@@ -1,5 +1,5 @@
 from random import choice, randint
-from string import ascii_letters
+from string import printable
 import re
 
 class RegexStr(object):
@@ -229,7 +229,7 @@ class Exclude(RegexOperator):
         ind.valid_data(), self.args))
 
         data = filter(lambda ind: \
-        not ind in chars, ascii_letters)
+        not ind in chars, printable)
 
         return choice(data)
 
@@ -252,7 +252,7 @@ class X(RegexOperator):
         return ''
 
     def valid_data(self):
-        char = choice(ascii_letters)
+        char = choice(printable)
         return char
 
     def __str__(self):
