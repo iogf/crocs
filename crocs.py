@@ -34,6 +34,15 @@ class RegexOperator(object):
         regex, str) else regex
         return regex
 
+    def test(self):
+        regex = str(self)
+        data  = self.valid_data()
+        strc  = re.match(regex, data)
+        print 'Regex;', regex
+        print 'Input:', data
+        print 'Group dict:', strc.groupdict()
+        print 'Groups', strc.groups()
+
     def __str__(self):
         pass
 
