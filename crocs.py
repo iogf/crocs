@@ -4,7 +4,7 @@ import re
 
 class RegexStr(object):
     def __init__(self, value):
-        self.value = re.escape(value)
+        self.value = value
 
     def invalid_data(self):
         pass
@@ -13,7 +13,7 @@ class RegexStr(object):
         return self.value
 
     def __str__(self):
-        return self.value
+        return re.escape(self.value)
 
 class RegexOperator(object):
     def __init__(self):
@@ -46,6 +46,9 @@ class RegexOperator(object):
         print 'Group 0:', strc.group(0)
         print 'Groups:', strc.groups()
 
+    def join(self):
+        return ''.join(map(lambda ind: str(ind), self.args))
+
     def __str__(self):
         pass
 
@@ -68,8 +71,7 @@ class NamedGroup(RegexOperator):
         ind.valid_data(), self.args))
 
     def __str__(self):
-        return '(?P<%s>%s)' % (self.name, ''.join(map(
-        lambda ind: str(ind), self.args)))
+        return '(?P<%s>%s)' % (self.name, self.join())
 
 class Group(RegexOperator):
     """
@@ -89,8 +91,7 @@ class Group(RegexOperator):
         ind.valid_data(), self.args))
 
     def __str__(self):
-        return '(%s)' % ''.join(map(lambda ind: \
-        str(ind), self.args))
+        return '(%s)' % self.join()
 
 class Times(RegexOperator):
     """
@@ -167,6 +168,20 @@ class ConsumeBack(RegexOperator):
     def __str__(self):
         return '%s(?=%s)' % (self.regex0, self.regex1)
 
+class Seq(RegexOperator):
+    def __init__(self, start, end):
+        self.start = start
+        self.end   = end
+        self.seq   = [chr(ind) for ind in xrange(
+        ord(self.start), ord(self.end))]
+
+    def valid_data(self):
+        char = choice(self.seq)
+        return char
+
+    def __str__(self):
+        return '%s-%s' % (self.start, self.end)
+
 class Include(RegexOperator):
     """
     Sets.
@@ -174,18 +189,21 @@ class Include(RegexOperator):
     [abc]
     """
 
-    def __init__(self, chars):
-        self.chars = chars
+    def __init__(self, *args):
+        self.args = self.encargs(args)
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        char = choice(self.chars)
+        chars = ''.join(map(lambda ind: \
+        ind.valid_data(), self.args))
+
+        char = choice(chars)
         return char
 
     def __str__(self):
-        return '[%s]' % self.chars
+        return '[%s]' % self.join()
 
 class Exclude(RegexOperator):
     """
@@ -194,20 +212,23 @@ class Exclude(RegexOperator):
     [^abc]
     """
 
-    def __init__(self, chars):
-        self.chars = chars
+    def __init__(self, *args):
+        self.args = self.encargs(args)
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
+        chars = ''.join(map(lambda ind: \
+        ind.valid_data(), self.args))
+
         data = filter(lambda ind: \
-        not ind in self.chars, ascii_letters)
+        not ind in chars, ascii_letters)
 
         return choice(data)
 
     def __str__(self):
-        return '[^%s]' % self.chars
+        return '[^%s]' % self.join()
 
 class X(RegexOperator):
     """
@@ -247,7 +268,6 @@ class Pattern(RegexOperator):
         ind.valid_data(), self.args))
 
     def __str__(self):
-        return ''.join(map(lambda ind: \
-        str(ind), self.args))
-
+        return self.join()
     
+
