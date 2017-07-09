@@ -37,16 +37,25 @@ class RegexOperator(object):
     def test(self):
         regex = str(self)
         data  = self.valid_data()
-        strc  = re.match(regex, data)
+
+        # It has to be search in order to work with ConsumeNext.
+        strc  = re.search(regex, data)
         print 'Regex;', regex
         print 'Input:', data
         print 'Group dict:', strc.groupdict()
-        print 'Groups', strc.groups()
+        print 'Group 0:', strc.group(0)
+        print 'Groups:', strc.groups()
 
     def __str__(self):
         pass
 
 class NamedGroup(RegexOperator):
+    """
+    Named groups.
+
+    (?P<name>...)
+    """
+
     def __init__(self, name, *args):
         self.args = self.encargs(args)
         self.name  = name
@@ -78,6 +87,16 @@ class Group(RegexOperator):
         str(ind), self.args))
 
 class Times(RegexOperator):
+    """
+    Match n, m times.
+
+    a{1, 3}
+
+    Note: The * and + are emulated by
+    Times(regex, 0) or Times(regex, 1)
+
+    """
+
     TEST_MAX = 10
 
     def __init__(self, regex, min=0, max=''):
@@ -101,21 +120,33 @@ class Times(RegexOperator):
         self.min, self.max)
 
 class ConsumeNext(RegexOperator):
+    """
+    Lookbehind assertion.
+
+    (?<=...)
+    """
+
     def __init__(self, regex0, regex1):
         self.regex0 = self.encstr(regex0)
         self.regex1 = self.encstr(regex1)
-
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        pass
+        return '%s%s' % (self.regex0.valid_data(), 
+        self.regex1.valid_data())
 
     def __str__(self):
         return '(?<=%s)%s' % (self.regex0, self.regex1)
 
 class ConsumeBack(RegexOperator):
+    """
+    Lookahead assertion.
+
+    (?=...)
+    """
+
     def __init__(self, regex0, regex1):
         self.regex0 = self.encstr(regex0)
         self.regex1 = self.encstr(regex1)
@@ -124,12 +155,19 @@ class ConsumeBack(RegexOperator):
         pass
 
     def valid_data(self):
-        pass
+        return '%s%s' % (self.regex0.valid_data(), 
+        self.regex1.valid_data())
 
     def __str__(self):
-        return '(?=%s)%s' % (self.regex0, self.regex1)
+        return '%s(?=%s)' % (self.regex0, self.regex1)
 
 class Include(RegexOperator):
+    """
+    Sets.
+
+    [abc]
+    """
+
     def __init__(self, chars):
         self.chars = chars
 
@@ -144,6 +182,12 @@ class Include(RegexOperator):
         return '[%s]' % self.chars
 
 class Exclude(RegexOperator):
+    """
+    Excluding.
+
+    [^abc]
+    """
+
     def __init__(self, chars):
         self.chars = chars
 
@@ -160,6 +204,12 @@ class Exclude(RegexOperator):
         return '[^%s]' % self.chars
 
 class X(RegexOperator):
+    """
+    The dot.
+
+    .
+    """
+
     TOKEN = '.'
 
     def __init__(self):
@@ -176,6 +226,10 @@ class X(RegexOperator):
         return self.TOKEN
 
 class Pattern(RegexOperator):
+    """
+    Setup a pattern.
+    """
+
     def __init__(self, *args):
         self.args = self.encargs(args)
 
@@ -191,7 +245,3 @@ class Pattern(RegexOperator):
         str(ind), self.args))
 
     
-
-
-
-
