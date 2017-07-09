@@ -16,6 +16,10 @@ class RegexStr(object):
         return re.escape(self.value)
 
 class RegexOperator(object):
+    # It may be interesting to have a base class Pattern
+    # that implements common methods with Group and Include, Exclude.
+    # Because these accept multiple arguments.
+
     def __init__(self):
         pass
 
