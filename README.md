@@ -33,6 +33,16 @@ The class X replaces the '.' regex functionality.
 The string 'yivGY' is one of the possible valid inputs
 that permit a match for the construction.
 
+Notice that it would be possible to write as:
+
+~~~python
+x = X()
+chk = Times(x, 3)
+chk.test()
+~~~
+
+The Pattern class is used to glue more than one pattern. 
+
 ### Basic sets
 
 ~~~python
@@ -55,7 +65,6 @@ Groups: ()
 
 The input is generated randomly. So it is possible to get an intuition of how the regex will
 behave with real input.
-
 
 ### Using groups
 
@@ -133,6 +142,70 @@ Input: ajrjjpoke-1
 Group dict: {'num': '1'}
 Group 0: ajrjjpoke-1
 Groups: ('1',)
+~~~
+
+A more complex and detailed example that shows slightly how to reason using the functional syntax.
+
+It solves the problem of catching mails whose domain contains 
+'br' in the beginning and the hostname contains 'python' in  the beginning too. 
+It makes sure that the first letter in the mail name is in the set a-z as well.
+
+~~~python
+from crocs import *
+
+# First we define how our patterns look like.
+name_valid_letters = Seq('a', 'z')
+name_valid_numbers = Seq('0', '9')
+name_valid_signs   = '_.-'
+
+# The include works sort of Times except for one char. 
+# You can think of it as fetching one from the described sets.
+name_valid_chars = Include(name_valid_letters, 
+name_valid_numbers, name_valid_signs)
+
+# Think of the Times class as meaning: fetch the
+# described patterns one or more times.
+name_chunk = Times(name_valid_chars, 1)
+
+# The first letter in the mail name has to be a in 'a-z'.
+name_fmt = Pattern(Include(name_valid_letters), name_chunk)
+
+# Think of group as a way to keep reference
+# to the fetched chunk.
+mail = NamedGroup('name', name_fmt)
+
+# The random's hostname part looks like the name except
+# it starts with 'python' in the beginning, 
+# so we fetch the random chars.
+hostname_chars = Include(name_valid_letters)
+hostname_chunk = Times(hostname_chars, 1)
+
+# We format finally the complete hostname pattern.
+hostname_fmt = Pattern('python', hostname_chunk)
+
+# Keep reference for the group.
+hostname = NamedGroup('hostname', hostname_fmt)
+
+# Define the domain format.
+domain_fmt = Pattern('br', Include('a', 'z'))
+
+# Keep reference of the domain chunk.
+domain  = NamedGroup('domain', domain_fmt)
+
+# Finally we generate the regex and check how it looks like.
+match_mail = Pattern(mail, '@', hostname, '.', domain)
+match_mail.test()
+
+~~~
+
+Would output:
+
+~~~
+Regex; (?P<name>[a-z][a-z0-9\_\.\-]{1,})\@(?P<hostname>python[a-z]{1,})\.(?P<domain>br[az])
+Input: dt5gqaot@pythonckdjjdecbm.brz
+Group dict: {'domain': 'brz', 'hostname': 'pythonckdjjdecbm', 'name': 'dt5gqaot'}
+Group 0: dt5gqaot@pythonckdjjdecbm.brz
+Groups: ('dt5gqaot', 'pythonckdjjdecbm', 'brz')
 ~~~
 
 **Note:** crocs is in its early development state it is not supporting all regex's features.

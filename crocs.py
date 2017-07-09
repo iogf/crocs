@@ -182,8 +182,7 @@ class Seq(RegexOperator):
         ord(self.start), ord(self.end))]
 
     def valid_data(self):
-        char = choice(self.seq)
-        return char
+        return ''.join(self.seq)
 
     def __str__(self):
         return '%s-%s' % (self.start, self.end)
