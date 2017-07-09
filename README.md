@@ -8,6 +8,31 @@ it is as well possible to generate random inputs for the regex that would match 
 
 The examples below clarifies better.
 
+### The dot/variable
+
+~~~python
+from crocs import *
+
+e = Pattern(Times(X(), 3, 5))
+
+e.test()
+
+~~~
+
+Output:
+
+~~~
+Regex; .{3,5}
+Input: yivGY
+Group dict: {}
+Group 0: yivGY
+Groups: ()
+~~~
+
+The class X replaces the '.' regex functionality.
+The string 'yivGY' is one of the possible valid inputs
+that permit a match for the construction.
+
 ### Basic sets
 
 ~~~python
