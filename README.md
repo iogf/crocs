@@ -90,6 +90,26 @@ Notice that if you want to limit below using times.
 Times(regex, max=4)
 ~~~
 
+### Named groups
+
+~~~python
+from crocs import *
+
+e = Pattern(
+    Times(Include(Seq('a', 'z')), 5), '-',
+    NamedGroup('num', Include(Seq('0', '9'))))
+
+e.test()
+~~~
+
+~~~
+Regex; [a-z]{5,}\-(?P<num>[0-9])
+Input: ajrjjpoke-1
+Group dict: {'num': '1'}
+Group 0: ajrjjpoke-1
+Groups: ('1',)
+~~~
+
 **Note:** crocs is in its early development state it is not supporting all regex's features.
 Check the demo folder for better info on what it can be done.
 

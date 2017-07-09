@@ -119,8 +119,10 @@ class Times(RegexOperator):
         count = randint(self.min, self.max 
         if self.max else self.TEST_MAX)
 
-        data = self.regex.valid_data()
-        return data * count
+        data = ''.join((self.regex.valid_data() 
+        for ind in xrange(count)))
+
+        return data 
 
     def __str__(self):
         return '%s{%s,%s}' % (self.regex, 
