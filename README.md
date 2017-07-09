@@ -212,6 +212,10 @@ Group 0: dt5gqaot@pythonckdjjdecbm.brz
 Groups: ('dt5gqaot', 'pythonckdjjdecbm', 'brz')
 ~~~
 
+Despite of the code being more prolix, using the functional syntax permits to better reason on implementing
+regex for certain situations. Using a bit of imagination it can be thought as sort of an imperative
+paradigm where Times, Include, Exclude play the role of retrieving content.
+
 **Note:** crocs is in its early development state it is not supporting all regex's features.
 Check the demo folder for better info on what it can be done.
 
