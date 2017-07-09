@@ -6,39 +6,38 @@ The idea behind crocs is simplifying the construction and debugging of regex's. 
 implement regex's using a function syntax, the resulting structure is then compiled into a regex's string.
 it is as well possible to generate random inputs for the regex that would match the regex pattern.
 
-The example below clarifies the scenary:
+The examples below clarifies better.
+
+### Basic sets
 
 ~~~python
 from crocs import *
 
-e = Pattern(Group(Exclude('abc'), 'cuca'), Times(
-NamedGroup('alpha', Include('mnc'), 'done'), 4))
+e = Pattern(Exclude('abc'), Include('xv'))
 
 e.test()
-
 ~~~
 
 Would output:
 
 ~~~
-[tau@sigma demo]$ python2 groups.py 
-Regex; ([^abc]cuca)(?P<alpha>[mnc]done){4,}
-Input: lcucandonendonendonendonendonendonendonendonendonendone
-Group dict: {'alpha': 'ndone'}
-Group 0: lcucandonendonendonendonendonendonendonendonendonendone
-Groups: ('lcuca', 'ndone')
+Regex; [^abc][xv]
+Input: Ax
+Group dict: {}
+Group 0: Ax
+Groups: ()
 ~~~
 
 The input is generated randomly. So it is possible to get an intuition of how the regex will
 behave with real input.
 
-Another example:
+
+### Using groups
 
 ~~~python
 from crocs import *
 
-e = Pattern(Group(Exclude('abc'), 'cuca'), Times(
-NamedGroup('alpha', Include('mnc'), 'done'), 4))
+e = Pattern(Group(Exclude('abc'), 'cuca'))
 
 e.test()
 ~~~
@@ -46,15 +45,15 @@ e.test()
 Output;
 
 ~~~
-[tau@sigma demo]$ python2 basic_sets.py 
-Regex; .[^abc]{3,}[xv]{4,}
-Input: GVVVxxxxxxx
+Regex; ([^abc]cuca)
+Input: Kcuca
 Group dict: {}
-Group 0: GVVVxxxxxxx
-Groups: ()
+Group 0: Kcuca
+Groups: ('Kcuca',)
 ~~~
 
-A simpler example that shows how to match one or more chars.
+### The +/* operators.
+
 
 ~~~python
 from crocs import *
@@ -91,9 +90,6 @@ Notice that if you want to limit below using times.
 Times(regex, max=4)
 ~~~
 
-The module is documented and it shouldn't be hard to figure out
-which classes belong to which regex operators.
-
 **Note:** crocs is in its early development state it is not supporting all regex's features.
 Check the demo folder for better info on what it can be done.
 
@@ -102,4 +98,5 @@ Check the demo folder for better info on what it can be done.
 ~~~
 pip2 install crocs
 ~~~
+
 
