@@ -72,6 +72,12 @@ class NamedGroup(RegexOperator):
         lambda ind: str(ind), self.args)))
 
 class Group(RegexOperator):
+    """
+    A normal group.
+
+    (abc).
+    """
+
     def __init__(self, *args):
         self.args = self.encargs(args)
 

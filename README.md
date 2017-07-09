@@ -78,11 +78,17 @@ Groups: ()
 
 The operators '+' and '*' are replaced for the class Times.
 
-~~~
+~~~python
 Times(regex, 1) # For +
 
 Times(regex, 0) # For *
 
+~~~
+
+Notice that if you want to limit below using times.
+
+~~~python
+Times(regex, max=4)
 ~~~
 
 The module is documented and it shouldn't be hard to figure out
