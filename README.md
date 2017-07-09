@@ -155,6 +155,12 @@ It solves the problem of catching mails whose domain contains
 It makes sure that the first letter in the mail name is in the set a-z as well.
 
 ~~~python
+"""
+It solves the problem of catching mails whose domain contains 
+'br' in the beginning and the hostname contains 'python' in  the beginning too. 
+It makes sure that the first letter in the mail name is in the set a-z as well.
+"""
+
 from crocs import *
 
 # First we define how our patterns look like.
@@ -191,7 +197,7 @@ hostname_fmt = Pattern('python', hostname_chunk)
 hostname = NamedGroup('hostname', hostname_fmt)
 
 # Define the domain format.
-domain_fmt = Pattern('br', Include('a', 'z'))
+domain_fmt = Pattern('br', Include(name_valid_letters))
 
 # Keep reference of the domain chunk.
 domain  = NamedGroup('domain', domain_fmt)
@@ -205,11 +211,11 @@ match_mail.test()
 Would output:
 
 ~~~
-Regex; (?P<name>[a-z][a-z0-9\_\.\-]{1,})\@(?P<hostname>python[a-z]{1,})\.(?P<domain>br[az])
-Input: dt5gqaot@pythonckdjjdecbm.brz
-Group dict: {'domain': 'brz', 'hostname': 'pythonckdjjdecbm', 'name': 'dt5gqaot'}
-Group 0: dt5gqaot@pythonckdjjdecbm.brz
-Groups: ('dt5gqaot', 'pythonckdjjdecbm', 'brz')
+Regex; (?P<name>[a-z][a-z0-9\_\.\-]{1,})\@(?P<hostname>python[a-z]{1,})\.(?P<domain>br[a-z])
+Input: tbr@pythontfn.brq
+Group dict: {'domain': 'brq', 'hostname': 'pythontfn', 'name': 'tbr'}
+Group 0: tbr@pythontfn.brq
+Groups: ('tbr', 'pythontfn', 'brq')
 ~~~
 
 Despite of the code being more prolix, using the functional syntax permits to better reason on implementing

@@ -40,7 +40,7 @@ hostname_fmt = Pattern('python', hostname_chunk)
 hostname = NamedGroup('hostname', hostname_fmt)
 
 # Define the domain format.
-domain_fmt = Pattern('br', Include('a', 'z'))
+domain_fmt = Pattern('br', Include(name_valid_letters))
 
 # Keep reference of the domain chunk.
 domain  = NamedGroup('domain', domain_fmt)
@@ -48,6 +48,7 @@ domain  = NamedGroup('domain', domain_fmt)
 # Finally we generate the regex and check how it looks like.
 match_mail = Pattern(mail, '@', hostname, '.', domain)
 match_mail.test()
+
 
 
 
