@@ -42,25 +42,6 @@ cd ~/projects/crocs-code
 git checkout *
 ##############################################################################
 # create, a new branch locally from an existing commit, from, master.
-git checkout master
-cd ~/projects/crocs-code
-git checkout -b old_version fcebcd4f229cb29cac344161937d249785bf83f8
-git push --set-upstream origin old_version
-
-git checkout old_version
-##############################################################################
-# delete, old version, crocs.
-git checkout master
-git branch -d old_version
-git push origin :old_version
-git fetch -p 
-##############################################################################
-# create, toc, table of contents, crocs.
-cd ~/projects/crocs-code
-gh-md-toc BOOK.md > table.md
-vy table.md
-rm table.md
-##############################################################################
 # install, crocs.
 sudo bash -i
 cd /home/tau/projects/crocs-code
@@ -80,6 +61,7 @@ cd ~/projects/crocs-code
 python2 setup.py sdist register upload
 rm -fr dist
 ##############################################################################
+
 
 
 

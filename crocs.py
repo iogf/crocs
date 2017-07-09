@@ -1,4 +1,5 @@
-from random import choice
+from random import choice, randint
+from string import ascii_letters
 import re
 
 class RegexOperator(object):
@@ -42,6 +43,8 @@ class Group(RegexOperator):
         return '(%s)' % self.regex
 
 class Times(RegexOperator):
+    TEST_MAX = 10
+
     def __init__(self, regex, min=0, max=''):
         self.regex = regex
         self.min   = min
@@ -51,7 +54,9 @@ class Times(RegexOperator):
         pass
 
     def valid_data(self):
-        pass
+        count = randint(self.min, self.max if self.max else self.TEST_MAX)
+        data = self.regex.valid_data()
+        return data * count
 
     def __str__(self):
         return '%s{%s,%s}' % (self.regex, 
@@ -93,7 +98,8 @@ class Include(RegexOperator):
         pass
 
     def valid_data(self):
-        pass
+        char = choice(self.chars)
+        return char
 
     def __str__(self):
         return '[%s]' % self.chars
@@ -106,7 +112,10 @@ class Exclude(RegexOperator):
         pass
 
     def valid_data(self):
-        pass
+        data = filter(lambda ind: \
+        not ind in self.chars, ascii_letters)
+
+        return choice(data)
 
     def __str__(self):
         return '[^%s]' % self.chars
@@ -118,10 +127,11 @@ class X(RegexOperator):
         pass
 
     def invalid_data(self):
-        pass
+        return ''
 
     def valid_data(self):
-        pass
+        char = choice(ascii_letters)
+        return char
 
     def __str__(self):
         return self.TOKEN
@@ -134,13 +144,15 @@ class Pattern(RegexOperator):
         pass
 
     def valid_data(self):
-        pass
+        return ''.join(map(lambda ind: \
+        ind.valid_data(), self.args))
 
     def __str__(self):
         return ''.join(map(lambda ind: \
         str(ind), self.args))
 
     
+
 
 
 
