@@ -2,6 +2,19 @@ from random import choice, randint
 from string import ascii_letters
 import re
 
+class RegexStr(object):
+    def __init__(self, value):
+        self.value = re.escape(value)
+
+    def invalid_data(self):
+        pass
+
+    def valid_data(self):
+        return self.value
+
+    def __str__(self):
+        return self.value
+
 class RegexOperator(object):
     def __init__(self):
         pass
@@ -12,41 +25,55 @@ class RegexOperator(object):
     def valid_data(self):
         pass
 
+    def encargs(self, args):
+        return [RegexStr(ind) if isinstance(ind, str) else ind
+        for ind in args]
+
+    def encstr(self, regex):
+        regex = RegexStr(regex) if isinstance(
+        regex, str) else regex
+        return regex
+
     def __str__(self):
         pass
 
 class NamedGroup(RegexOperator):
-    def __init__(self, name, regex):
-        self.regex = regex
+    def __init__(self, name, *args):
+        self.args = self.encargs(args)
         self.name  = name
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        pass
+        return ''.join(map(lambda ind: \
+        ind.valid_data(), self.args))
 
     def __str__(self):
-        return '(?P<%s>%s)' % (self.name, self.regex)
+        return '(?P<%s>%s)' % (self.name, ''.join(map(
+        lambda ind: str(ind), self.args)))
 
 class Group(RegexOperator):
-    def __init__(self, regex):
-        self.regex = regex
+    def __init__(self, *args):
+        self.args = self.encargs(args)
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        pass
+        return ''.join(map(lambda ind: \
+        ind.valid_data(), self.args))
 
     def __str__(self):
-        return '(%s)' % self.regex
+        return '(%s)' % ''.join(map(lambda ind: \
+        str(ind), self.args))
 
 class Times(RegexOperator):
     TEST_MAX = 10
 
     def __init__(self, regex, min=0, max=''):
-        self.regex = regex
+        self.regex = self.encstr(regex)
+
         self.min   = min
         self.max   = max
 
@@ -54,7 +81,9 @@ class Times(RegexOperator):
         pass
 
     def valid_data(self):
-        count = randint(self.min, self.max if self.max else self.TEST_MAX)
+        count = randint(self.min, self.max 
+        if self.max else self.TEST_MAX)
+
         data = self.regex.valid_data()
         return data * count
 
@@ -64,8 +93,9 @@ class Times(RegexOperator):
 
 class ConsumeNext(RegexOperator):
     def __init__(self, regex0, regex1):
-        self.regex0 = regex0
-        self.regex1 = regex1
+        self.regex0 = self.encstr(regex0)
+        self.regex1 = self.encstr(regex1)
+
 
     def invalid_data(self):
         pass
@@ -78,8 +108,8 @@ class ConsumeNext(RegexOperator):
 
 class ConsumeBack(RegexOperator):
     def __init__(self, regex0, regex1):
-        self.regex0 = regex0
-        self.regex1 = regex1
+        self.regex0 = self.encstr(regex0)
+        self.regex1 = self.encstr(regex1)
 
     def invalid_data(self):
         pass
@@ -138,7 +168,7 @@ class X(RegexOperator):
 
 class Pattern(RegexOperator):
     def __init__(self, *args):
-        self.args = args
+        self.args = self.encargs(args)
 
     def invalid_data(self):
         pass
