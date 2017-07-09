@@ -136,6 +136,8 @@ e = Pattern(
 e.test()
 ~~~
 
+Output: 
+
 ~~~
 Regex; [a-z]{5,}\-(?P<num>[0-9])
 Input: ajrjjpoke-1
@@ -143,6 +145,8 @@ Group dict: {'num': '1'}
 Group 0: ajrjjpoke-1
 Groups: ('1',)
 ~~~
+
+### Catching mails
 
 A more complex and detailed example that shows slightly how to reason using the functional syntax.
 
