@@ -248,13 +248,16 @@ Check the demo folder for better info on what it can be done.
 
 # Install
 
+**Note:** Work with both python 2 or 3.
+
 ~~~
-pip2 install crocs
+pip install crocs
 ~~~
 
 Documentation
 =============
 
 [Wiki](https://github.com/iogf/crocs/wiki)
+
 
 
