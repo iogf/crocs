@@ -148,18 +148,7 @@ Groups: ('1',)
 
 ### Catching mails
 
-A more complex and detailed example that shows slightly how to reason using the functional syntax.
-
-It solves the problem of catching mails whose domain contains 
-'br' in the beginning and the hostname contains 'python' in  the beginning too. 
-It makes sure that the first letter in the mail name is in the set a-z as well.
-
 ~~~python
-"""
-It solves the problem of catching mails whose domain contains 
-'br' in the beginning and the hostname contains 'python' in  the beginning too. 
-It makes sure that the first letter in the mail name is in the set a-z as well.
-"""
 
 from crocs import *
 
@@ -182,7 +171,7 @@ name_fmt = Pattern(Include(name_valid_letters), name_chunk)
 
 # Think of group as a way to keep reference
 # to the fetched chunk.
-mail = NamedGroup('name', name_fmt)
+name = NamedGroup('name', name_fmt)
 
 # The random's hostname part looks like the name except
 # it starts with 'python' in the beginning, 
@@ -203,7 +192,7 @@ domain_fmt = Pattern('br', Include(name_valid_letters))
 domain  = NamedGroup('domain', domain_fmt)
 
 # Finally we generate the regex and check how it looks like.
-match_mail = Pattern(mail, '@', hostname, '.', domain)
+match_mail = Pattern(name, '@', hostname, '.', domain)
 match_mail.test()
 
 ~~~
@@ -258,6 +247,7 @@ Documentation
 =============
 
 [Wiki](https://github.com/iogf/crocs/wiki)
+
 
 
 
