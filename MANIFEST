@@ -11,5 +11,7 @@ demo/example_times.py
 demo/groups.py
 demo/mail_checker.py
 demo/named_group.py
+demo/neg_consume_back.py
+demo/neg_consume_next.py
 demo/one_or_more.py
 demo/seqs.py

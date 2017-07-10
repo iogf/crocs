@@ -45,7 +45,7 @@ git checkout *
 # install, crocs.
 sudo bash -i
 cd /home/tau/projects/crocs-code
-python2 setup.py install
+python setup.py install
 rm -fr build
 exit
 ##############################################################################
@@ -61,6 +61,16 @@ cd ~/projects/crocs-code
 python2 setup.py sdist register upload
 rm -fr dist
 ##############################################################################
+# check patch-1
+cd /home/tau/projects/crocs-code/
+git checkout -b cclauss-patch-1 master
+git pull https://github.com/cclauss/crocs.git patch-1
+
+# merge, patch, pull, into, development, vy, avamsi, contribution.
+git checkout development
+git merge --no-ff cclauss-patch-1
+git push origin development
+
 
 
 

@@ -13,8 +13,11 @@ class RegexStr(object):
         self.value = value
 
     def invalid_data(self):
-        data = filter(lambda ind: \
-        not ind in self.value, printable)
+        # data = filter(lambda ind: \
+        # not ind in self.value, printable)
+
+        data = [ind for ind in printable
+        if not ind in self.value]
 
         return ''.join(choice(data) 
         for ind in xrange(len(self.value)))
@@ -200,8 +203,9 @@ class Seq(RegexOperator):
         ord(self.start), ord(self.end))]
 
     def invalid_data(self):
-        return ''.join(filter(lambda ind: \
-        not ind in self.seq, printable))
+        data = [ind for ind in printable
+        if not ind in self.seq]
+        return ''.join(data)
 
     def valid_data(self):
         return ''.join(self.seq)
@@ -223,8 +227,11 @@ class Include(RegexOperator):
         chars = ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
-        data = filter(lambda ind: \
-        not ind in chars, printable)
+        # data = filter(lambda ind: \
+        # not ind in chars, printable)
+
+        data = [ind for ind in printble
+        if not ind in chars]
 
         return choice(data)
 
@@ -259,8 +266,11 @@ class Exclude(RegexOperator):
         chars = ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
-        data = filter(lambda ind: \
-        not ind in chars, printable)
+        # data = filter(lambda ind: \
+        # not ind in chars, printable)
+
+        data = [ind for ind in printable
+        if not ind in chars]
 
         return choice(data)
 
@@ -307,3 +317,4 @@ class Pattern(RegexOperator):
 
     def __str__(self):
         return self.join()
+
