@@ -1,6 +1,12 @@
+from __future__ import print_function
 from random import choice, randint
 from string import printable
 import re
+
+try:
+    xrange          # Python 2
+except NameError:
+    xrange = range  # Python 3
 
 class RegexStr(object):
     def __init__(self, value):
@@ -48,11 +54,11 @@ class RegexOperator(object):
 
         # It has to be search in order to work with ConsumeNext.
         strc  = re.search(regex, data)
-        print 'Regex;', regex
-        print 'Input:', data
-        print 'Group dict:', strc.groupdict()
-        print 'Group 0:', strc.group(0)
-        print 'Groups:', strc.groups()
+        print('Regex;', regex)
+        print('Input:', data)
+        print('Group dict:', strc.groupdict())
+        print('Group 0:', strc.group(0))
+        print('Groups:', strc.groups())
 
     def join(self):
         return ''.join(map(lambda ind: str(ind), self.args))
@@ -301,6 +307,3 @@ class Pattern(RegexOperator):
 
     def __str__(self):
         return self.join()
-    
-
-
