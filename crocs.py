@@ -230,7 +230,7 @@ class Include(RegexOperator):
         # data = filter(lambda ind: \
         # not ind in chars, printable)
 
-        data = [ind for ind in printble
+        data = [ind for ind in printable
         if not ind in chars]
 
         return choice(data)
@@ -245,34 +245,18 @@ class Include(RegexOperator):
     def __str__(self):
         return '[%s]' % self.join()
 
-class Exclude(RegexOperator):
+class Exclude(Include):
     """
     Excluding.
 
     [^abc]
     """
 
-    def __init__(self, *args):
-        self.args = self.encargs(args)
-
     def invalid_data(self):
-        chars = ''.join(map(lambda ind: \
-        ind.valid_data(), self.args))
-
-        char = choice(chars)
-        return char
+        return super(Exclude, self).valid_data()
 
     def valid_data(self):
-        chars = ''.join(map(lambda ind: \
-        ind.valid_data(), self.args))
-
-        # data = filter(lambda ind: \
-        # not ind in chars, printable)
-
-        data = [ind for ind in printable
-        if not ind in chars]
-
-        return choice(data)
+        return super(Exclude, self).invalid_data()
 
     def __str__(self):
         return '[^%s]' % self.join()
