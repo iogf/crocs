@@ -154,11 +154,12 @@ class ConsumeNext(RegexOperator):
         pass
 
     def valid_data(self):
-        return '%s%s' % (self.regex0.invalid_data(), 
-        self.regex1.valid_data())
+        return '%s%s' % ((self.regex0.valid_data(), 
+        self.regex1.valid_data()) if not self.neg else (self.regex0.invalid_data(), 
+        self.regex1.valid_data()))
 
     def __str__(self):
-        return ('(?<=%s)%s' if self.neg else \
+        return ('(?<=%s)%s' if not self.neg else \
         '(?<!%s)%s') % (self.regex0, self.regex1)
 
 class ConsumeBack(RegexOperator):
@@ -168,19 +169,22 @@ class ConsumeBack(RegexOperator):
     (?=...)
     """
 
-    def __init__(self, regex0, regex1):
+    def __init__(self, regex0, regex1, neg=False):
         self.regex0 = self.encstr(regex0)
         self.regex1 = self.encstr(regex1)
+        self.neg    = neg
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        return '%s%s' % (self.regex0.valid_data(), 
-        self.regex1.valid_data())
+        return '%s%s' % ((self.regex0.valid_data(), 
+        self.regex1.valid_data()) if not self.neg else (self.regex0.valid_data(), 
+        self.regex1.invalid_data()))
 
     def __str__(self):
-        return '%s(?=%s)' % (self.regex0, self.regex1)
+        return ('%s(?=%s)' if not self.neg else\
+        '%s(?!%s)') % (self.regex0, self.regex1)
 
 class Seq(RegexOperator):
     def __init__(self, start, end):
