@@ -222,6 +222,27 @@ Despite of the code being more prolix, using the functional syntax permits to be
 regex for certain situations. Using a bit of imagination it can be thought as sort of an imperative
 paradigm where Times, Include, Exclude play the role of retrieving content.
 
+### Negative lookahead
+
+~~~python
+from crocs import *
+
+e = Pattern(ConsumeBack('abc', 'def', neg=True))
+e.test()
+
+~~~
+
+Output: 
+
+~~~
+Regex; abc(?!def)
+Input: abcoP7
+Group dict: {}
+Group 0: abc
+Groups: ()
+
+~~~
+
 **Note:** crocs is in its early development state it is not supporting all regex's features.
 Check the demo folder for better info on what it can be done.
 
