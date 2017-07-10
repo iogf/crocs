@@ -1,5 +1,7 @@
 from crocs import *
 
-e = Pattern(ConsumeBack('abc', 'def', neg=True))
-e.test()
+e0 = Pattern(ConsumeBack('abc', 'def', neg=True))
+e0.test()
+
+
 

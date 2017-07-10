@@ -127,12 +127,22 @@ class Times(RegexOperator):
 
     def __init__(self, regex, min=0, max=''):
         self.regex = self.encstr(regex)
-
         self.min   = min
         self.max   = max
 
     def invalid_data(self):
-        pass
+        count = randint(self.min, self.max 
+        if self.max else self.TEST_MAX)
+        
+        # Get all chars that wouldnt match the underlying
+        # patterns.
+        data = self.regex.invalid_data() 
+
+        # Generate a string that wouldn't match with any 
+        # of the underlying patterns.
+        # Notice that Times(X(), 2).invalid_data() would throw
+        # an exception due to X() not having invalid chars.
+        return ''.join((choice(data) for ind in xrange(count)))
 
     def valid_data(self):
         count = randint(self.min, self.max 
@@ -200,7 +210,7 @@ class Seq(RegexOperator):
         self.start = start
         self.end   = end
         self.seq   = [chr(ind) for ind in xrange(
-        ord(self.start), ord(self.end))]
+        ord(self.start), ord(self.end) + 1)]
 
     def invalid_data(self):
         data = [ind for ind in printable
