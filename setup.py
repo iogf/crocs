@@ -1,4 +1,3 @@
-#! /usr/bin/env python2
 
 from distutils.core import setup
 setup(name="crocs",
@@ -11,6 +10,7 @@ setup(name="crocs",
       keywords=[],
       classifiers=[],
       description="",)
+
 
 
 
