@@ -37,7 +37,7 @@ Notice that it would be possible to write as:
 
 ~~~python
 x = X()
-chk = Times(x, 3)
+chk = Times(x, 3, 5)
 chk.test()
 ~~~
 
