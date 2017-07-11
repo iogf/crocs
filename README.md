@@ -43,6 +43,27 @@ chk.test()
 
 The Pattern class is used to glue more than one pattern. 
 
+### Check possible matches
+
+~~~python
+p0 = Seq('0', '9')
+c0 = Include(p0)
+data0 = Times(c0, 1)
+cond = ConsumeBack('alpha', 'beta', neg=True)
+pattern = Pattern(data0, cond)
+
+pattern.hits()
+~~~
+
+Outputs:
+
+~~~
+Match with:
+ 620034alphaAwE. 378686alpha$7~R 6309alpha>P5B 00119176alpha*Tj 0610937alpha\u{v 
+ 6133alphapn 5892871alphalwpD 8477365546alphaw~<' 01265865alpha]1
+ 689478495alphaQ5Mj
+~~~
+
 ### Basic sets
 
 ~~~python
@@ -251,6 +272,7 @@ Documentation
 =============
 
 [Wiki](https://github.com/iogf/crocs/wiki)
+
 
 
 

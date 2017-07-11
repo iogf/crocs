@@ -58,6 +58,13 @@ class RegexOperator(object):
     def join(self):
         return ''.join(map(lambda ind: str(ind), self.args))
 
+    def hits(self, count=10):
+        print('Match with:\n', ' '.join((self.valid_data() 
+        for ind in xrange(count))))
+
+        # print('Fail with:\n', ' '.join((self.invalid_data() 
+        # for ind in xrange(count))))
+
     def __str__(self):
         pass
 
@@ -305,5 +312,6 @@ class Pattern(RegexOperator):
 
     def __str__(self):
         return self.join()
+
 
 
