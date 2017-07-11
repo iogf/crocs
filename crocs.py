@@ -68,8 +68,6 @@ class RegexOperator(object):
 
         return regex, input
 
-        return self.valid_data()
-
     def join(self):
         return ''.join(map(lambda ind: str(ind), self.args))
 
