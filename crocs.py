@@ -33,23 +33,15 @@ class RegexOperator(object):
     # that implements common methods with Group and Include, Exclude.
     # Because these accept multiple arguments.
 
-    def __init__(self):
-        pass
+    def __init__(self, *args):
+        self.args = [RegexStr(ind) 
+        if isinstance(ind, str) else ind for ind in args]
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
         pass
-
-    def encargs(self, args):
-        return [RegexStr(ind) if isinstance(ind, str) else ind
-        for ind in args]
-
-    def encstr(self, regex):
-        regex = RegexStr(regex) if isinstance(
-        regex, str) else regex
-        return regex
 
     def test(self):
         regex = str(self)
@@ -77,7 +69,7 @@ class NamedGroup(RegexOperator):
     """
 
     def __init__(self, name, *args):
-        self.args = self.encargs(args)
+        super(NamedGroup, self).__init__(*args)
         self.name  = name
 
     def invalid_data(self):
@@ -99,7 +91,7 @@ class Group(RegexOperator):
     """
 
     def __init__(self, *args):
-        self.args = self.encargs(args)
+        super(Group, self).__init__(*args)
 
     def invalid_data(self):
         return ''.join(map(lambda ind: \
@@ -123,20 +115,23 @@ class Times(RegexOperator):
 
     """
 
-    TEST_MAX = 10
+    MAX = 10
 
     def __init__(self, regex, min=0, max=''):
-        self.regex = self.encstr(regex)
+        # The self.args will contain just one regex.
+        super(Times, self).__init__(regex)
+
+        self.regex = self.args[0]
         self.min   = min
         self.max   = max
 
     def invalid_data(self):
         count = randint(self.min, self.max 
-        if self.max else self.TEST_MAX)
+        if self.max else self.MAX)
         
         # Get all chars that wouldnt match the underlying
         # patterns.
-        data = self.regex.invalid_data() 
+        data = self.args[0].invalid_data() 
 
         # Generate a string that wouldn't match with any 
         # of the underlying patterns.
@@ -146,9 +141,9 @@ class Times(RegexOperator):
 
     def valid_data(self):
         count = randint(self.min, self.max 
-        if self.max else self.TEST_MAX)
+        if self.max else self.MAX)
 
-        data = ''.join((self.regex.valid_data() 
+        data = ''.join((self.args[0].valid_data() 
         for ind in xrange(count)))
 
         return data 
@@ -165,21 +160,21 @@ class ConsumeNext(RegexOperator):
     """
 
     def __init__(self, regex0, regex1, neg=False):
-        self.regex0 = self.encstr(regex0)
-        self.regex1 = self.encstr(regex1)
-        self.neg    = neg
+        super(ConsumeNext, self).__init__(regex0, regex1)
+        self.neg = neg
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        return '%s%s' % ((self.regex0.valid_data(), 
-        self.regex1.valid_data()) if not self.neg else (self.regex0.invalid_data(), 
-        self.regex1.valid_data()))
+        return '%s%s' % ((self.args[0].valid_data(), 
+        self.args[1].valid_data()) if not self.neg \
+        else (self.args[0].invalid_data(), 
+        self.args[1].valid_data()))
 
     def __str__(self):
         return ('(?<=%s)%s' if not self.neg else \
-        '(?<!%s)%s') % (self.regex0, self.regex1)
+        '(?<!%s)%s') % (self.args[0], self.args[1])
 
 class ConsumeBack(RegexOperator):
     """
@@ -189,21 +184,20 @@ class ConsumeBack(RegexOperator):
     """
 
     def __init__(self, regex0, regex1, neg=False):
-        self.regex0 = self.encstr(regex0)
-        self.regex1 = self.encstr(regex1)
-        self.neg    = neg
+        super(ConsumeBack, self).__init__(regex0, regex1)
+        self.neg = neg
 
     def invalid_data(self):
         pass
 
     def valid_data(self):
-        return '%s%s' % ((self.regex0.valid_data(), 
-        self.regex1.valid_data()) if not self.neg else (self.regex0.valid_data(), 
-        self.regex1.invalid_data()))
+        return '%s%s' % ((self.args[0].valid_data(), 
+        self.args[1].valid_data()) if not self.neg else \
+        (self.args[0].valid_data(), self.args[1].invalid_data()))
 
     def __str__(self):
         return ('%s(?=%s)' if not self.neg else\
-        '%s(?!%s)') % (self.regex0, self.regex1)
+        '%s(?!%s)') % (self.args[0], self.args[1])
 
 class Seq(RegexOperator):
     def __init__(self, start, end):
@@ -231,7 +225,7 @@ class Include(RegexOperator):
     """
 
     def __init__(self, *args):
-        self.args = self.encargs(args)
+        super(Include, self).__init__(*args)
 
     def invalid_data(self):
         chars = ''.join(map(lambda ind: \
@@ -299,7 +293,7 @@ class Pattern(RegexOperator):
     """
 
     def __init__(self, *args):
-        self.args = self.encargs(args)
+        super(Pattern, self).__init__(*args)
 
     def invalid_data(self):
         return ''.join(map(lambda ind: \
@@ -311,4 +305,5 @@ class Pattern(RegexOperator):
 
     def __str__(self):
         return self.join()
+
 

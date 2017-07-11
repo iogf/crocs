@@ -148,6 +148,10 @@ Groups: ('1',)
 
 ### Catching mails
 
+It solves the problem of catching mails whose domain contains 
+'br' in the beginning and the hostname contains 'python' in  the beginning too. 
+It makes sure that the first letter in the mail name is in the set a-z as well.
+
 ~~~python
 
 from crocs import *
@@ -247,6 +251,7 @@ Documentation
 =============
 
 [Wiki](https://github.com/iogf/crocs/wiki)
+
 
 
 
