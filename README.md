@@ -10,7 +10,7 @@ The examples below clarifies better.
 
 ### References 
 
-Crcos makes it easy for using '\n' with groups.
+Crocs makes it easy for using '\n' with groups.
 
 ~~~python
 from crocs import *
