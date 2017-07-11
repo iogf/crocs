@@ -280,7 +280,8 @@ Documentation
 [Wiki](https://github.com/iogf/crocs/wiki)
 
 
-
+**Note:** If crocs was useful to you and you feel likely supporting it, please, consider opening
+an issue about a donnation :)
 
 
 

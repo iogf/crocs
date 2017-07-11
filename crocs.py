@@ -336,6 +336,9 @@ class X(RegexOperator):
     def __str__(self):
         return self.TOKEN
 
+    def clear(self):
+        pass
+
 class Pattern(RegexOperator):
     """
     Setup a pattern.
