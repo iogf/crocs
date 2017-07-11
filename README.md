@@ -8,9 +8,9 @@ it is as well possible to generate random inputs for the regex that would match 
 
 The examples below clarifies better.
 
-### References 
+### Group reference 
 
-Crocs makes it easy for using '\n' with groups.
+Crocs makes it easy for using '\numbers' with groups and testing them.
 
 ~~~python
 from crocs import *
