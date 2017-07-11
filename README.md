@@ -58,7 +58,9 @@ Outputs:
 
 ~~~
 Match with:
- alphannw alphapombn alphalidkq alphajoamdlvz alphaemksv alpharxu alphapjocfmn alphaq alphaatvtvc alphayfj
+alphannw alphapombn alphalidkq 
+alphajoamdlvz alphaemksv alpharxu 
+alphapjocfmn alphaq alphaatvtvc alphayfj
 
 ~~~
 
