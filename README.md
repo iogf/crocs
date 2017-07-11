@@ -8,6 +8,33 @@ it is as well possible to generate random inputs for the regex that would match 
 
 The examples below clarifies better.
 
+### Group reference 
+
+Crocs makes it easy for using '\numbers' with groups and testing them.
+
+~~~python
+from crocs import *
+
+g = Group('X',Times(Include(Seq('0', '9')), 1, 2))
+e = Pattern(g, Times(Include(Seq('a', 'z')), 1, 3), g)
+
+e.test()
+e.hits()
+~~~
+
+Outputs:
+
+~~~
+Regex; (X[0-9]{1,4})[a-z]{1,3}\1
+Input: X6aotX6
+Group dict: {}
+Group 0: X6aotX6
+Groups: ('X6',)
+Match with:
+ X7nX7 X44ndX44 X6988mX6988 X04eX04 X6fX6 X7blX7 X31gwwX31 X7dX7 X21rwgX21 X005rvsX005
+~~~
+
+
 ### The dot/variable
 
 ~~~python
@@ -42,27 +69,6 @@ chk.test()
 ~~~
 
 The Pattern class is used to glue more than one pattern. 
-
-### Check possible matches
-
-~~~python
-from crocs import *
-
-p0 = Seq('a', 'z')
-c0 = Include(p0)
-data = Pattern('alpha', Times(c0, 1))
-data.hits()
-~~~
-
-Outputs:
-
-~~~
-Match with:
-alphannw alphapombn alphalidkq 
-alphajoamdlvz alphaemksv alpharxu 
-alphapjocfmn alphaq alphaatvtvc alphayfj
-
-~~~
 
 ### Basic sets
 
@@ -274,6 +280,8 @@ Documentation
 [Wiki](https://github.com/iogf/crocs/wiki)
 
 
+**Note:** If crocs was useful to you and you feel likely supporting it, please, consider opening
+an issue about a donnation :)
 
 
 

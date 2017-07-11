@@ -28,6 +28,9 @@ class RegexStr(object):
     def __str__(self):
         return re.escape(self.value)
 
+    def clear(self):
+        pass
+
 class RegexOperator(object):
     # It may be interesting to have a base class Pattern
     # that implements common methods with Group and Include, Exclude.
@@ -44,8 +47,7 @@ class RegexOperator(object):
         pass
 
     def test(self):
-        regex = str(self)
-        data  = self.valid_data()
+        regex, data = self.seed()
 
         # It has to be search in order to work with ConsumeNext.
         strc  = re.search(regex, data)
@@ -54,12 +56,23 @@ class RegexOperator(object):
         print('Group dict:', strc.groupdict())
         print('Group 0:', strc.group(0))
         print('Groups:', strc.groups())
+    
+    def clear(self):
+        for ind in self.args:
+            ind.clear()
+
+    def seed(self):
+        self.clear()
+        regex = str(self)
+        input = self.valid_data()
+
+        return regex, input
 
     def join(self):
         return ''.join(map(lambda ind: str(ind), self.args))
 
     def hits(self, count=10):
-        print('Match with:\n', ' '.join((self.valid_data() 
+        print('Match with:\n', ' '.join((self.seed()[1]
         for ind in xrange(count))))
 
         # print('Fail with:\n', ' '.join((self.invalid_data() 
@@ -97,7 +110,14 @@ class Group(RegexOperator):
     (abc).
     """
 
+    count = 0
+
     def __init__(self, *args):
+        self.compiled = False
+        self.data     = ''
+        self.map      = ''
+
+        self.input    = ''
         super(Group, self).__init__(*args)
 
     def invalid_data(self):
@@ -105,11 +125,28 @@ class Group(RegexOperator):
         ind.invalid_data(), self.args))
 
     def valid_data(self):
-        return ''.join(map(lambda ind: \
+        return self.input
+
+    def compile(self):
+        self.data     = '(%s)' % self.join()
+        self.compiled = True
+        Group.count   = Group.count + 1
+        self.map      = '\%s' % Group.count
+        self.input    = ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
+        return self.data
+
     def __str__(self):
-        return '(%s)' % self.join()
+        if not self.compiled:
+            return self.compile()
+        return self.map
+
+    def clear(self):
+        self.data = ''
+        self.map  = ''
+        Group.count = 0
+        self.compiled = False
 
 class Times(RegexOperator):
     """
@@ -224,6 +261,9 @@ class Seq(RegexOperator):
     def __str__(self):
         return '%s-%s' % (self.start, self.end)
 
+    def clear(self):
+        pass
+
 class Include(RegexOperator):
     """
     Sets.
@@ -294,6 +334,9 @@ class X(RegexOperator):
     def __str__(self):
         return self.TOKEN
 
+    def clear(self):
+        pass
+
 class Pattern(RegexOperator):
     """
     Setup a pattern.
@@ -312,6 +355,7 @@ class Pattern(RegexOperator):
 
     def __str__(self):
         return self.join()
+
 
 
 
