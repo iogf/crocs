@@ -25,13 +25,13 @@ e.hits()
 Outputs:
 
 ~~~
-Regex; (X[0-9]{1,2})[a-z]{1,3}\1
-Input: X18lX18
+Regex; (X[0-9]{1,4})[a-z]{1,3}\1
+Input: X6aotX6
 Group dict: {}
-Group 0: X18lX18
-Groups: ('X18',)
+Group 0: X6aotX6
+Groups: ('X6',)
 Match with:
- X18lX18 X18bX18 X18dcX18 X18nX18 X18cX18 X18tafX18 X18soX18 X18qvtX18 X18akzX18 X18sX18
+ X7nX7 X44ndX44 X6988mX6988 X04eX04 X6fX6 X7blX7 X31gwwX31 X7dX7 X21rwgX21 X005rvsX005
 ~~~
 
 

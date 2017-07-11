@@ -47,9 +47,7 @@ class RegexOperator(object):
         pass
 
     def test(self):
-        self.clear()
-        regex = str(self)
-        data  = self.valid_data()
+        regex, data = self.seed()
 
         # It has to be search in order to work with ConsumeNext.
         strc  = re.search(regex, data)
@@ -63,11 +61,20 @@ class RegexOperator(object):
         for ind in self.args:
             ind.clear()
 
+    def seed(self):
+        self.clear()
+        regex = str(self)
+        input = self.valid_data()
+
+        return regex, input
+
+        return self.valid_data()
+
     def join(self):
         return ''.join(map(lambda ind: str(ind), self.args))
 
     def hits(self, count=10):
-        print('Match with:\n', ' '.join((self.valid_data() 
+        print('Match with:\n', ' '.join((self.seed()[1]
         for ind in xrange(count))))
 
         # print('Fail with:\n', ' '.join((self.invalid_data() 
@@ -140,7 +147,8 @@ class Group(RegexOperator):
     def clear(self):
         self.data = ''
         self.map  = ''
-        self.count = 0
+        Group.count = 0
+        self.compiled = False
 
 class Times(RegexOperator):
     """
