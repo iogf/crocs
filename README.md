@@ -8,6 +8,33 @@ it is as well possible to generate random inputs for the regex that would match 
 
 The examples below clarifies better.
 
+### References 
+
+Crcos makes it easy for using '\n' with groups.
+
+~~~python
+from crocs import *
+
+g = Group('X',Times(Include(Seq('0', '9')), 1, 2))
+e = Pattern(g, Times(Include(Seq('a', 'z')), 1, 3), g)
+
+e.test()
+e.hits()
+~~~
+
+Outputs:
+
+~~~
+Regex; (X[0-9]{1,2})[a-z]{1,3}\1
+Input: X18lX18
+Group dict: {}
+Group 0: X18lX18
+Groups: ('X18',)
+Match with:
+ X18lX18 X18bX18 X18dcX18 X18nX18 X18cX18 X18tafX18 X18soX18 X18qvtX18 X18akzX18 X18sX18
+~~~
+
+
 ### The dot/variable
 
 ~~~python
@@ -42,27 +69,6 @@ chk.test()
 ~~~
 
 The Pattern class is used to glue more than one pattern. 
-
-### Check possible matches
-
-~~~python
-from crocs import *
-
-p0 = Seq('a', 'z')
-c0 = Include(p0)
-data = Pattern('alpha', Times(c0, 1))
-data.hits()
-~~~
-
-Outputs:
-
-~~~
-Match with:
-alphannw alphapombn alphalidkq 
-alphajoamdlvz alphaemksv alpharxu 
-alphapjocfmn alphaq alphaatvtvc alphayfj
-
-~~~
 
 ### Basic sets
 
@@ -272,6 +278,7 @@ Documentation
 =============
 
 [Wiki](https://github.com/iogf/crocs/wiki)
+
 
 
 

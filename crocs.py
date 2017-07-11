@@ -28,6 +28,9 @@ class RegexStr(object):
     def __str__(self):
         return re.escape(self.value)
 
+    def clear(self):
+        pass
+
 class RegexOperator(object):
     # It may be interesting to have a base class Pattern
     # that implements common methods with Group and Include, Exclude.
@@ -44,6 +47,7 @@ class RegexOperator(object):
         pass
 
     def test(self):
+        self.clear()
         regex = str(self)
         data  = self.valid_data()
 
@@ -54,6 +58,10 @@ class RegexOperator(object):
         print('Group dict:', strc.groupdict())
         print('Group 0:', strc.group(0))
         print('Groups:', strc.groups())
+    
+    def clear(self):
+        for ind in self.args:
+            ind.clear()
 
     def join(self):
         return ''.join(map(lambda ind: str(ind), self.args))
@@ -97,7 +105,14 @@ class Group(RegexOperator):
     (abc).
     """
 
+    count = 0
+
     def __init__(self, *args):
+        self.compiled = False
+        self.data     = ''
+        self.map      = ''
+
+        self.input    = ''
         super(Group, self).__init__(*args)
 
     def invalid_data(self):
@@ -105,11 +120,27 @@ class Group(RegexOperator):
         ind.invalid_data(), self.args))
 
     def valid_data(self):
-        return ''.join(map(lambda ind: \
+        return self.input
+
+    def compile(self):
+        self.data     = '(%s)' % self.join()
+        self.compiled = True
+        Group.count   = Group.count + 1
+        self.map      = '\%s' % Group.count
+        self.input    = ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
+        return self.data
+
     def __str__(self):
-        return '(%s)' % self.join()
+        if not self.compiled:
+            return self.compile()
+        return self.map
+
+    def clear(self):
+        self.data = ''
+        self.map  = ''
+        self.count = 0
 
 class Times(RegexOperator):
     """
@@ -224,6 +255,9 @@ class Seq(RegexOperator):
     def __str__(self):
         return '%s-%s' % (self.start, self.end)
 
+    def clear(self):
+        pass
+
 class Include(RegexOperator):
     """
     Sets.
@@ -312,6 +346,7 @@ class Pattern(RegexOperator):
 
     def __str__(self):
         return self.join()
+
 
 
 
