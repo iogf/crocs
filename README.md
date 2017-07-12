@@ -34,6 +34,29 @@ Match with:
  X7nX7 X44ndX44 X6988mX6988 X04eX04 X6fX6 X7blX7 X31gwwX31 X7dX7 X21rwgX21 X005rvsX005
 ~~~
 
+### The OR operator
+
+~~~
+from crocs import *
+
+p0 = Times(Include('a', 'z'), 1, 10)
+p1 = Any('alpha', 'beta', p0)
+
+p1.test()
+p1.hits()
+~~~
+
+Could output:
+
+~~~
+Regex; alpha|beta|[az]{1,10}
+Input: beta
+Group dict: {}
+Group 0: beta
+Groups: ()
+Match with:
+ zzaazz azazaaaazz beta alpha beta a z beta beta alpha
+~~~
 
 ### The dot/variable
 
@@ -282,6 +305,7 @@ Documentation
 
 **Note:** If crocs was useful to you and you feel likely supporting it, please, consider opening
 an issue about a donnation :)
+
 
 
 

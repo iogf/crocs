@@ -81,6 +81,22 @@ class RegexOperator(object):
     def __str__(self):
         pass
 
+class Any(RegexOperator):
+    def __init__(self, *args):
+        super(Any, self).__init__(*args)
+
+    def invalid_data(self):
+        return choice([ind.invalid_data() 
+        for ind in self.args])
+
+    def valid_data(self):
+        return choice([ind.valid_data() 
+        for ind in self.args])
+
+    def __str__(self):
+        return '|'.join(map(lambda ind: \
+        str(ind), self.args))
+
 class NamedGroup(RegexOperator):
     """
     Named groups.
