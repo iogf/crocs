@@ -8,6 +8,7 @@ demo/consume_back.py
 demo/consume_next.py
 demo/dot.py
 demo/example_times.py
+demo/group_reference.py
 demo/groups.py
 demo/mail_checker.py
 demo/named_group.py
