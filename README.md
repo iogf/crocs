@@ -15,7 +15,7 @@ Crocs makes it easy for using '\numbers' with groups and testing them.
 ~~~python
 from crocs import *
 
-g = Group('X',Times(Include(Seq('0', '9')), 1, 2))
+g = Group('X', Times(Include(Seq('0', '9')), 1, 2))
 e = Pattern(g, Times(Include(Seq('a', 'z')), 1, 3), g)
 
 e.test()
