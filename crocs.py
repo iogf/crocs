@@ -372,6 +372,15 @@ class Pattern(RegexOperator):
     def __str__(self):
         return self.join()
 
-
-
+# Shorthands.
+A  = Any
+NG = NamedGroup
+G  = Group
+T  = Times
+CN = ConsumeNext
+CB = ConsumeBack
+S  = Seq
+I  = Include
+E  = Exclude
+P  = Pattern
 

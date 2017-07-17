@@ -8,7 +8,7 @@ it is as well possible to generate random inputs for the regex that would match 
 
 The examples below clarifies better.
 
-### Group reference 
+### Groups
 
 Crocs makes it easy for using '\numbers' with groups and testing them.
 
@@ -34,7 +34,7 @@ Match with:
  X7nX7 X44ndX44 X6988mX6988 X04eX04 X6fX6 X7blX7 X31gwwX31 X7dX7 X21rwgX21 X005rvsX005
 ~~~
 
-### The OR operator
+### Operator OR
 
 ~~~
 from crocs import *
@@ -93,7 +93,7 @@ chk.test()
 
 The Pattern class is used to glue more than one pattern. 
 
-### Basic sets
+### Sets
 
 ~~~python
 from crocs import *
@@ -115,26 +115,6 @@ Groups: ()
 
 The input is generated randomly. So it is possible to get an intuition of how the regex will
 behave with real input.
-
-### Using groups
-
-~~~python
-from crocs import *
-
-e = Pattern(Group(Exclude('abc'), 'cuca'))
-
-e.test()
-~~~
-
-Output;
-
-~~~
-Regex; ([^abc]cuca)
-Input: Kcuca
-Group dict: {}
-Group 0: Kcuca
-Groups: ('Kcuca',)
-~~~
 
 ### The +/* operators.
 
@@ -196,7 +176,7 @@ Group 0: ajrjjpoke-1
 Groups: ('1',)
 ~~~
 
-### Catching mails
+### More complete example (Mail filter)
 
 It solves the problem of catching mails whose domain contains 
 'br' in the beginning and the hostname contains 'python' in  the beginning too. 
@@ -265,7 +245,7 @@ Despite of the code being more prolix, using the functional syntax permits to be
 regex for certain situations. Using a bit of imagination it can be thought as sort of an imperative
 paradigm where Times, Include, Exclude play the role of retrieving content.
 
-### Negative lookahead
+### Lookahead/Lookbehind
 
 ~~~python
 from crocs import *
@@ -289,6 +269,35 @@ Groups: ()
 **Note:** crocs is in its early development state it is not supporting all regex's features.
 Check the demo folder for better info on what it can be done.
 
+### Compressed syntax
+
+It is possible to use the following shorthands too, in some situations it may be interesting
+to have.
+
+~~~python
+from crocs import I, G, E, T, P, S
+
+e = P('alpha', G(T(I(S('1', '5')), 1, 5)), 'beta')
+e.test()
+e.hits()
+
+~~~
+
+Outputs:
+
+~~~
+Regex; alpha([1-5]{1,5})beta
+Input: alpha34341beta
+Group dict: {}
+Group 0: alpha34341beta
+Groups: ('34341',)
+Match with:
+ alpha51243beta alpha131beta alpha5415beta alpha24251beta 
+alpha514beta alpha4324beta alpha144beta alpha4214beta 
+alpha45433beta alpha4232beta
+
+~~~
+
 # Install
 
 **Note:** Work with both python 2 or 3.
@@ -305,6 +314,7 @@ Documentation
 
 **Note:** If crocs was useful to you and you feel likely supporting it, please, consider opening
 an issue about a donnation :)
+
 
 
 
