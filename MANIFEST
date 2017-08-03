@@ -18,4 +18,5 @@ demo/neg_consume_next.py
 demo/neg_with_times.py
 demo/one_or_more.py
 demo/seqs.py
+demo/shorthands.py
 demo/test_times.py
