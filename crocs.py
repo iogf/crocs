@@ -77,6 +77,10 @@ class RegexOperator(object):
 
         # print('Fail with:\n', ' '.join((self.invalid_data() 
         # for ind in xrange(count))))
+        
+    @property
+    def to_regex(self):
+        return self.seed()[0]
 
     def __str__(self):
         pass
