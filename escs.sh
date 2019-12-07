@@ -1,27 +1,28 @@
 ##############################################################################
-# clone, crocs, github.
+# Clone crocs.
 cd ~/projects
 git clone git@github.com:iogf/crocs.git crocs-code
 ##############################################################################
-# push, crocs, github.
+# Push code
 cd ~/projects/crocs-code
 git status
 git add *
 git commit -a
 git push 
 ##############################################################################
-# create the develop branch, crocs.
+# Create the development branch.
+cd ~/projects/crocs-code
 git branch -a
 git checkout -b development
 git push --set-upstream origin development
 ##############################################################################
-# merge master into development, crocs.
+# Merge master into development crocs.
 cd ~/projects/crocs-code
 git checkout development
 git merge master
 git push
 ##############################################################################
-# merge development into master, crocs.
+# Merge development into master crocs.
 cd ~/projects/crocs-code
 git checkout master
 git merge development
@@ -41,7 +42,7 @@ git fetch -p
 cd ~/projects/crocs-code
 git checkout *
 ##############################################################################
-# create, a new branch locally from an existing commit, from, master.
+# create, a new branch locally from an existing commit.
 # install, crocs.
 sudo bash -i
 cd /home/tau/projects/crocs-code
@@ -55,7 +56,7 @@ python2.6 setup.py sdist
 rm -fr dist
 rm MANIFEST
 ##############################################################################
-# share, put, place, host, package, python, pip, application, crocs.
+# Upload to pypi/pip.
 
 cd ~/projects/crocs-code
 python2 setup.py sdist register upload
@@ -66,7 +67,7 @@ cd /home/tau/projects/crocs-code/
 git checkout -b cclauss-patch-1 master
 git pull https://github.com/cclauss/crocs.git patch-1
 
-# merge, patch, pull, into, development, vy, avamsi, contribution.
+# Merge pull request.
 git checkout development
 git merge --no-ff cclauss-patch-1
 git push origin development

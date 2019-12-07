@@ -11,14 +11,14 @@ name_valid_letters = Seq('a', 'z')
 name_valid_numbers = Seq('0', '9')
 name_valid_signs   = '_.-'
 
-# The include works sort of Times except for one char. 
+# The include works sort of Size except for one char. 
 # You can think of it as fetching one from the described sets.
 name_valid_chars = Include(name_valid_letters, 
 name_valid_numbers, name_valid_signs)
 
-# Think of the Times class as meaning: fetch the
+# Think of the Size class as meaning: fetch the
 # described patterns one or more times.
-name_chunk = Times(name_valid_chars, 1)
+name_chunk = Size(name_valid_chars, 1)
 
 # The first letter in the mail name has to be a in 'a-z'.
 name_fmt = Pattern(Include(name_valid_letters), name_chunk)
@@ -31,7 +31,7 @@ name = NamedGroup('name', name_fmt)
 # it starts with 'python' in the beginning, 
 # so we fetch the random chars.
 hostname_chars = Include(name_valid_letters)
-hostname_chunk = Times(hostname_chars, 1)
+hostname_chunk = Size(hostname_chars, 1)
 
 # We format finally the complete hostname pattern.
 hostname_fmt = Pattern('python', hostname_chunk)

@@ -1,6 +1,6 @@
 from crocs import *
 
-e = Pattern(Times(X(), 1), 'cde', Times(Group('bum'), 3))
+e = Pattern(Size(X(), 1), 'cde', Size(Group('bum'), 3))
 
 e.test()
 

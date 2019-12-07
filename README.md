@@ -15,8 +15,8 @@ Crocs makes it easy for using '\numbers' with groups and testing them.
 ~~~python
 from crocs import *
 
-g = Group('X', Times(Include(Seq('0', '9')), 1, 2))
-e = Pattern(g, Times(Include(Seq('a', 'z')), 1, 3), g)
+g = Group('X', Size(Include(Seq('0', '9')), 1, 2))
+e = Pattern(g, Size(Include(Seq('a', 'z')), 1, 3), g)
 
 e.test()
 e.hits()
@@ -39,7 +39,7 @@ Match with:
 ~~~
 from crocs import *
 
-p0 = Times(Include('a', 'z'), 1, 10)
+p0 = Size(Include('a', 'z'), 1, 10)
 p1 = Any('alpha', 'beta', p0)
 
 p1.test()
@@ -63,7 +63,7 @@ Match with:
 ~~~python
 from crocs import *
 
-e = Pattern(Times(X(), 3, 5))
+e = Pattern(Size(X(), 3, 5))
 
 e.test()
 
@@ -87,7 +87,7 @@ Notice that it would be possible to write as:
 
 ~~~python
 x = X()
-chk = Times(x, 3, 5)
+chk = Size(x, 3, 5)
 chk.test()
 ~~~
 
@@ -122,7 +122,7 @@ behave with real input.
 ~~~python
 from crocs import *
 
-e = Pattern(Times(X(), 1), 'cde')
+e = Pattern(Size(X(), 1), 'cde')
 
 e.test()
 
@@ -139,19 +139,19 @@ Group 0: BBBcde
 Groups: ()
 ~~~
 
-The operators '+' and '*' are replaced for the class Times.
+The operators '+' and '*' are replaced for the class Size.
 
 ~~~python
-Times(regex, 1) # For +
+Size(regex, 1) # For +
 
-Times(regex, 0) # For *
+Size(regex, 0) # For *
 
 ~~~
 
 Notice that if you want to limit below using times.
 
 ~~~python
-Times(regex, max=4)
+Size(regex, max=4)
 ~~~
 
 ### Named groups
@@ -160,7 +160,7 @@ Times(regex, max=4)
 from crocs import *
 
 e = Pattern(
-    Times(Include(Seq('a', 'z')), 5), '-',
+    Size(Include(Seq('a', 'z')), 5), '-',
     NamedGroup('num', Include(Seq('0', '9'))))
 
 e.test()
@@ -191,14 +191,14 @@ name_valid_letters = Seq('a', 'z')
 name_valid_numbers = Seq('0', '9')
 name_valid_signs   = '_.-'
 
-# The include works sort of Times except for one char. 
+# The include works sort of Size except for one char. 
 # You can think of it as fetching one from the described sets.
 name_valid_chars = Include(name_valid_letters, 
 name_valid_numbers, name_valid_signs)
 
-# Think of the Times class as meaning: fetch the
+# Think of the Size class as meaning: fetch the
 # described patterns one or more times.
-name_chunk = Times(name_valid_chars, 1)
+name_chunk = Size(name_valid_chars, 1)
 
 # The first letter in the mail name has to be a in 'a-z'.
 name_fmt = Pattern(Include(name_valid_letters), name_chunk)
@@ -211,7 +211,7 @@ name = NamedGroup('name', name_fmt)
 # it starts with 'python' in the beginning, 
 # so we fetch the random chars.
 hostname_chars = Include(name_valid_letters)
-hostname_chunk = Times(hostname_chars, 1)
+hostname_chunk = Size(hostname_chars, 1)
 
 # We format finally the complete hostname pattern.
 hostname_fmt = Pattern('python', hostname_chunk)
@@ -243,7 +243,7 @@ Groups: ('tbr', 'pythontfn', 'brq')
 
 Despite of the code being more prolix, using the functional syntax permits to better reason on implementing
 regex for certain situations. Using a bit of imagination it can be thought as sort of an imperative
-paradigm where Times, Include, Exclude play the role of retrieving content.
+paradigm where Size, Include, Exclude play the role of retrieving content.
 
 ### Lookahead/Lookbehind
 
@@ -269,38 +269,11 @@ Groups: ()
 **Note:** crocs is in its early development state it is not supporting all regex's features.
 Check the demo folder for better info on what it can be done.
 
-### Compressed syntax
-
-It is possible to use the following shorthands too, in some situations it may be interesting
-to have.
-
-~~~python
-from crocs import I, G, E, T, P, S
-
-e = P('alpha', G(T(I(S('1', '5')), 1, 5)), 'beta')
-e.test()
-e.hits()
-
-~~~
-
-Outputs:
-
-~~~
-Regex; alpha([1-5]{1,5})beta
-Input: alpha34341beta
-Group dict: {}
-Group 0: alpha34341beta
-Groups: ('34341',)
-Match with:
- alpha51243beta alpha131beta alpha5415beta alpha24251beta 
-alpha514beta alpha4324beta alpha144beta alpha4214beta 
-alpha45433beta alpha4232beta
-
 ~~~
 
 # Install
 
-**Note:** Work with both python 2 or 3.
+**Note:** Work with python3 only.
 
 ~~~
 pip install crocs
@@ -314,9 +287,4 @@ Documentation
 
 **Note:** If crocs was useful to you and you feel likely supporting it, please, consider opening
 an issue about a donnation :)
-
-
-
-
-
 

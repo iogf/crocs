@@ -1,3 +1,4 @@
+tee >(stdbuf -o 0 python -i)
 ##############################################################################
 from crocs import *
 p = Pattern(X(), X())
@@ -11,7 +12,7 @@ s
 ##############################################################################
 from crocs import *
 x = X()
-chk = Times(x, 3)
+chk = Size(x, 3)
 chk.test()
 
 ([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})
@@ -23,9 +24,9 @@ name_valid_signs    = '_.-'
 name_valid_chars = Include(name_valid_letters, 
 name_valid_numbers, name_valid_signs)
 
-# Think of the Times class as meaning: fetch the
+# Think of the Size class as meaning: fetch the
 # described pattern one or more times.
-name_chunk = Times(name_valid_chars, 1)
+name_chunk = Size(name_valid_chars, 1)
 
 # Think of group as a way to keep reference
 # to the fetched chunk.
@@ -34,7 +35,7 @@ mail = NamedGroup('name', name_chunk)
 # The random's hostname part looks like the name except
 # it starts with 'python' in the beginning, 
 # so we fetch the random chars.
-hostname_chunk = Times(name_valid_chars, 1)
+hostname_chunk = Size(name_valid_chars, 1)
 
 # We format finally the complete hostname pattern.
 hostname_fmt = Pattern('python', hostname_chunk)
@@ -46,7 +47,7 @@ hostname = NamedGroup('hostname', hostname_fmt)
 domain_chars = Pattern(name_valid_letters, '.')
 
 # Fetch the pattern that we defined earlier.
-domain_chunk = Times(domain_chars, 2, 6)
+domain_chunk = Size(domain_chars, 2, 6)
 
 # Keep reference of the domain chunk.
 domain  = NamedGroup('domain', domain_chunk)
@@ -111,7 +112,7 @@ set_x.test()
 # abcd-1
 # kjldkf-3
 
-from crocs import Seq, Times, Include
+from crocs import Seq, Size, Include
 
 # Define our sequences with the type of chars we need.
 p0 = Seq('a', 'z')
@@ -123,14 +124,14 @@ c0 = Include(p0, p1)
 # Consume one or more chars from the same sequences
 # that c0 was consuming just a char.
 
-data0 = Times(c0, 1)
+data0 = Size(c0, 1)
 
 # The second part , the one after the '-'.
 p2 = Seq('0', '9')
 c1 = Include(p2)
 
 # Fetch the chunks.
-data1 = Times(c1, 1)
+data1 = Size(c1, 1)
 
 # Finally we finally build the set.
 set_b = Pattern(data0, '-', data1)
@@ -172,7 +173,7 @@ p1 = Seq('A', 'Z')
 c0 = Include(p0, p1)
 
 # Fetch one or more chars from c0.
-data0 = Times(c0, 1)
+data0 = Size(c0, 1)
 
 # Define our pattern that is going to be used as
 # a condition to extract from the strings the desired chunks.
@@ -182,7 +183,7 @@ p2 = Seq('0', '9')
 c1 = Include(p2)
 
 # Get one or more chars from c1.
-data1 = Times(c1, 1)
+data1 = Size(c1, 1)
 
 # Define the general format of the second part thats
 # the condition.
@@ -211,7 +212,7 @@ p0 = Seq('a', 'z')
 c0 = Include(p0)
 
 # Fetch one or more chars from c0.
-data0 = Times(c0, 1)
+data0 = Size(c0, 1)
 
 
 # Define how the second part looks like.
@@ -234,7 +235,7 @@ from crocs import *
 # The string has digits in the beginning.
 p0 = Seq('a', 'z')
 c0 = Include(p0)
-data = Pattern('alpha', Times(c0, 1))
+data = Pattern('alpha', Size(c0, 1))
 data.hits()
 
 # Set up the condition, it will match alpha only if it is not
@@ -262,7 +263,7 @@ from crocs import *
 c0 = Include(Seq('0', '9'))
 
 # Get more random chars from c0.
-fmt0 = Times(c0)
+fmt0 = Size(c0)
 
 cond = ConsumeNext('abc', fmt0)
 cond.test()
