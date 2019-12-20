@@ -1,7 +1,7 @@
 tee >(stdbuf -o 0 python -i)
 ##############################################################################
 from crocs import *
-p = Pattern(X(), X())
+p = Join(X(), X())
 p.regex()
 print p
 print p.args
@@ -12,7 +12,7 @@ s
 ##############################################################################
 from crocs import *
 x = X()
-chk = Size(x, 3)
+chk = Repeat(x, 3)
 chk.test()
 
 ([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})
@@ -24,9 +24,9 @@ name_valid_signs    = '_.-'
 name_valid_chars = Include(name_valid_letters, 
 name_valid_numbers, name_valid_signs)
 
-# Think of the Size class as meaning: fetch the
+# Think of the Repeat class as meaning: fetch the
 # described pattern one or more times.
-name_chunk = Size(name_valid_chars, 1)
+name_chunk = Repeat(name_valid_chars, 1)
 
 # Think of group as a way to keep reference
 # to the fetched chunk.
@@ -35,25 +35,25 @@ mail = NamedGroup('name', name_chunk)
 # The random's hostname part looks like the name except
 # it starts with 'python' in the beginning, 
 # so we fetch the random chars.
-hostname_chunk = Size(name_valid_chars, 1)
+hostname_chunk = Repeat(name_valid_chars, 1)
 
 # We format finally the complete hostname pattern.
-hostname_fmt = Pattern('python', hostname_chunk)
+hostname_fmt = Join('python', hostname_chunk)
 
 # Keep reference for the group.
 hostname = NamedGroup('hostname', hostname_fmt)
 
 # Define the pattern for the domain.
-domain_chars = Pattern(name_valid_letters, '.')
+domain_chars = Join(name_valid_letters, '.')
 
 # Fetch the pattern that we defined earlier.
-domain_chunk = Size(domain_chars, 2, 6)
+domain_chunk = Repeat(domain_chars, 2, 6)
 
 # Keep reference of the domain chunk.
 domain  = NamedGroup('domain', domain_chunk)
 
 # Finally we generate the regex and check how it looks like.
-match_mail = Pattern(mail, '@', hostname, domain)
+match_mail = Join(mail, '@', hostname, domain)
 match_mail.test()
 ##############################################################################
 # abc adc adc ado aio ano amo
@@ -62,12 +62,12 @@ from crocs import *
 
 x = X()
 
-b = Pattern(x, 'd', x)
+b = Join(x, 'd', x)
 b.test()
 
 ##############################################################################
 
-from crocs import Seq, Pattern
+from crocs import Seq, Join
 
 # Define the scope of the data thats a-z.
 p0 = Seq('a', 'z')
@@ -79,11 +79,11 @@ c0 = Include(p0)
 c1 = X()
 
 # Build the set.
-set_b = Pattern(c0, c1)
+set_b = Join(c0, c1)
 set_b.test()
 ##############################################################################
 
-from crocs import Seq, Pattern
+from crocs import Seq, Join
 
 # Define the scope of the data thats a-z.
 p0 = Seq('0', '9')
@@ -95,7 +95,7 @@ c0 = Exclude(p0)
 c1 = X()
 
 # Build the set.
-set_b = Pattern(c0, c1)
+set_b = Join(c0, c1)
 set_b.test()
 ##############################################################################
 
@@ -106,13 +106,13 @@ c0 = Include(Seq('a', 'c'), '_*;/')
 c1 = Exclude(Seq('a', 'z'), '_*;/')
 
 # Build the set x.
-set_x = Pattern(c0, c1)
+set_x = Join(c0, c1)
 set_x.test()
 ##############################################################################
 # abcd-1
 # kjldkf-3
 
-from crocs import Seq, Size, Include
+from crocs import Seq, Repeat, Include
 
 # Define our sequences with the type of chars we need.
 p0 = Seq('a', 'z')
@@ -124,17 +124,17 @@ c0 = Include(p0, p1)
 # Consume one or more chars from the same sequences
 # that c0 was consuming just a char.
 
-data0 = Size(c0, 1)
+data0 = Repeat(c0, 1)
 
 # The second part , the one after the '-'.
 p2 = Seq('0', '9')
 c1 = Include(p2)
 
 # Fetch the chunks.
-data1 = Size(c1, 1)
+data1 = Repeat(c1, 1)
 
 # Finally we finally build the set.
-set_b = Pattern(data0, '-', data1)
+set_b = Join(data0, '-', data1)
 set_b.test()
 ##############################################################################
 import crocs
@@ -173,7 +173,7 @@ p1 = Seq('A', 'Z')
 c0 = Include(p0, p1)
 
 # Fetch one or more chars from c0.
-data0 = Size(c0, 1)
+data0 = Repeat(c0, 1)
 
 # Define our pattern that is going to be used as
 # a condition to extract from the strings the desired chunks.
@@ -183,12 +183,12 @@ p2 = Seq('0', '9')
 c1 = Include(p2)
 
 # Get one or more chars from c1.
-data1 = Size(c1, 1)
+data1 = Repeat(c1, 1)
 
 # Define the general format of the second part thats
 # the condition.
 
-data2 = Pattern('-', data1)
+data2 = Join('-', data1)
 
 # The condition that will warrant the second part after the '-'
 # will be formed by just numbers but will not consume it.
@@ -198,7 +198,7 @@ data2 = Pattern('-', data1)
 # just numbers.
 cond = ConsumeBack(data0, data2)
 
-pattern = Pattern(cond)
+pattern = Join(cond)
 pattern.test()
 
 ##############################################################################
@@ -212,11 +212,11 @@ p0 = Seq('a', 'z')
 c0 = Include(p0)
 
 # Fetch one or more chars from c0.
-data0 = Size(c0, 1)
+data0 = Repeat(c0, 1)
 
 
 # Define how the second part looks like.
-data1 = Pattern('-', 'alpha')
+data1 = Join('-', 'alpha')
 
 # The condition that will warrant the second part after the '-'
 # will be formed by just numbers but will not consume it.
@@ -226,7 +226,7 @@ data1 = Pattern('-', 'alpha')
 # just numbers.
 cond = ConsumeBack(data0, data1, neg=True)
 
-pattern = Pattern(cond)
+pattern = Join(cond)
 pattern.test()
 
 ##############################################################################
@@ -235,7 +235,7 @@ from crocs import *
 # The string has digits in the beginning.
 p0 = Seq('a', 'z')
 c0 = Include(p0)
-data = Pattern('alpha', Size(c0, 1))
+data = Join('alpha', Repeat(c0, 1))
 data.hits()
 
 # Set up the condition, it will match alpha only if it is not
@@ -243,7 +243,7 @@ data.hits()
 cond = ConsumeBack('alpha', 'beta', neg=True)
 
 # Finally set up the pattern.
-pattern = Pattern(data0, cond)
+pattern = Join(data0, cond)
 pattern.test()
 pattern.hits()
 regx = search('[0-9]{1,}alpha(?!beta)', '3233alphaskljd')
@@ -263,7 +263,7 @@ from crocs import *
 c0 = Include(Seq('0', '9'))
 
 # Get more random chars from c0.
-fmt0 = Size(c0)
+fmt0 = Repeat(c0)
 
 cond = ConsumeNext('abc', fmt0)
 cond.test()

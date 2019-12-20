@@ -44,52 +44,47 @@ class RegexOperator:
         """
         """
 
-        regex, data = self.seed()
+        regex = self.to_regex()
+        data  = self.seed()
 
         # It has to be search in order to work with ConsumeNext.
-        strc  = re.search(regex, data)
+        regc  = re.search(regex, data)
         print('Regex;', regex)
         print('Input:', data)
 
         print('Group dict:', 
-        strc.groupdict() if hasattr(
-        strc, 'groupdict') else None)
+        regc.groupdict() if hasattr(
+        regc, 'groupdict') else None)
 
         print('Group 0:', 
-        strc.group(0) if hasattr(
-        strc, 'group') else None)
+        regc.group(0) if hasattr(
+        regc, 'group') else None)
 
         print('Groups:', 
-        strc.groups() if hasattr(
-            strc, 'groups') else None)
+        regc.groups() if hasattr(
+            regc, 'groups') else None)
     
     def clear(self):
         for ind in self.args:
             ind.clear()
 
     def seed(self):
+        data = self.valid_data()
         self.clear()
-        regex = str(self)
-        input = self.valid_data()
-        return regex, input
-
-    def join(self):
-        data = map(lambda ind: str(ind), self.args)
-        return ''.join(data)
+        return data
 
     def hits(self, count=10):
-        data = (self.seed()[1] for ind in range(count))
+        data = (self.seed() for ind in range(count))
         print('Match with:\n', ' '.join(data))
 
-        # print('Fail with:\n', ' '.join((self.invalid_data() 
-        # for ind in range(count))))
-        
-    @property
     def to_regex(self):
-        return self.seed()[0]
+        lm     = lambda ind: ind.to_regex()
+        regstr =  ''.join(map(lm, self.args))
+        self.clear()
+        return regstr
 
     def __str__(self):
-        pass
+        return self.to_regex()
 
 class Any(RegexOperator):
     def __init__(self, *args):
@@ -103,7 +98,7 @@ class Any(RegexOperator):
         lst = [ind.valid_data() for ind in self.args]
         return choice(lst)
 
-    def __str__(self):
+    def to_regex(self):
         data = map(lambda ind: str(ind), self.args)
         data = '|'.join(data)
         return data
@@ -129,8 +124,9 @@ class NamedGroup(RegexOperator):
         data = ''.join(data)
         return data
 
-    def __str__(self):
-        return '(?P<%s>%s)' % (self.name, self.join())
+    def to_regex(self):
+        return '(?P<%s>%s)' % (self.name, 
+        ''.join(map(str, self.args)))
 
 class Group(RegexOperator):
     """
@@ -157,18 +153,17 @@ class Group(RegexOperator):
         return self.input
 
     def compile(self):
-        self.data     = '(%s)' % self.join()
+        self.data     = '(%s)' % ''.join(map(str, self.args))
         self.compiled = True
         Group.count   = Group.count + 1
         self.map      = '\%s' % Group.count
 
-        # Warning: Not sure why it has to be here.
         self.input    = map(lambda ind: ind.valid_data(), self.args)
         self.input    = ''.join(self.input)
 
         return self.data
 
-    def __str__(self):
+    def to_regex(self):
         if not self.compiled:
             return self.compile()
         return self.map
@@ -179,14 +174,14 @@ class Group(RegexOperator):
         Group.count   = 0
         self.compiled = False
 
-class Size(RegexOperator):
+class Repeat(RegexOperator):
     """
     """
 
     MAX = 10
 
     def __init__(self, regex, min=0, max=''):
-        super(Size, self).__init__(regex)
+        super(Repeat, self).__init__(regex)
 
         self.regex = self.args[0]
         self.min   = min
@@ -202,7 +197,7 @@ class Size(RegexOperator):
 
         # Generate a string that wouldn't match with any 
         # of the underlying patterns.
-        # Notice that Size(X(), 2).invalid_data() would throw
+        # Notice that Repeat(X(), 2).invalid_data() would throw
         # an exception due to X() not having invalid chars.
         return ''.join((choice(data) for ind in range(count)))
 
@@ -216,18 +211,27 @@ class Size(RegexOperator):
 
         return data 
 
-    def __str__(self):
+    def to_regex(self):
         return '%s{%s,%s}' % (self.regex, 
         self.min, self.max)
 
-class Mul(Size):
+class Times(Repeat):
     def __init__(self, regex):
         super(Mul, self).__init__(regex)
 
         self.regex = self.args[0]
 
-    def __str__(self):
+    def to_regex(self):
         return '%s*' % (self.regex)
+
+class Maybe(Repeat):
+    def __init__(self, regex):
+        super(Mul, self).__init__(regex)
+
+        self.regex = self.args[0]
+
+    def to_regex(self):
+        return '%s?' % (self.regex)
 
 class Plus(RegexOperator):
     def __init__(self, regex):
@@ -235,7 +239,7 @@ class Plus(RegexOperator):
 
         self.regex = self.args[0]
 
-    def __str__(self):
+    def to_regex(self):
         return '%s+' % (self.regex)
 
 class ConsumeNext(RegexOperator):
@@ -264,8 +268,7 @@ class ConsumeNext(RegexOperator):
         self.args[1].valid_data())
         return '%s%s' % pattern1
 
-
-    def __str__(self):
+    def to_regex(self):
         fmt = '(?<=%s)%s' if not self.neg else '(?<!%s)%s'
         return fmt % (self.args[0], self.args[1])
 
@@ -297,7 +300,7 @@ class ConsumeBack(RegexOperator):
 
         return '%s%s' % pattern1
 
-    def __str__(self):
+    def to_regex(self):
         fmt = '%s(?=%s)' if not self.neg else '%s(?!%s)'
         return fmt % (self.args[0], self.args[1])
 
@@ -306,7 +309,7 @@ class Seq(RegexOperator):
         self.start = start
         self.end   = end
         self.seq   = [chr(ind) for ind in range(
-        ord(self.start), ord(self.end) + 1)]
+            ord(self.start), ord(self.end) + 1)]
 
     def invalid_data(self):
         data = [ind for ind in printable
@@ -316,7 +319,7 @@ class Seq(RegexOperator):
     def valid_data(self):
         return ''.join(self.seq)
 
-    def __str__(self):
+    def to_regex(self):
         return '%s-%s' % (self.start, self.end)
 
     def clear(self):
@@ -333,11 +336,8 @@ class Include(RegexOperator):
         super(Include, self).__init__(*args)
 
     def invalid_data(self):
-        chars = ''.join(map(lambda ind: \
-        ind.valid_data(), self.args))
-
-        # data = filter(lambda ind: \
-        # not ind in chars, printable)
+        chars = ''.join(map(
+        lambda ind: ind.valid_data(), self.args))
 
         data = [ind for ind in printable
         if not ind in chars]
@@ -345,14 +345,14 @@ class Include(RegexOperator):
         return choice(data)
 
     def valid_data(self):
-        chars = ''.join(map(lambda ind: \
-        ind.valid_data(), self.args))
+        chars = ''.join(map(
+        lambda ind: ind.valid_data(), self.args))
 
         char = choice(chars)
         return char
 
-    def __str__(self):
-        return '[%s]' % self.join()
+    def to_regex(self):
+        return '[%s]' % ''.join(map(str, self.args))
 
 class Exclude(Include):
     """
@@ -367,8 +367,8 @@ class Exclude(Include):
     def valid_data(self):
         return super(Exclude, self).invalid_data()
 
-    def __str__(self):
-        return '[^%s]' % self.join()
+    def to_regex(self):
+        return '[^%s]' % ''.join(map(str, self.args))
 
 class X(RegexOperator):
     """
@@ -389,7 +389,7 @@ class X(RegexOperator):
         char = choice(printable)
         return char
 
-    def __str__(self):
+    def to_regex(self):
         return self.TOKEN
 
     def clear(self):
@@ -403,13 +403,13 @@ class RegexParser:
     def build(self):
         pass
 
-class Pattern(RegexOperator):
+class Join(RegexOperator):
     """
     Setup a pattern.
     """
 
     def __init__(self, *args):
-        super(Pattern, self).__init__(*args)
+        super(Join, self).__init__(*args)
 
     def invalid_data(self):
         return ''.join(map(lambda ind: \
@@ -419,6 +419,6 @@ class Pattern(RegexOperator):
         return ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
-    def __str__(self):
-        return self.join()
+    def to_regex(self):
+        return ''.join(map(str, self.args))
 
