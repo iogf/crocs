@@ -7,8 +7,13 @@ t1 = LexNode(t0, b'[^\"]+', Token)
 t2 = LexNode(t1, b'\"', Token)
 t3 = LexNode(lexmap, b' +')
 t4 = LexNode(lexmap, b'for', Token)
+lex = Lexer(lexmap)
 
 data = b'for "abcd for it" for "str for string" for "heheh" for'
+lex.feed(data)
+print(list(lex.run()))
 
-lex = Lexer(lexmap)
-print(list(lex.feed(data)))
+print('-' * 50)
+data = b'for "abc" for this "efg" for'
+lex.feed(data)
+print(list(lex.run()))
