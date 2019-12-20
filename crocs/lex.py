@@ -29,6 +29,7 @@ class Lexer:
         """
         """
         self.lnode.on_err()
+        print('Data: %s ...' % self.data[:40])
 
     def mktoken(self, state):
         """

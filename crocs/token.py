@@ -5,4 +5,4 @@ class Token:
         self.end   = end
 
     def __repr__(self):
-        return 'Type:%s\nValue:%s\n' % (self.__class__, self.value)
+        return '%s(%s)' % (self.__class__.__name__, repr(self.value))
