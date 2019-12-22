@@ -10,8 +10,7 @@ class Lexer:
         """
         """
         self.lexmap = lexmap
-
-        self.data  = None
+        self.data   = None
         self.offset = 0
 
     def next(self):
@@ -28,19 +27,11 @@ class Lexer:
 
         if token:
             self.slice(token)
-
-        if self.data and not token:
-            self.handle_err()
         return token
 
     def slice(self, token):
         size = len(token.value)
         self.data = self.data[size:]
-
-    def handle_err(self):
-        """
-        """
-        print('> Offset: %s: %s ...' % (self.offset, self.data[:30]))
 
     def run(self):
         """
@@ -88,6 +79,8 @@ class LexMap(XNode):
         xnode.root = self.root
 
     def consume(self, data):
+        assert data != '', 'Crocs: No valid data!'
+
         for ind in self.expect.children:
             token = ind.is_valid(data)
             if token:
@@ -128,8 +121,11 @@ class LexNode(LexMap):
     def __init__(self, xnode, regex, type=Token, handle_err=None):
         """
         """
-        assert isinstance(xnode, (LexMap, LexNode))
-        assert isinstance(regex, str)
+        err0 = 'Crocs: Invalid xnode value!'
+        assert isinstance(xnode, (LexMap, LexNode)), err0
+
+        err1 = 'Crocs: Invalid regex value'
+        assert isinstance(regex, str), err1
 
         super(LexNode, self).__init__(xnode, handle_err)
         self.regex    = regex
@@ -151,8 +147,6 @@ class LexNode(LexMap):
         else:
             self.root.reset()
 
-        # print('Token:', token)
-        # print('Expect:', self.root.expect)
         return token
 
     def __repr__(self):
@@ -162,7 +156,12 @@ class LexLink(LexMap):
     def __init__(self, xnode, rnode, handle_err=None):
         """
         """
-        # assert isinstance(xnode, LexNode)
+        err0 = 'Crocs: Invalid xnode value!'
+        assert isinstance(xnode, LexNode), err0
+    
+        err1 = 'Crocs: Invalid rnode value!'
+        assert isinstance(rnode, LexMap), err1
+
         super(LexLink, self).__init__(xnode, handle_err)
         self.rnode = rnode
         self.expect = self
@@ -170,8 +169,6 @@ class LexLink(LexMap):
     def is_valid(self, data):
         """
         """
-        # print('data:', data, token)
-        # time.sleep(1)
         self.rnode.set_expect(self)
         self.rnode.set_expect(self.rnode)
 
