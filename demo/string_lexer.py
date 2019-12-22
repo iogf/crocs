@@ -17,7 +17,7 @@ print('Example 1!')
 data = '" Chunk0"'
 lex.feed(data)
 tokens = lex.run()
-print(list(tokens))
+print('Consumed:', list(tokens))
 
 print('Example 2!')
 
@@ -25,4 +25,4 @@ print('Example 2!')
 data = '" Chunk0" "ss " era "'
 lex.feed(data)
 tokens = lex.run()
-print(list(tokens))
+print('Consumed:', list(tokens))

@@ -20,19 +20,11 @@ lex = Lexer(ListTokens.lexmap)
 data = '[1, 2, [3, 5]]'
 lex.feed(data)
 tokens = lex.run()
-print(list(tokens))
+print('Consumed:', list(tokens))
 
 print('Example 2')
 lex = Lexer(ListTokens.lexmap)
 data = '[1, [2, [1, ]] abc'
 lex.feed(data)
 tokens = lex.run()
-print(list(tokens))
-
-
-
-
-
-
-
-
+print('Consumed:', list(tokens))

@@ -126,8 +126,8 @@ class LexNode(LexMap):
         assert isinstance(regex, str), err1
 
         super(LexNode, self).__init__(xnode, handle_err)
-        self.regex    = regex
-        self.type     = type
+        self.regex = regex
+        self.type  = type
 
     def is_valid(self, data):
         """
@@ -147,7 +147,7 @@ class LexNode(LexMap):
         return token
 
     def __repr__(self):
-        return '(%s %s)' % (self.type, self.regex)
+        return '(%s %s)' % (self.type.__name__, self.regex)
 
 class LexLink(LexMap):
     def __init__(self, xnode, rnode, handle_err=None):
