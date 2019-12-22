@@ -80,15 +80,13 @@ class LexMap(XNode):
 
     def consume(self, data):
         assert data != '', 'Crocs: No valid data!'
-
         for ind in self.expect.children:
             token = ind.is_valid(data)
             if token:
                 return token
 
-        if self.xstack and data:
+        if self.xstack:
             return self.consume_refs(data)
-
         self.handle_err(data)
 
     def consume_refs(self, data):
@@ -146,7 +144,6 @@ class LexNode(LexMap):
             self.root.set_expect(self)
         else:
             self.root.reset()
-
         return token
 
     def __repr__(self):

@@ -17,7 +17,7 @@ class ListTokens:
 
 print('Example 1')
 lex = Lexer(ListTokens.lexmap)
-data = '[1, 2, [3, 5][]'
+data = '[1, 2, [3, 5]]'
 lex.feed(data)
 tokens = lex.run()
 print(list(tokens))
