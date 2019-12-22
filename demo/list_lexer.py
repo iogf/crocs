@@ -2,7 +2,7 @@
 """
 
 from crocs.lex import Lexer, LexMap, LexNode, LexLink
-from crocs.token import Token, Eof
+from crocs.token import Token
 
 class ListTokens:
     lexmap = LexMap()
@@ -14,8 +14,6 @@ class ListTokens:
     t4 = LexNode(lexmap, ',', Token)
 
     t5 = LexNode(lexmap, ' +')
-    # t6 = LexNode(lexmap, '', Eof)
-
 
 lex = Lexer(ListTokens.lexmap)
 data = '[1, [2, [1, , 4]], [41]]'
