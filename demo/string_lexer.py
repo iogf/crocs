@@ -1,19 +1,30 @@
+"""
+"""
+
 from crocs.lex import Lexer, LexMap, LexNode
-from crocs.token import Token
+from crocs.token import Token, Eof
 
-lexmap = LexMap()
-t0 = LexNode(lexmap, b'\"', Token)
-t1 = LexNode(t0, b'[^\"]+', Token)
-t2 = LexNode(t1, b'\"', Token)
-t3 = LexNode(lexmap, b' +')
-t4 = LexNode(lexmap, b'for', Token)
-lex = Lexer(lexmap)
+class StringTokens:
+    lexmap = LexMap()
+    t0 = LexNode(lexmap, '\"', Token)
+    t1 = LexNode(t0, '[^\"]+', Token)
+    t2 = LexNode(t1, '\"', Token)
+    t3 = LexNode(lexmap, ' +')
+    t4 = LexNode(lexmap, '', Eof)
 
-data = b'for "abcd for it" for "str for string" for "heheh" for'
+
+lex = Lexer(StringTokens.lexmap)
+
+# print('Example 1!')
+# data = '" Chunk0"'
+# lex.feed(data)
+# tokens = lex.run()
+# print(list(tokens))
+
+print('Example 2!')
+# Now displays an error due to Tok0 not being a token nor a string.
+data = '" Chunk0" "ss "'
 lex.feed(data)
-print(list(lex.run()))
-
-print('-' * 50)
-data = b'for "abc" for this "efg" for'
-lex.feed(data)
-print(list(lex.run()))
+tokens = lex.run()
+print(list(tokens))
+print(lex.lexmap.expect)

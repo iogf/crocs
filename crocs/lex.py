@@ -1,3 +1,4 @@
+from crocs.token import Token, eof
 import re
 import time
 
@@ -10,44 +11,42 @@ class Lexer:
         """
         self.lexmap = lexmap
 
-        # Last regex node that was matched.
-        self.lnode = lexmap
         self.data  = None
         self.offset = 0
 
-    def token(self):
+    def next(self):
         """
         """
 
-        state = self.lnode.consume(self.data)
-        if state: 
-            return self.mktoken(state)
-        if self.data and self.lnode.children:
-            self.display_error()
+        if self.data:
+            return self.process()
+        else:
+            self.lexmap.is_error()
 
-    def display_error(self):
+    def process(self):
+        token = self.lexmap.consume(self.data)
+
+        if token:
+            self.slice(token)
+
+        if self.data and not token:
+            self.handle_err()
+        return token
+
+    def slice(self, token):
+        size = len(token.value)
+        self.data = self.data[size:]
+
+    def handle_err(self):
         """
         """
-        self.lnode.on_err()
-        print('Data: %s ...' % self.data[:40])
+        print('> Offset: %s: %s ...' % (self.offset, self.data[:30]))
 
-    def mktoken(self, state):
-        """
-        """
-
-        tokval, self.data, xnode = state
-        self.set_rule(xnode)
-
-        if xnode.type: 
-            return xnode.type(tokval)
-        return self.token()
-    
     def run(self):
         """
         """
-
         while True:
-            token = self.token()
+            token = self.next()
             if token:
                 yield token
             else:
@@ -59,12 +58,6 @@ class Lexer:
         self.data = data
         self.offset = 0
 
-    def set_rule(self, xnode):
-        if not xnode.children:
-            self.lnode = self.lexmap
-        else:
-            self.lnode = xnode
-
     def skip(self):
         """
         """
@@ -74,54 +67,113 @@ class Lexer:
         pass
 
 class LexMap(XNode):
-    def __init__(self, xnode=None, msgerr=None):
+    def __init__(self, xnode=None, handle_err=None):
         """
         """
 
         self.xnode    = xnode
         self.children = []
-        self.msgerr   = msgerr
+        self.expect = self
+        self.xstack = []
+        self.root = self
+
+        if handle_err:
+            self.handle_err = handle_err 
 
         if xnode:
-            self.xnode.children.append(self)
+            xnode.register(self)
+
+    def register(self, xnode):
+        self.children.append(xnode)
+        xnode.root = self.root
 
     def consume(self, data):
-        for ind in self.children:
-            state = ind.is_valid(data)
-            if state:
-                return state
+        for ind in self.expect.children:
+            token = ind.is_valid(data)
+            if token:
+                return token
 
-    def on_err(self):
-        default_msgerr = 'Unrecognized token!'
-        if self.msgerr:
-            print(self.msgerr)
-        else:
-            print(default_msgerr)
+        if self.xstack and data:
+            return self.consume_refs(data)
+
+        self.handle_err(data)
+
+    def consume_refs(self, data):
+        self.expect = self.xstack.pop()
+        token = self.consume(data)
+
+        return token
+
+    def set_expect(self, xnode):
+        """
+        """
+        if isinstance(self.expect, LexLink):
+            self.xstack.append(self.expect) 
+        self.expect = xnode
+
+    def reset(self):
+        self.expect = self
+
+    def is_error(self):
+        if self.xstack:
+            print('Expected: %s\nFound Eof!' %
+                self.xstack)
+
+    def handle_err(self, data):
+        print('> Invalid token.')
+        print('> Expected:', self.children)
+        print('> Data:', repr(data))
 
 class LexNode(LexMap):
-    def __init__(self, xnode, regex, type=None):
+    def __init__(self, xnode, regex, type=Token, handle_err=None):
         """
         """
+        assert isinstance(xnode, (LexMap, LexNode))
+        assert isinstance(regex, str)
 
-        self.xnode    = xnode
+        super(LexNode, self).__init__(xnode, handle_err)
         self.regex    = regex
         self.type     = type
-        self.children = []
-        self.xnode.children.append(self)
 
     def is_valid(self, data):
         """
         """
 
-        rmatch = re.match(self.regex, data)
-        if rmatch:
-            return (rmatch.group(0), 
-                data[rmatch.end():], self)
+        regobj = re.match(self.regex, data)
+        if regobj:
+            return self.handle_token(regobj)
                 
+    def handle_token(self, regobj):
+        token = self.type(regobj.group(0))
+
+        if self.children:
+            self.root.set_expect(self)
+        else:
+            self.root.reset()
+
+        # print('Token:', token)
+        # print('Expect:', self.root.expect)
+        return token
+
     def __repr__(self):
-        return '%s %s' % (self.type.__class__.__name__, self.regex)
+        return '(%s %s)' % (self.type, self.regex)
 
-    def on_err(self):
-        default_msgerr = 'Expected:%s' % self.children
-        print(default_msgerr)
+class LexLink(LexMap):
+    def __init__(self, xnode, rnode, handle_err=None):
+        """
+        """
+        # assert isinstance(xnode, LexNode)
+        super(LexLink, self).__init__(xnode, handle_err)
+        self.rnode = rnode
+        self.expect = self
 
+    def is_valid(self, data):
+        """
+        """
+        # print('data:', data, token)
+        # time.sleep(1)
+        self.rnode.set_expect(self)
+        self.rnode.set_expect(self.rnode)
+
+        token = self.rnode.consume(data)
+        return token
