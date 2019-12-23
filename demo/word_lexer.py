@@ -1,26 +1,23 @@
 """
 """
 
-from crocs.lex import Lexer, LexMap, LexNode, LexLink
+from crocs.lex import Lexer, LexMap, LexNode, LexChain
 from crocs.token import Token
 
-class ListTokens:
+class WordTokens:
     lexmap = LexMap()
-    t0 = LexNode(lexmap, '\[', Token)
-    t1 = LexLink(t0, lexmap)
-    t2 = LexNode(t1, '\]', Token)
+    LexChain(lexmap, LexNode('alpha', type=Token))
+    LexChain(lexmap, LexNode('beta', type=Token))
+    LexChain(lexmap, LexNode('gamma', type=Token))
+    LexChain(lexmap, LexNode(' +', type=Token))
 
-    t3 = LexNode(lexmap, '[0-9]+', Token)
-    t4 = LexNode(t3, ',', Token)
 
-    t5 = LexNode(lexmap, ' +')
+lex = Lexer(WordTokens.lexmap)
 
-print('Example 1')
-lex = Lexer(ListTokens.lexmap)
-data = '[1, 2, [3, 5]]'
+print('Example 1!')
+data = 'alpha gamma          beta alpha'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
-
 
 

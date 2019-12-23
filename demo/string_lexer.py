@@ -1,20 +1,22 @@
 """
 """
 
-from crocs.lex import Lexer, LexMap, LexNode
+from crocs.lex import Lexer, LexMap, LexNode, LexChain
 from crocs.token import Token
 
 class StringTokens:
     lexmap = LexMap()
-    t0 = LexNode(lexmap, '\"', Token)
-    t1 = LexNode(t0, '[^\"]+', Token)
-    t2 = LexNode(t1, '\"', Token)
-    t3 = LexNode(lexmap, ' +')
+    t_str = LexChain(lexmap, 
+    LexNode('\"', Token),
+    LexNode('[^\"]+', Token),
+    LexNode('\"', Token))
+
+    LexChain(lexmap, LexNode(' +', type=Token))
 
 lex = Lexer(StringTokens.lexmap)
 
 print('Example 1!')
-data = '" Chunk0"'
+data = '" This will"       "rock!"     "For sure!"'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
@@ -26,3 +28,10 @@ data = '" Chunk0" "ss " era "'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
+
+
+data = '" alpha" beta "gamma " zeta "'
+lex.feed(data)
+tokens = lex.run()
+print('Consumed:', list(tokens))
+
