@@ -51,7 +51,7 @@ class Lexer:
         """
         self.data = data
         self.offset = 0
-        # self.lexmap.clear()
+        self.lexmap.clear()
 
     def skip(self):
         """
@@ -83,6 +83,13 @@ class LexMap(XNode):
         #    
         # Another possibility for a bad state it is if no token
         # is matched, in that case self.expect will tell why it failed.
+
+    def clear(self):
+        self.xstack.clear()
+        self.expect = None
+
+        for ind in self.children:
+            ind.clear()
 
     def handle_success(self):
         print('Crocs: No errors!')
@@ -196,6 +203,10 @@ class LexChain(XNode):
         for ind in args:
             ind.register(self)
 
+    def clear(self):
+        self.index = 0
+        self.istack.clear()
+    
     def push(self, index):
         """    
         This method saves the actual state of this machine onto
