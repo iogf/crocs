@@ -29,6 +29,7 @@ lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
 
+print('Example 3!')
 
 data = '" alpha" beta "gamma " zeta "'
 lex.feed(data)

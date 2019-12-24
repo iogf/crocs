@@ -4,12 +4,10 @@ import time
 
 class XNode:
     def __init__(self):
-        self.expect = []
-        self.root   = self
+        self.root = self
 
-    def register(self, xnode):
-        self.expect.append(xnode)
-        xnode.root = self.root
+    def register(self, root):
+        self.root = root
 
 class Lexer:
     def __init__(self, lexmap):
@@ -25,8 +23,6 @@ class Lexer:
 
         if self.data:
             return self.process()
-        else:
-            self.lexmap.eof()
 
     def process(self):
         token = self.lexmap.consume(self.data)
@@ -48,6 +44,7 @@ class Lexer:
                 yield token
             else:
                 break
+        self.lexmap.error_analysis(self.data)
 
     def feed(self, data):
         """
@@ -87,17 +84,26 @@ class LexMap(XNode):
         # Another possibility for a bad state it is if no token
         # is matched, in that case self.expect will tell why it failed.
 
+    def handle_success(self):
+        print('Crocs: No errors!')
+
+    def error_analysis(self, data):
+        if self.xstack or self.expect or data:
+            self.handle_err(data)
+        else:
+            self.handle_success()
+
     def eof(self):
-        if self.xstack or self.expect:
-            self.handle_err('')
+        self.error_analysis('')
 
     def handle_err(self, data):
+        # if self.xstack or self.expect or data:
         print('Crocs: Errors!') 
         print('> Expected: %s' % (self.expect if self.expect else self))
 
         print('> Data: %s' % repr(data))
         print('> Xstack:%s' % self.xstack)
-
+    
     def init_state(self, data):
         """
         This is a map of LexChain instances. Each one fo these 
@@ -127,8 +133,6 @@ class LexMap(XNode):
             token = ind.init_state(data)
             if token:
                 return token
-
-        self.handle_err(data)
         pass
 
     def push(self, xnode):
@@ -163,6 +167,7 @@ class LexMap(XNode):
         #
         # When the doc is ok then all the triggers's state should be in its
         # initial value.
+        token = None
         if not self.expect:
             return self.init_state(data)
 
@@ -171,7 +176,6 @@ class LexMap(XNode):
         if token:
             return token
         pass
-        self.handle_err(data)
 
     def __repr__(self):
         return '%s' % self.children
@@ -186,8 +190,11 @@ class LexChain(XNode):
         self.istack = []
         self.children = []
         self.children.extend(args)
-
         lexmap.children.append(self)
+
+        # Register itself in the nodes as being the root node.
+        for ind in args:
+            ind.register(self)
 
     def push(self, index):
         """    
@@ -225,6 +232,7 @@ class LexChain(XNode):
             self.push(1)
         return token
 
+
     def consume(self, data):
         """
         Attempt to match the self.index pattern against the data.
@@ -233,18 +241,37 @@ class LexChain(XNode):
 
         It basically matches the current state against the pattern.
         """
-
-        token = self.children[self.index].consume(data)
+        xnode = self.children[self.index]
+        token = xnode.consume(data)
         self.index = self.index + 1
 
+
+        # if isinstance(xnode, LexRef) and self.index < len(self.children) and not token:
+            # return self.consume(data)
+
+        # When xnode is instance of LexRef it means it should
+        # trigge as muuch as it is possible from the doc.
+        #
+        # It is a reference to a map of tokens and rules, whatever
+        # is defined in the document and meets the lexmap reference
+        # will be consumed.
+        #
+        # When the token is None then it means it no longer meets
+        # the lex map rules then it remains checking if it meets
+        # the remaining of the lex chain spec.
+        # if not isinstance(xnode, LexRef):
+            
         # It means the chain was fully matched or the pattern failed
         # to match.
         #
         # Thus it resets its machine to its initial state for
         # matching the next pattern.
-
-        if self.index >= len(self.children) or not token:
+        if self.index >= len(self.children):
             self.pull()
+        elif isinstance(xnode, LexRef) and not token:
+            return self.consume(data)
+        elif isinstance(xnode, LexRef):
+            self.index = self.index - 1
         pass
 
         return token
@@ -263,7 +290,7 @@ class LexChain(XNode):
     def __repr__(self):
         return '%s' % self.children
 
-class LexNode(LexMap):
+class LexNode(XNode):
     def __init__(self, regex, type=Token):
         """
         """
@@ -283,21 +310,32 @@ class LexNode(LexMap):
         if regobj:
             return self.mktoken(regobj)
                 
+        # This regex didn't match it means the chain rule
+        # wasn't consumed therefore the doc is invalid.
+        #    
+        # The initial state has to be reset.
+        # self.root.pull()
+
     def mktoken(self, regobj):
         tokval = regobj.group(0)
         token  = self.type(tokval)
+
+        # It means that the regex matched and the root
+        # chain has to process the next requirement whatever it is.
         return token
 
     def __repr__(self):
         return '(%s, %s)' % (self.type.__name__, repr(self.regex))
 
-class LexLink(LexMap):
-    def __init__(self, xnode, lexmap):
+class LexRef(XNode):
+    def __init__(self, lexmap):
+        self.lexmap = lexmap
         """
         """
+
     def consume(self, data):
         """
         """
-    def __repr__(self):
-        return '%s' % self.expect
+        return self.lexmap.init_state(data)
+
 
