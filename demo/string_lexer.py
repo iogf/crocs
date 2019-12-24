@@ -24,6 +24,11 @@ print('Consumed:', list(tokens))
 print('Example 2!')
 
 # Now displays an error due to Tok0 not being a token nor a string.
+data = '" foo" "bar " boo "'
+lex.feed(data)
+tokens = lex.run()
+print('Consumed:', list(tokens))
+
 
 data = '" alpha" beta "gamma " zeta "'
 lex.feed(data)

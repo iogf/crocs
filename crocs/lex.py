@@ -93,7 +93,10 @@ class LexMap(XNode):
 
     def handle_err(self, data):
         print('Crocs: Errors!') 
-        print('> Expected: %s' % self.expect)
+        
+        print('> Expected: %s' % self.expect 
+        if self.expect else self)
+
         print('> Data: %s' % repr(data))
         print('> Xstack:%s' % self.xstack)
 
@@ -126,6 +129,8 @@ class LexMap(XNode):
             token = ind.init_state(data)
             if token:
                 return token
+
+        self.handle_err(data)
         pass
 
     def push(self, xnode):
