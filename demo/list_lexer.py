@@ -44,3 +44,10 @@ data = '[1 [[ 3 []]'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
+
+print('Example 5')
+lex = Lexer(ListTokens.lexmap)
+data = '[1 ] [2 3] [1 3]'
+lex.feed(data)
+tokens = lex.run()
+print('Consumed:', list(tokens))

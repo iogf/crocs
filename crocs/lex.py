@@ -21,10 +21,6 @@ class Lexer:
         """
         """
 
-        if self.data:
-            return self.process()
-
-    def process(self):
         token = self.lexmap.consume(self.data)
 
         if token:
@@ -68,7 +64,7 @@ class LexMap(XNode):
         super(LexMap, self).__init__()
         self.children = []
 
-        # This is a state machine. When a given LexChain
+        # When a given LexChain
         # is trigged then the current state is saved here.
         self.xstack = []
 
@@ -76,13 +72,6 @@ class LexMap(XNode):
         # When a LexChain is trigged then its previous is saved
         # onto the self.xstack and the new one is set here.
         self.expect = None
-
-        # The initial state is self.expect = self 
-        # and xstack empty. If it hits '' and this state
-        # is not fullfilled then it is a broken doc.
-        #    
-        # Another possibility for a bad state it is if no token
-        # is matched, in that case self.expect will tell why it failed.
 
     def clear(self):
         self.xstack.clear()
@@ -244,6 +233,26 @@ class LexChain(XNode):
         return token
 
 
+    def consume_lexref(self, data):
+        """
+        When the lexref is consumed and it doesn't map then
+        it has to match the next chain pattern to make sure the
+        chain in fact fails.
+        """
+        lnode = self.children[self.index]
+        token = lnode.consume(data)
+        self.index = self.index + 1
+
+        if not token and self.index < len(self.children):
+            return self.consume(data)
+        if not token:
+            self.pull()
+            return self.lexmap.consume(data)
+        else:
+            self.index = self.index - 1
+
+        return token
+
     def consume(self, data):
         """
         Attempt to match the self.index pattern against the data.
@@ -253,12 +262,8 @@ class LexChain(XNode):
         It basically matches the current state against the pattern.
         """
         xnode = self.children[self.index]
-        token = xnode.consume(data)
-        self.index = self.index + 1
-
-
-        # if isinstance(xnode, LexRef) and self.index < len(self.children) and not token:
-            # return self.consume(data)
+        if isinstance(xnode, LexRef):
+            return self.consume_lexref(data)
 
         # When xnode is instance of LexRef it means it should
         # trigge as muuch as it is possible from the doc.
@@ -277,16 +282,18 @@ class LexChain(XNode):
         #
         # Thus it resets its machine to its initial state for
         # matching the next pattern.
-        if self.index >= len(self.children):
-            self.pull()
-        elif isinstance(xnode, LexRef) and not token:
-            return self.consume(data)
-        elif isinstance(xnode, LexRef):
-            self.index = self.index - 1
-        pass
+        token = xnode.consume(data)
+        self.index = self.index + 1
 
+        if self.index >= len(self.children) or not token:
+            self.pull()
         return token
 
+    def consume_next(self, data):
+        xnode = self.children[self.index + 1]
+        token = xnode.consume(data)
+        pass
+            
     def pull(self):
         """
         When this trigger is filled it means its machine
