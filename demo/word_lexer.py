@@ -1,7 +1,7 @@
 """
 """
 
-from crocs.lex import Lexer, LexMap, LexNode, LexChain
+from crocs.yacc import Lexer, LexMap, LexNode, LexChain
 from crocs.token import Token
 
 class WordTokens:

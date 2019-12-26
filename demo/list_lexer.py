@@ -1,53 +1,23 @@
 """
 """
 
-from crocs.lex import Lexer, LexMap, LexNode, LexRef, LexChain
+from crocs.yacc import Lexer, LexMap, LexNode, SeqNode, LexRef, LexSeq
 from crocs.token import Token
 
 class ListTokens:
     lexmap = LexMap()
-    LexChain(lexmap, 
-    LexNode('\[', Token),
+    LexSeq(lexmap, 
+    SeqNode('\[', Token),
     LexRef(lexmap),
-    # LexNode(',', Token),
-    LexNode('\]', Token))
+    SeqNode('\]', Token))
 
-    LexChain(lexmap, LexNode('[0-9]+', Token))
-    LexChain(lexmap, LexNode(' +', Token))
+    LexNode(lexmap, '[0-9]+', Token)
+    LexNode(lexmap, ' +', Token)
 
 print('Example 1')
 lex = Lexer(ListTokens.lexmap)
-data = '[]'
+data = '[1 2 3 [1 3 4] [1 2 ]]'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
 
-print('Example 2')
-lex = Lexer(ListTokens.lexmap)
-data = '[1 [1 2 [1 2 [ 2] 3] 4] ]'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
-
-
-print('Example 3')
-lex = Lexer(ListTokens.lexmap)
-data = '[1 [] 3 []]'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
-
-# Should fail.
-print('Example 4')
-lex = Lexer(ListTokens.lexmap)
-data = '[1 [[ 3 []]'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
-
-print('Example 5')
-lex = Lexer(ListTokens.lexmap)
-data = '[1 ] [2 3] [1 3]'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))

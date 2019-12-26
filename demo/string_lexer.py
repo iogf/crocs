@@ -1,17 +1,18 @@
 """
 """
 
-from crocs.lex import Lexer, LexMap, LexNode, LexChain
+from crocs.yacc import Lexer, LexMap, LexSeq, LexNode, SeqNode
 from crocs.token import Token
 
 class StringTokens:
     lexmap = LexMap()
-    t_str = LexChain(lexmap, 
-    LexNode('\"', Token),
-    LexNode('[^\"]+', Token),
-    LexNode('\"', Token))
 
-    LexChain(lexmap, LexNode(' +', type=Token))
+    LexSeq(lexmap, 
+    SeqNode('\"', Token),
+    SeqNode('[^\"]+', Token),
+    SeqNode('\"', Token))
+
+    LexNode(lexmap, ' +', type=Token)
 
 lex = Lexer(StringTokens.lexmap)
 
@@ -24,15 +25,9 @@ print('Consumed:', list(tokens))
 print('Example 2!')
 
 # Now displays an error due to Tok0 not being a token nor a string.
-data = '" foo" "bar " boo "'
+data = '" foo" bar " boo "'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
 
-print('Example 3!')
-
-data = '" alpha" beta "gamma " zeta "'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
 
