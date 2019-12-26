@@ -67,6 +67,9 @@ class Lexer:
                 yield from tseq
             else:
                 break
+        # The loop stops on eof. It is useful for
+        # some rules.
+        yield eof
 
     def consume(self, data):
         """
@@ -140,7 +143,7 @@ class Rule(XNode):
 class LexSeq(XNode):
     """
     """
-    def __init__(self, lexmap, *args, type=TSeq):
+    def __init__(self, lexmap, *args, type=None):
         self.lexmap = lexmap
         self.xnodes = []
         self.type   = type
@@ -159,8 +162,11 @@ class LexSeq(XNode):
             else:
                 return TSeq()
         pass
+
+        if self.type:
+            return self.type(tseq)
         return tseq
-            
+        
     def __repr__(self):
         return 'LexSeq(%s)' % self.xnodes
 
@@ -199,7 +205,7 @@ class LexNode(SeqNode):
         self.lexmap = lexmap
         self.lexmap.register(self)
 
-class Link(XNode):
+class LexRef(XNode):
     def __init__(self, xnode):
         self.xnode = xnode
         super(LexRef, self).__init__()
@@ -209,5 +215,13 @@ class Link(XNode):
     def consume(self, data):
         """
         """
-        pass
 
+        tseq = TSeq()
+        while True:
+            slice = data[len(tseq):]
+            token = self.xnode.consume(slice)
+            if not token:
+                break
+            else:
+                tseq.extend(token)
+        return tseq

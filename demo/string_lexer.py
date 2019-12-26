@@ -8,11 +8,11 @@ class StringTokens:
     lexmap = LexMap()
 
     LexSeq(lexmap, 
-    SeqNode('\"', Token),
-    SeqNode('[^\"]+', Token),
-    SeqNode('\"', Token))
+    SeqNode(r'\"', Token),
+    SeqNode(r'[^\"]+', Token),
+    SeqNode(r'\"', Token))
 
-    LexNode(lexmap, ' +', type=Token)
+    LexNode(lexmap, r' +', type=Token)
 
 lex = Lexer(StringTokens.lexmap)
 

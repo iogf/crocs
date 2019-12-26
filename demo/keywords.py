@@ -12,7 +12,7 @@ class Identifier(Token):
 
 class KeywordTokens:
     lexmap = LexMap()
-    LexSeq(lexmap, SeqNode(r'rif', type=Keyword),
+    LexSeq(lexmap, SeqNode(r'if', type=Keyword),
     SeqNode(r'\s+', type=Token))
 
     LexSeq(lexmap, SeqNode(r'for', type=Keyword),

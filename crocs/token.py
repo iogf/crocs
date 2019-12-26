@@ -9,7 +9,6 @@ class Token:
         return '%s(%s)' % (self.__class__.__name__, repr(self.value))
 
 class Eof(Token):
-    def __repr__(self):
-        return 'EOF'
+    pass
 
 eof = Eof('')

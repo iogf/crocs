@@ -1,15 +1,15 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, LexNode, LexChain
+from crocs.yacc import Lexer, LexMap, SeqNode, LexSeq
 from crocs.token import Token
 
 class WordTokens:
     lexmap = LexMap()
-    LexChain(lexmap, LexNode('[^0-9]+', type=Token))
-    LexChain(lexmap, LexNode('2u', type=Token))
-    LexChain(lexmap, LexNode('0gf', type=Token))
-    LexChain(lexmap, LexNode(' +', type=Token))
+    LexSeq(lexmap, SeqNode(r'[^0-9]+', type=Token))
+    LexSeq(lexmap, SeqNode(r'2u', type=Token))
+    LexSeq(lexmap, SeqNode(r'0gf', type=Token))
+    LexSeq(lexmap, SeqNode(r' +', type=Token))
 
 lex = Lexer(WordTokens.lexmap)
 print('Example 1!')
