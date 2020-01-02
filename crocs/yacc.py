@@ -5,6 +5,9 @@ import time
 class LexError(Exception):
     pass
 
+class YaccError(Exception):
+    pass
+
 class XNode:
     def __init__(self):
         self.children = []
@@ -28,19 +31,66 @@ class TSeq(list):
     # def __bool__(self):
         # pass
 
+    def clen(self):
+        pass
+
     def __len__(self):
         val = map(len, self)
         return sum(val)
 
+class PTree(list):
+    """
+    A parse tree, it is the result of a grammar rule
+    validation. It contains the rule that was used to parse
+    the tokens.
+    """
+
+    def __init__(self, rule, *args):
+        self.extend(args)
+        self.rule = rule
+        pass
+
+    def tlen(self):
+        count = 0
+        for ind in self:
+            count += ind.tlen()
+        return count
+
 class Yacc:
     def __init__(self, grammar):
         self.grammar = grammar
+        self.hmap    = dict()
 
-    def add_handle(self, xnode):
+    def build(self, data):
+        data = tuple(data)
+
+        while True:
+            ptree = self.consume(data)
+            data = data[ptree.tlen():]
+            if ptree: 
+                yield ptree
+            else:
+                break
+
+    def consume(self, data):
+        ptree = self.grammar.consume(data)
+        if not ptree and data:
+            self.handle_error(ptree, data)
+        return ptree
+
+    def handle_error(self, ptree, data):
+        print('Error!')
+        print('PTree:', ptree)
+        print('Data:', data)
+
+    def add_handle(self, xnode, handle):
+        handles = self.hmap.get(xnode, [])
+        handles.append(handle)
         pass
 
-    def del_handle(self, xnode):
-        pass
+    def del_handle(self, xnode, handle):
+        handles = self.map[xnode]
+        handles.remove(handle)
 
     def skip(self):
         pass
@@ -102,7 +152,6 @@ class LexMap(XNode):
         """
         """
         super(LexMap, self).__init__()
-        self.children = []
 
     def consume(self, data):
         """
@@ -121,23 +170,46 @@ class LexMap(XNode):
 
 class Grammar(XNode):
     def __init__(self):
-        pass
-
-class RuleMap(Grammar):
-    """
-    """
-    def __init__(self, grammar, *args):
-    
-        pass
+        super(Grammar, self).__init__()
 
     def consume(self, data):
-        pass
+        for ind in self.children:
+            ptree = ind.consume(data)
+            if ptree:
+                return ptree
+        return PTree(self)
 
 class Rule(XNode):
     def __init__(self, grammar, *args):
+        self.xnodes = []
+        self.xnodes.extend(args)
+        grammar.register(self)
+
+    def consume(self, tokens):
+        ptree = PTree(self)
+        for ind in self.xnodes:
+            slice = tokens[ptree.tlen():]
+            struct = ind.consume(slice)
+            if struct:
+                ptree.append(struct)
+            else:
+                return PTree(self)
+        return ptree
+
+class TokVal:
+    def __init__(self, value):
+        self.value = value
+
+    def consume(self, tokens):
+        if self.value == tokens[0].value:
+            return tokens[0]
+        # print(repr(self.value), repr(tokens[0].value))
+
+class Struct(XNode):
+    def __init__(self, *args):
         pass
 
-    def consume(self, data):
+    def validate(self, data):
         pass
 
 class LexSeq(XNode):
@@ -164,7 +236,7 @@ class LexSeq(XNode):
         pass
 
         if self.type:
-            return self.type(tseq)
+            return TSeq(self.type(tseq))
         return tseq
         
     def __repr__(self):

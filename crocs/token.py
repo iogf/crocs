@@ -1,6 +1,20 @@
+class Struct(list):
+    pass
+
 class Token:
     def __init__(self, value):
         self.value = value
+
+    @classmethod
+    def consume(cls, tokens):
+        if isinstance(tokens[0], cls):
+            return tokens[0]
+
+    def tlen(self):
+        return 1
+
+    def clen(self):
+        pass
 
     def __len__(self):
         return len(self.value)
