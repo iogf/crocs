@@ -61,27 +61,35 @@ class Yacc:
         self.grammar = grammar
         self.hmap    = dict()
 
-    def build(self, data):
-        data = tuple(data)
+    def discard_tokens(self, tokens):
+        for indi in tokens:
+            for indj in self.grammar.discarded_tokens:
+                if not indj.consume((indi, )):
+                    yield indi
+
+    def build(self, tokens):
+        tokens = self.discard_tokens(tokens)
+        tokens = tuple(tokens)
 
         while True:
-            ptree = self.consume(data)
-            data = data[ptree.tlen():]
+            ptree = self.consume(tokens)
+            tokens = tokens[ptree.tlen():]
             if ptree: 
                 yield ptree
             else:
                 break
 
-    def consume(self, data):
-        ptree = self.grammar.consume(data)
-        if not ptree and data:
-            self.handle_error(ptree, data)
+    def consume(self, tokens):
+        ptree = self.grammar.consume(tokens)
+        if not ptree and tokens:
+            if tokens[0]:
+                self.handle_error(ptree, tokens)
         return ptree
 
-    def handle_error(self, ptree, data):
+    def handle_error(self, ptree, tokens):
         print('Error!')
         print('PTree:', ptree)
-        print('Data:', data)
+        print('Data:', tokens)
 
     def add_handle(self, xnode, handle):
         handles = self.hmap.get(xnode, [])
@@ -171,6 +179,10 @@ class LexMap(XNode):
 class Grammar(XNode):
     def __init__(self):
         super(Grammar, self).__init__()
+        self.discarded_tokens = []
+
+    def discard(self, *args):
+        self.discarded_tokens.extend(args)
 
     def consume(self, data):
         for ind in self.children:

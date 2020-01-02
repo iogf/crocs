@@ -14,10 +14,10 @@ class Token:
         return 1
 
     def clen(self):
-        pass
+        return len(self.value)
 
     def __len__(self):
-        return len(self.value)
+        return self.clen()
 
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, repr(self.value))
