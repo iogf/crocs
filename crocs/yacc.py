@@ -1,4 +1,4 @@
-from crocs.token import Token, eof
+from crocs.token import Token, eof, XNode
 import re
 import time
 
@@ -6,14 +6,6 @@ class LexError(Exception):
     pass
 
 class YaccError(Exception):
-    pass
-
-class XNode:
-    def __init__(self):
-        self.children = []
-
-    def register(self, xnode):
-        self.children.append(xnode)
     pass
 
 
@@ -103,9 +95,6 @@ class Yacc:
     def skip(self):
         pass
 
-    def next(self):
-        pass
-
 class Lexer:
     def __init__(self, lexmap, no_errors=False):
         """
@@ -184,45 +173,71 @@ class Grammar(XNode):
     def discard(self, *args):
         self.discarded_tokens.extend(args)
 
-    def consume(self, data):
+    def consume(self, data, exclude=[]):
         for ind in self.children:
-            ptree = ind.consume(data)
-            if ptree:
-                return ptree
+            if not ind in exclude:
+               ptree = ind.consume(data, exclude)
+               if ptree:
+                   return ptree
         return PTree(self)
 
 class Rule(XNode):
-    def __init__(self, grammar, *args):
+    def __init__(self, grammar, head, *args):
+        """
+        """
         self.xnodes = []
         self.xnodes.extend(args)
+        self.head = head
         grammar.register(self)
 
-    def consume(self, tokens):
-        ptree = PTree(self)
+    def consume(self, tokens, exclude=[]):
+        ptree    = PTree(self)
+        ex_rules = exclude[:]
+
+        if self.head.is_refer():
+            ex_rules.append(self)
+
+        struct = self.head.consume(tokens, ex_rules)
+        if not struct:
+            return PTree(self)
+
+        ptree.append(struct)
         for ind in self.xnodes:
-            slice = tokens[ptree.tlen():]
-            struct = ind.consume(slice)
+            slice  = tokens[ptree.tlen():]
+            struct = ind.consume(slice, ex_rules)
             if struct:
                 ptree.append(struct)
             else:
                 return PTree(self)
         return ptree
 
-class TokVal:
+class TokVal(XNode):
     def __init__(self, value):
         self.value = value
 
-    def consume(self, tokens):
+    def consume(self, tokens, exclude=[]):
         if self.value == tokens[0].value:
             return tokens[0]
         # print(repr(self.value), repr(tokens[0].value))
 
 class Struct(XNode):
-    def __init__(self, *args):
-        pass
+    def __init__(self, refer):
+        self.refer = refer
 
-    def validate(self, data):
-        pass
+    def is_refer(self):
+        return True
+
+    def consume(self, tokens, exclude=[]):
+        """
+        """
+        ptree = PTree(self)
+        while True:
+            slice = tokens[ptree.tlen():]
+            struct = self.refer.consume(slice, exclude)
+            if struct:
+                ptree.append(struct)
+            else:
+                return ptree
 
 class LexSeq(XNode):
     """

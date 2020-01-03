@@ -1,13 +1,22 @@
-class Struct(list):
+class XNode:
+    def __init__(self):
+        self.children = []
+
+    def register(self, xnode):
+        self.children.append(xnode)
     pass
 
-class Token:
+    @classmethod
+    def is_refer(self):
+        return False
+
+class Token(XNode):
     def __init__(self, value):
         self.value = value
 
     @classmethod
-    def consume(cls, tokens):
-        if isinstance(tokens[0], cls):
+    def consume(cls, tokens, exclude=[]):
+        if tokens and isinstance(tokens[0], cls):
             return tokens[0]
 
     def tlen(self):
