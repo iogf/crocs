@@ -11,8 +11,10 @@ class XNode:
         return False
 
 class Token(XNode):
-    def __init__(self, value):
+    def __init__(self, value, rule=None, type=None):
         self.value = value
+        self.rule = rule if rule else self
+        self.type = type
 
     @classmethod
     def consume(cls, tokens, exclude=[]):
@@ -30,6 +32,30 @@ class Token(XNode):
 
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, repr(self.value))
+
+class Num(Token):
+    pass
+
+class Plus(Token):
+    pass
+
+class Minus(Token):
+    pass
+
+class Div(Token):
+    pass
+
+class Mul(Token):
+    pass
+
+class RP(Token):
+    pass
+
+class LP(Token):
+    pass
+
+class Blank(Token):
+    pass
 
 class Eof(Token):
     pass

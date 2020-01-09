@@ -2,31 +2,7 @@
 """
 
 from crocs.yacc import Lexer, LexMap, LexNode, Rule, Grammar, Struct, Yacc
-from crocs.token import Token
-
-class Num(Token):
-    pass
-
-class Plus(Token):
-    pass
-
-class Minus(Token):
-    pass
-
-class Div(Token):
-    pass
-
-class Mul(Token):
-    pass
-
-class RP(Token):
-    pass
-
-class LP(Token):
-    pass
-
-class Blank(Token):
-    pass
+from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank
 
 class CalcTokens:
     lexmap = LexMap()
@@ -42,19 +18,20 @@ class CalcTokens:
 
 class CalcGrammar:
     expression = Grammar()
-    term = Grammar()
-    factor = Grammar()
+    term       = Grammar()
+    factor     = Grammar()
 
-    Rule(expression, Struct(expression), Plus, Struct(term))
-    Rule(expression, Struct(expression), Minus, Struct(term))
-    Rule(expression, Struct(term))
+    r_plus = Rule(expression, Plus, term)
+    r_minus = Rule(expression, Minus, term)
+    expression.add(r_plus,  r_minus, term)
 
-    Rule(term, Struct(term), Mul, Struct(factor))
-    Rule(term, Struct(term), Div, Struct(factor))
-    Rule(term, Struct(factor))
+    r_mul = Rule(term, Mul, factor)
+    r_div = Rule(term, Div, factor)
+    term.add(r_mul, r_div, factor)
 
-    Rule(factor, Num)
-    Rule(factor, LP, Struct(expression), RP)
+    r_paren = Rule(LP, expression, RP)
+    factor.add(r_paren, Num)
+
     expression.discard(Blank)
 
 class CalcParser(Yacc):

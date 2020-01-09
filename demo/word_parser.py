@@ -2,10 +2,7 @@
 """
 
 from crocs.yacc import Lexer, Yacc, LexMap, LexNode, Rule, Grammar, TokVal
-from crocs.token import Token
-
-class Blank(Token):
-    pass
+from crocs.token import Token, Blank
 
 class WordTokens:
     lexmap  = LexMap()
@@ -13,30 +10,16 @@ class WordTokens:
     LexNode(lexmap, r' +', type=Blank)
 
 class WordGrammar:
-    grammar  = Grammar()
-    r_phrase0 = Rule(grammar, TokVal('alpha'), TokVal('beta'))
-    r_phrase1 = Rule(grammar, TokVal('gamma'), TokVal('zeta'))
-
+    grammar   = Grammar()
+    r_phrase0 = Rule(TokVal('alpha'), TokVal('beta'))
+    r_phrase1 = Rule(TokVal('gamma'), TokVal('zeta'))
+    grammar.add(r_phrase0, r_phrase1)
     grammar.discard(Blank)
 
-class WordParser(Yacc):
-    def __init__(self):
-        self.lexer = Lexer(WordTokens.lexmap)
-        super(WordParser, self).__init__(WordGrammar.grammar)
-    
-        self.add_handle(WordGrammar.r_phrase0, self.handle_phrase)
-        self.add_handle(WordGrammar.r_phrase1, self.handle_phrase)
-
-    def run(self, data):
-        self.lexer.feed(data)
-        tokens = self.lexer.run()
-        ptree  = self.build(tokens)
-        return ptree
-
-    def handle_phrase(self, ptree):
-        pass
-
 data = 'alpha beta gamma zeta'
-parse = WordParser()
-ptree = parse.run(data)
+lexer = Lexer(WordTokens.lexmap)
+yacc  = Yacc(WordGrammar.grammar)
+lexer.feed(data)
+tokens = lexer.run()
+ptree  = yacc.build(tokens)
 print(list(ptree))

@@ -20,8 +20,9 @@ class TupleTokens:
 
 class TupleGrammar:
     grammar = Grammar()
-    Rule(grammar, TokVal('('), Struct(grammar), TokVal(')'))
-    Rule(grammar, Num)
+    r_paren = Rule(TokVal('('), Struct(grammar), TokVal(')'))
+    r_num = Rule(Num)
+    grammar.add(r_paren, r_num)
     grammar.discard(Blank)
 
 print('Example 1')

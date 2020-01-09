@@ -20,15 +20,12 @@ class TSeq(list):
         self.slen = 0
         self.tlen = 0
 
-    # def __bool__(self):
-        # pass
-
     def clen(self):
-        pass
-
-    def __len__(self):
         val = map(len, self)
         return sum(val)
+
+    def __len__(self):
+        return self.clen()
 
 class PTree(list):
     """
@@ -173,38 +170,39 @@ class Grammar(XNode):
     def discard(self, *args):
         self.discarded_tokens.extend(args)
 
-    def consume(self, data, exclude=[]):
+    def consume(self, tokens, exclude=[]):
+        if tokens[0].rule.type == self:
+            return tokens[0]
+
         for ind in self.children:
             if not ind in exclude:
-               ptree = ind.consume(data, exclude)
+               ptree = ind.consume(tokens, exclude)
                if ptree:
                    return ptree
         return PTree(self)
 
+    def is_refer(self):
+        return True
+
+    def add(self, *args):
+        self.children.extend(args)
+
 class Rule(XNode):
-    def __init__(self, grammar, head, *args):
+    def __init__(self, *args, type=None):
         """
         """
         self.xnodes = []
         self.xnodes.extend(args)
-        self.head = head
-        grammar.register(self)
+        self.type = type
 
     def consume(self, tokens, exclude=[]):
-        ptree    = PTree(self)
-        ex_rules = exclude[:]
+        ptree = PTree(self)
+        if self.xnodes[0].is_refer():
+            exclude = exclude + [self]
 
-        if self.head.is_refer():
-            ex_rules.append(self)
-
-        struct = self.head.consume(tokens, ex_rules)
-        if not struct:
-            return PTree(self)
-
-        ptree.append(struct)
         for ind in self.xnodes:
             slice  = tokens[ptree.tlen():]
-            struct = ind.consume(slice, ex_rules)
+            struct = ind.consume(slice, exclude)
             if struct:
                 ptree.append(struct)
             else:
@@ -212,13 +210,14 @@ class Rule(XNode):
         return ptree
 
 class TokVal(XNode):
-    def __init__(self, value):
+    def __init__(self, value, rule=None, type=None):
         self.value = value
+        self.rule = rule if rule else self
+        self.type = type
 
     def consume(self, tokens, exclude=[]):
         if self.value == tokens[0].value:
             return tokens[0]
-        # print(repr(self.value), repr(tokens[0].value))
 
 class Struct(XNode):
     def __init__(self, refer):
