@@ -45,6 +45,25 @@ class PTree(list):
             count += ind.tlen()
         return count
 
+class RTree(PTree):
+    def __init__(self, ptree, type):
+        self.extend(ptree)
+
+        # The rule that evaluated an RTree is usually a 
+        # PTree's type.
+        self.rule = type
+        pass
+
+    def tlen(self):
+        """
+        An RTree is the result of evaluation of a Rule type against
+        its grammar, a Rule type is a Grammar. 
+
+        The length of a RTree is  1 otherwise it doesn't do slicing 
+        of the tokens correctly.
+        """
+        return 1
+        
 class Yacc:
     def __init__(self, grammar):
         self.grammar = grammar
@@ -171,9 +190,12 @@ class Grammar(XNode):
         self.discarded_tokens.extend(args)
 
     def consume(self, tokens, exclude=[]):
-        if tokens[0].rule.type == self:
+        if tokens[0].rule == self:
             return tokens[0]
 
+        return self.validate(tokens, exclude)
+
+    def validate(self, tokens, exclude=[]):
         for ind in self.children:
             if not ind in exclude:
                ptree = ind.consume(tokens, exclude)
@@ -196,6 +218,19 @@ class Rule(XNode):
         self.type = type
 
     def consume(self, tokens, exclude=[]):
+        """
+        It receives a sequence of tokens and attempt to match
+        the specified rule.
+    
+        When there is a match and a type is defined then it prepends 
+        the rule tokens to the tokens sequence and attempt to match 
+        again with some rule in the grammar.
+
+        It returns PTree's which may contain RTree's
+        or Token's. An RTree is the result of a Rule type
+        evaluation.
+        """
+
         ptree = PTree(self)
         if self.xnodes[0].is_refer():
             exclude = exclude + [self]
@@ -207,6 +242,31 @@ class Rule(XNode):
                 ptree.append(struct)
             else:
                 return PTree(self)
+
+        if self.type:
+            return self.evaltype(ptree, tokens)
+        return ptree
+
+    def evaltype(self, ptree, tokens):
+        """
+        Consume returns a PTree that contains rule tokens,
+        these rules are evaluated to a type. 
+
+        The grammar rules may have rules that depend on this type. 
+        Thus it has to be evaluated again. The PTree is prepended then 
+        sent back to be matched.
+
+        When there is no match against the rule type and its
+        grammar then it returns the rule ptree.
+        """
+
+        slice = tokens[ptree.tlen():]            
+        rtree = RTree(ptree, self.type)
+
+        slice = (rtree, ) + slice
+        rtree = self.type.validate(slice)
+        if rtree:
+            return rtree
         return ptree
 
 class TokVal(XNode):

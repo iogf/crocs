@@ -21,16 +21,17 @@ class CalcGrammar:
     term       = Grammar()
     factor     = Grammar()
 
-    r_plus = Rule(expression, Plus, term)
-    r_minus = Rule(expression, Minus, term)
+    r_plus = Rule(expression, Plus, term, type=expression)
+    r_minus = Rule(expression, Minus, term, type=expression)
     expression.add(r_plus,  r_minus, term)
 
-    r_mul = Rule(term, Mul, factor)
-    r_div = Rule(term, Div, factor)
+    r_mul = Rule(term, Mul, factor, type=expression)
+    r_div = Rule(term, Div, factor, type=expression)
     term.add(r_mul, r_div, factor)
 
-    r_paren = Rule(LP, expression, RP)
-    factor.add(r_paren, Num)
+    r_paren = Rule(LP, expression, RP, type=expression)
+    r_num   = Rule(Num)
+    factor.add(r_paren, r_num)
 
     expression.discard(Blank)
 
@@ -44,7 +45,7 @@ class CalcParser(Yacc):
         tokens = self.lexer.run()
         return self.build(tokens)
 
-data = '1 + 2 * (1 - 2)'
+data = '1 + 2 '
 parser = CalcParser()
 ptree = parser.calc(data)
 print('Consumed:', list(ptree))
