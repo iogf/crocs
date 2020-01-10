@@ -45,6 +45,12 @@ class PTree(list):
             count += ind.tlen()
         return count
 
+    def plen(self):
+        count = 0
+        for ind in self:
+            count += ind.plen()
+        return count
+
 class RTree(PTree):
     def __init__(self, ptree, type):
         self.extend(ptree)
@@ -54,7 +60,7 @@ class RTree(PTree):
         self.rule = type
         pass
 
-    def tlen(self):
+    def plen(self):
         """
         An RTree is the result of evaluation of a Rule type against
         its grammar, a Rule type is a Grammar. 
@@ -62,8 +68,9 @@ class RTree(PTree):
         The length of a RTree is  1 otherwise it doesn't do slicing 
         of the tokens correctly.
         """
+
         return 1
-        
+
 class Yacc:
     def __init__(self, grammar):
         self.grammar = grammar
@@ -243,7 +250,7 @@ class Rule(XNode):
             exclude = exclude + [self]
 
         for ind in self.xnodes:
-            slice  = tokens[ptree.tlen():]
+            slice  = tokens[ptree.plen():]
             struct = ind.consume(slice, exclude)
             if struct:
                 ptree.append(struct)
@@ -267,7 +274,7 @@ class Rule(XNode):
         grammar then it returns the rule ptree.
         """
 
-        slice = tokens[ptree.tlen():]            
+        slice = tokens[ptree.plen():]            
         rtree = RTree(ptree, self.type)
 
         slice = (rtree, ) + slice
@@ -298,7 +305,7 @@ class Struct(XNode):
         """
         ptree = PTree(self)
         while True:
-            slice = tokens[ptree.tlen():]
+            slice = tokens[ptree.plen():]
             struct = self.refer.consume(slice, exclude)
             if struct:
                 ptree.append(struct)
