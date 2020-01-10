@@ -69,15 +69,24 @@ class Yacc:
         self.grammar = grammar
         self.hmap    = dict()
 
+    def is_discarded(self, token):
+        for indi in self.grammar.discarded_tokens:
+            if indi.consume((token, )):
+                return True
+        return False
+
     def discard_tokens(self, tokens):
         for indi in tokens:
-            for indj in self.grammar.discarded_tokens:
-                if not indj.consume((indi, )):
-                    yield indi
-
+            if not self.is_discarded(indi):
+                yield indi
+        
     def build(self, tokens):
-        tokens = self.discard_tokens(tokens)
         tokens = tuple(tokens)
+        print('tokens0', tokens)
+        tokens = self.discard_tokens(tokens)
+
+        tokens = tuple(tokens)
+        print('tokens1', tokens)
 
         while True:
             ptree = self.consume(tokens)

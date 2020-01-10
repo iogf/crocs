@@ -2,7 +2,7 @@
 """
 
 from crocs.yacc import Lexer, Yacc, LexMap, LexNode, Rule, Grammar, TokVal
-from crocs.token import Token, Blank
+from crocs.token import Token, Blank, Eof
 
 class NumTokens:
     lexmap  = LexMap()
@@ -17,7 +17,7 @@ class NumGrammar:
 
     r_type0 = Rule(TokVal('1'), TokVal('+'), TokVal('2'), type=type0)
     main.add(r_type0)
-    main.discard(Blank)
+    main.discard(Blank, Eof)
 
     r_type1 = Rule(type0, TokVal('+'), TokVal('2'))
     type0.add(r_type1)
@@ -28,5 +28,5 @@ yacc  = Yacc(NumGrammar.main)
 lexer.feed(data)
 tokens = lexer.run()
 ptree  = yacc.build(tokens)
-print(list(ptree))
+print('Consumed:', list(ptree))
 
