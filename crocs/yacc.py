@@ -76,17 +76,15 @@ class Yacc:
         return False
 
     def discard_tokens(self, tokens):
+        # Maybe discarding tokens should be here not
+        # in grammar definition.
         for indi in tokens:
             if not self.is_discarded(indi):
                 yield indi
         
     def build(self, tokens):
-        tokens = tuple(tokens)
-        print('tokens0', tokens)
         tokens = self.discard_tokens(tokens)
-
         tokens = tuple(tokens)
-        print('tokens1', tokens)
 
         while True:
             ptree = self.consume(tokens)
