@@ -15,7 +15,7 @@ class NumGrammar:
     main   = Grammar()
     type0   = Grammar()
 
-    r_type0 = Rule(TokVal('1'), TokVal('+'), TokVal('2'), type=type0)
+    r_type0 = Rule(TokVal('1'), TokVal('+'), TokVal('2'))
     main.add(r_type0)
     main.discard(Blank, Eof)
 

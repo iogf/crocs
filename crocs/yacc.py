@@ -34,10 +34,11 @@ class PTree(list):
     the tokens.
     """
 
-    def __init__(self, rule, *args):
+    def __init__(self, rule, *args, types=set()):
         self.extend(args)
         self.rule = rule
-        pass
+        self.types = types
+        self.value = self
 
     def tlen(self):
         count = 0
@@ -52,12 +53,15 @@ class PTree(list):
         return count
 
 class RTree(PTree):
-    def __init__(self, ptree, type):
+    def __init__(self, ptree):
         self.extend(ptree)
 
         # The rule that evaluated an RTree is usually a 
         # PTree's type.
-        self.rule = type
+        self.rule = ptree.rule
+        self.types = ptree.types
+        self.value = self
+
         pass
 
     def plen(self):
@@ -95,17 +99,27 @@ class Yacc:
 
         while True:
             ptree = self.consume(tokens)
-            tokens = tokens[ptree.tlen():]
+            tokens = tokens[ptree.plen():]
+
             if ptree: 
                 yield ptree
             else:
                 break
 
     def consume(self, tokens):
-        ptree = self.grammar.consume(tokens)
+        ptree  = self.grammar.validate(tokens)
+        tokens = tokens[ptree.plen():]
+        tokens = (RTree(ptree), ) + tokens
+
+        if ptree:
+            rtree = self.consume(tokens)
+            if rtree:
+                return rtree
+
         if not ptree and tokens:
             if tokens[0]:
                 self.handle_error(ptree, tokens)
+        
         return ptree
 
     def handle_error(self, ptree, tokens):
@@ -204,16 +218,18 @@ class Grammar(XNode):
         self.discarded_tokens.extend(args)
 
     def consume(self, tokens, exclude=[]):
-        if tokens[0].rule == self:
+        if self in tokens[0].types:
             return tokens[0]
 
-        return self.validate(tokens, exclude)
+        ptree = self.validate(tokens, exclude)
+        return ptree
 
     def validate(self, tokens, exclude=[]):
         for ind in self.children:
             if not ind in exclude:
-               ptree = ind.consume(tokens, exclude)
+               ptree = ind.validate(tokens, exclude)
                if ptree:
+                   ptree.types.add(self)
                    return ptree
         return PTree(self)
 
@@ -224,28 +240,17 @@ class Grammar(XNode):
         self.children.extend(args)
 
 class Rule(XNode):
-    def __init__(self, *args, type=None):
+    def __init__(self, *args):
         """
         """
-        self.xnodes = []
-        self.xnodes.extend(args)
-        self.type = type
+        self.xnodes = args
 
-    def consume(self, tokens, exclude=[]):
+    def validate(self, tokens, exclude=[]):
         """
-        It receives a sequence of tokens and attempt to match
-        the specified rule.
-    
-        When there is a match and a type is defined then it prepends 
-        the rule tokens to the tokens sequence and attempt to match 
-        again with some rule in the grammar.
-
-        It returns PTree's which may contain RTree's
-        or Token's. An RTree is the result of a Rule type
-        evaluation.
         """
 
         ptree = PTree(self)
+
         if self.xnodes[0].is_refer():
             exclude = exclude + [self]
 
@@ -256,38 +261,13 @@ class Rule(XNode):
                 ptree.append(struct)
             else:
                 return PTree(self)
-
-        if self.type:
-            return self.evaltype(ptree, tokens)
-        return ptree
-
-    def evaltype(self, ptree, tokens):
-        """
-        Consume returns a PTree that contains rule tokens,
-        these rules are evaluated to a type. 
-
-        The grammar rules may have rules that depend on this type. 
-        Thus it has to be evaluated again. The PTree is prepended then 
-        sent back to be matched.
-
-        When there is no match against the rule type and its
-        grammar then it returns the rule ptree.
-        """
-
-        slice = tokens[ptree.plen():]            
-        rtree = RTree(ptree, self.type)
-
-        slice = (rtree, ) + slice
-        rtree = self.type.validate(slice)
-        if rtree:
-            return rtree
         return ptree
 
 class TokVal(XNode):
-    def __init__(self, value, rule=None, type=None):
+    def __init__(self, value, rule=None, types=set()):
         self.value = value
         self.rule = rule if rule else self
-        self.type = type
+        self.types = types
 
     def consume(self, tokens, exclude=[]):
         if self.value == tokens[0].value:
