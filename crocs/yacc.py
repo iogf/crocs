@@ -208,12 +208,15 @@ class Grammar(XNode):
             if not ind in exclude:
                 ptree = ind.consume(tokens, exclude)
                 if ptree:
-                    rtree = self.shift(ptree, tokens)
-                    if rtree:
-                        return rtree
-                    else:
-                        return ptree
+                    return self.validate(ptree, tokens)
         return PTree(self)
+
+    def validate(self, ptree, tokens):
+        rtree = self.shift(ptree, tokens)
+        if rtree:
+            return rtree
+        else:
+            return ptree
 
     def push(self, ptree, tokens):
         """
