@@ -73,7 +73,7 @@ class RTree(PTree):
         of the tokens correctly.
         """
 
-        return 1
+        return int(bool(self))
 
 class Yacc:
     def __init__(self, grammar):
@@ -99,33 +99,24 @@ class Yacc:
 
         while True:
             ptree = self.consume(tokens)
-            tokens = tokens[ptree.plen():]
-
+            tokens = tokens[ptree.tlen():]
             if ptree: 
                 yield ptree
             else:
                 break
 
     def consume(self, tokens):
-        ptree  = self.grammar.validate(tokens)
-        tokens = tokens[ptree.plen():]
-        tokens = (RTree(ptree), ) + tokens
-
-        if ptree:
-            rtree = self.consume(tokens)
-            if rtree:
-                return rtree
-
+        ptree = self.grammar.consume(tokens)
         if not ptree and tokens:
             if tokens[0]:
                 self.handle_error(ptree, tokens)
-        
         return ptree
 
     def handle_error(self, ptree, tokens):
-        print('Error!')
+        print('Crocs Yacc error!')
         print('PTree:', ptree)
-        print('Data:', tokens)
+        print('Tokens:', tokens)
+        raise YaccError('Unexpected struct!')
 
     def add_handle(self, xnode, handle):
         handles = self.hmap.get(xnode, [])
@@ -213,25 +204,27 @@ class Grammar(XNode):
     def __init__(self):
         super(Grammar, self).__init__()
         self.discarded_tokens = []
+        self.stack = []
 
     def discard(self, *args):
         self.discarded_tokens.extend(args)
 
     def consume(self, tokens, exclude=[]):
-        if self in tokens[0].types:
-            return tokens[0]
-
-        ptree = self.validate(tokens, exclude)
-        return ptree
-
-    def validate(self, tokens, exclude=[]):
         for ind in self.children:
             if not ind in exclude:
-               ptree = ind.validate(tokens, exclude)
-               if ptree:
-                   ptree.types.add(self)
-                   return ptree
+                ptree = ind.consume(tokens, exclude)
+                if ptree:
+                    return self.push(ptree, tokens)
         return PTree(self)
+
+    def push(self, ptree, tokens):
+        """
+        """
+        for ind in self.children:
+            rtree = ind.push(ptree, tokens)
+            if rtree:
+                return rtree
+        return ptree
 
     def is_refer(self):
         return True
@@ -240,20 +233,29 @@ class Grammar(XNode):
         self.children.extend(args)
 
 class Rule(XNode):
-    def __init__(self, *args):
+    def __init__(self, init, *args):
         """
         """
+        self.init = init
         self.xnodes = args
 
-    def validate(self, tokens, exclude=[]):
-        """
-        """
+    def push(self, ptree, tokens):
+        if self.init.is_refer():
+            return self.eval_ptree(ptree, tokens)
 
+    def eval_ptree(self, ptree, tokens):
+        mtree = PTree(self)                
+        slice  = tokens[ptree.plen():]
+        rtree = self.eval_xnodes(slice)
+        if not rtree:
+            return mtree
+
+        mtree.append(ptree)
+        mtree.extend(rtree)
+        return mtree
+
+    def eval_xnodes(self, tokens, exclude=[]):
         ptree = PTree(self)
-
-        if self.xnodes[0].is_refer():
-            exclude = exclude + [self]
-
         for ind in self.xnodes:
             slice  = tokens[ptree.plen():]
             struct = ind.consume(slice, exclude)
@@ -261,6 +263,27 @@ class Rule(XNode):
                 ptree.append(struct)
             else:
                 return PTree(self)
+        return ptree
+
+    def consume(self, tokens, exclude=[]):
+        """
+        """
+        ptree = PTree(self)
+        if self.init.is_refer():
+            exclude = exclude + [self]
+
+        struct = self.init.consume(tokens, exclude)
+        if struct:
+            ptree.append(struct)
+        else:
+            return ptree
+
+        slice = tokens[ptree.plen():]
+        struct = self.eval_xnodes(slice, exclude)
+
+        if not struct and self.xnodes:
+            return PTree(self)
+        ptree.extend(struct)
         return ptree
 
 class TokVal(XNode):

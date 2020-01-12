@@ -27,7 +27,7 @@ class TupleGrammar:
 
 print('Example 1')
 lex = Lexer(TupleTokens.lexmap)
-data = '(1 2 3 (7 8))'
+data = '(1 2 3 ( 4 5 6))'
 lex.feed(data)
 tokens = lex.run()
 yacc = Yacc(TupleGrammar.grammar)

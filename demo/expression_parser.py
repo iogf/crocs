@@ -45,7 +45,7 @@ class CalcParser(Yacc):
         tokens = self.lexer.run()
         return self.build(tokens)
 
-data = '1 + 2 + 1 + ( 1 - 3) * (3 +4)'
+data = '1 + 1 * (1 - 2 + ( 1 * 3) * (1/2 - 3))'
 parser = CalcParser()
 ptree = parser.calc(data)
 print('Consumed:', list(ptree))
