@@ -93,11 +93,11 @@ class Yacc:
 
         while True:
             ptree = self.consume(tokens)
-            tokens = tokens[ptree.plen():]
             if ptree: 
                 yield ptree
             else:
                 break
+            tokens = tokens[ptree.plen():]
 
     def consume(self, tokens):
         ptree = self.grammar.consume(tokens)
@@ -203,13 +203,14 @@ class Grammar(XNode):
     def discard(self, *args):
         self.discarded_tokens.extend(args)
 
-    def consume(self, tokens, exclude=[]):
+    def consume(self, tokens, exclude=[], shift=True):
         for ind in self.children:
             if not ind in exclude:
                 ptree = ind.consume(tokens, exclude)
-                if ptree:
+                if ptree and shift:
                     return self.validate(ptree, tokens)
-        return PTree(self)
+                elif ptree:
+                    return ptree
 
     def validate(self, ptree, tokens):
         rtree = self.shift(ptree, tokens)
@@ -254,39 +255,38 @@ class Rule(XNode):
             return self.eval_ptree(ptree, tokens)
 
     def eval_ptree(self, ptree, tokens):
-        mtree = PTree(self)                
         slice  = tokens[ptree.plen():]
         rtree = self.eval_xnodes(slice, [self])
         if not rtree:
-            return mtree
+            return rtree
 
-        mtree.append(ptree)
+        mtree = PTree(self, ptree)
         mtree.extend(rtree)
         return mtree
 
     def eval_xnodes(self, tokens, exclude=[]):
         ptree = PTree(self)
         for ind in self.xnodes:
-            slice  = tokens[ptree.plen():]
-            struct = ind.consume(slice, exclude)
+            struct = ind.consume(tokens, exclude)
             if struct:
                 ptree.append(struct)
             else:
                 return PTree(self)
+            tokens = tokens[struct.plen():]
         return ptree
 
-    def consume(self, tokens, exclude=[]):
+    def consume(self, tokens, exclude=[], shift=True):
         """
         """
         ptree = PTree(self)
         if self.init.is_refer():
             exclude = exclude + [self]
 
-        struct = self.init.consume(tokens, exclude)
+        struct = self.init.consume(tokens, exclude, shift=False)
         if struct:
             ptree.append(struct)
         else:
-            return ptree
+            return PTree(self)
 
         slice = tokens[ptree.plen():]
         struct = self.eval_xnodes(slice, exclude)
@@ -302,7 +302,7 @@ class TokVal(Token):
         self.rule = rule if rule else self
         self.types = types
 
-    def consume(self, tokens, exclude=[]):
+    def consume(self, tokens, exclude=[], shift=False):
         if self.value == tokens[0].value:
             return tokens[0]
 

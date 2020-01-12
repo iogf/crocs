@@ -17,7 +17,7 @@ class Token(XNode):
         self.types = types
 
     @classmethod
-    def consume(cls, tokens, exclude=[]):
+    def consume(cls, tokens, exclude=[], shift=False):
         if tokens and isinstance(tokens[0], cls):
             return tokens[0]
 
