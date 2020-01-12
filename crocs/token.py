@@ -12,10 +12,9 @@ class XNode:
         return False
 
 class Token(XNode):
-    def __init__(self, value, rule=None, types=set()):
+    def __init__(self, value, rule=None):
         self.value = value
         self.rule = rule if rule else self
-        self.types = types
 
     @classmethod
     def consume(cls, tokens, exclude=[], shift=False):
@@ -45,7 +44,6 @@ class TokVal(Token):
     def __init__(self, value, rule=None):
         self.value = value
         self.rule = rule if rule else self
-        self.types = types
 
     def consume(self, tokens, exclude=[], shift=False):
         if self.value == tokens[0].value:
