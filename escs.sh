@@ -42,7 +42,6 @@ git fetch -p
 cd ~/projects/crocs-code
 git checkout *
 ##############################################################################
-# create, a new branch locally from an existing commit.
 # install, crocs.
 sudo bash -i
 cd /home/tau/projects/crocs-code

@@ -1,3 +1,4 @@
+
 class XNode:
     def __init__(self):
         self.children = []
@@ -31,14 +32,24 @@ class Token(XNode):
         return len(self.value)
 
     @classmethod
-    def push(cls, ptree, tokens):
-        return None
+    def push_type(cls, ptree, tokens):
+        pass
 
     def __len__(self):
         return self.clen()
 
     def __repr__(self):
         return '%s(%s)' % (self.__class__.__name__, repr(self.value))
+
+class TokVal(Token):
+    def __init__(self, value, rule=None):
+        self.value = value
+        self.rule = rule if rule else self
+        self.types = types
+
+    def consume(self, tokens, exclude=[], shift=False):
+        if self.value == tokens[0].value:
+            return tokens[0]
 
 class Num(Token):
     pass
