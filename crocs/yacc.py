@@ -40,12 +40,6 @@ class PTree(list):
         self.types = types
         self.value = self
 
-    def tlen(self):
-        count = 0
-        for ind in self:
-            count += ind.tlen()
-        return count
-
     def plen(self):
         count = 0
         for ind in self:
@@ -99,7 +93,7 @@ class Yacc:
 
         while True:
             ptree = self.consume(tokens)
-            tokens = tokens[ptree.tlen():]
+            tokens = tokens[ptree.plen():]
             if ptree: 
                 yield ptree
             else:
@@ -214,7 +208,11 @@ class Grammar(XNode):
             if not ind in exclude:
                 ptree = ind.consume(tokens, exclude)
                 if ptree:
-                    return self.push(ptree, tokens)
+                    rtree = self.shift(ptree, tokens)
+                    if rtree:
+                        return rtree
+                    else:
+                        return ptree
         return PTree(self)
 
     def push(self, ptree, tokens):
@@ -224,7 +222,16 @@ class Grammar(XNode):
             rtree = ind.push(ptree, tokens)
             if rtree:
                 return rtree
-        return ptree
+        return PTree(self)
+
+    def shift(self, ptree, tokens):
+        rtree = None
+        while True:
+            rtree = self.push(ptree, tokens)
+            if rtree:
+                ptree = rtree
+            else:
+                return ptree
 
     def is_refer(self):
         return True
@@ -246,7 +253,7 @@ class Rule(XNode):
     def eval_ptree(self, ptree, tokens):
         mtree = PTree(self)                
         slice  = tokens[ptree.plen():]
-        rtree = self.eval_xnodes(slice)
+        rtree = self.eval_xnodes(slice, [self])
         if not rtree:
             return mtree
 
