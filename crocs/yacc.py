@@ -296,7 +296,7 @@ class Rule(XNode):
         ptree.extend(struct)
         return ptree
 
-class TokVal(XNode):
+class TokVal(Token):
     def __init__(self, value, rule=None, types=set()):
         self.value = value
         self.rule = rule if rule else self

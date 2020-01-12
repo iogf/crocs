@@ -31,7 +31,7 @@ class CalcGrammar:
 
     r_paren = Rule(LP, expression, RP)
     r_num = Rule(Num)
-    factor.add(r_paren, r_num)
+    factor.add(r_paren, Num)
 
     expression.discard(Blank)
 

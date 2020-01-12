@@ -30,6 +30,10 @@ class Token(XNode):
     def clen(self):
         return len(self.value)
 
+    @classmethod
+    def push(cls, ptree, tokens):
+        return None
+
     def __len__(self):
         return self.clen()
 
