@@ -36,7 +36,7 @@ class Token(XNode):
         return len(self.value)
 
     @classmethod
-    def push_type(cls, ptree, tokens):
+    def shift(cls, struct, ptree, tokens):
         pass
 
     def __len__(self):

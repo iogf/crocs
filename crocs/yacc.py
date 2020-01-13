@@ -200,34 +200,31 @@ class Struct(XNode):
             if not ind in exclude:
                 ptree = ind.consume(tokens, exclude)
                 if ptree and self.recursive:
-                    return self.shift(ptree, tokens)
+                    return self.reduce(ptree, tokens)
                 elif ptree:
                     return ptree
         return PTree(self)
 
-    def push_type(self, ptree, tokens):
+    def shift(self, struct, ptree, tokens):
         """
         """
         for ind in self.children:
-            rtree = ind.push_type(ptree, tokens)
+            rtree = ind.shift(struct, ptree, tokens)
             if rtree:
                 return rtree
         return PTree(self)
 
-    def shift(self, ptree, tokens):
+    def reduce(self, ptree, tokens):
         """
         """
 
         rtree = None
         while True:
-            rtree = self.push_type(ptree, tokens)
+            rtree = self.shift(self, ptree, tokens)
             if rtree:
                 ptree = rtree
             else:
                 return ptree
-
-    def is_refer(self):
-        return True
 
     def add(self, *args):
         """
@@ -241,30 +238,29 @@ class Rule(XNode):
         self.trigger = trigger
         self.syms  = args
 
-    def push_type(self, ptree, tokens):
+    def shift(self, struct, ptree, tokens):
         """
         """
 
-        if not self.trigger.is_refer():
+        if not struct is self.trigger:
             return PTree(self)
 
-        slice  = tokens[ptree.plen():]
-        rtree = self.eval_symbols(slice, [self])
+        slice = tokens[ptree.plen():]
+        rtree = self.validate(slice, [self])
         if rtree:
             return  PTree(self, ptree, *rtree)
-        else:
-            return rtree
+        return rtree
 
-    def eval_symbols(self, tokens, exclude=[]):
+    def validate(self, tokens, exclude=[]):
         """
         """
 
         ptree = PTree(self)
         for ind in self.syms:
             slice = tokens[ptree.plen():]
-            struct = ind.consume(slice, exclude)
-            if struct:
-                ptree.append(struct)
+            rtree = ind.consume(slice, exclude)
+            if rtree:
+                ptree.append(rtree)
             else:
                 return PTree(self)
         return ptree
@@ -274,29 +270,25 @@ class Rule(XNode):
         """
 
         ptree = PTree(self)
-        if self.trigger.is_refer():
+        if isinstance(self.trigger, Struct):
             exclude = exclude + [self]
 
-        struct = self.trigger.consume(tokens, exclude)
-        if struct:
-            ptree.append(struct)
-        else:
+        rtree = self.trigger.consume(tokens, exclude)
+        if not rtree:
             return PTree(self)
 
-        slice = tokens[ptree.plen():]
-        struct = self.eval_symbols(slice, exclude)
-        if not struct and self.syms:
+        slice = tokens[rtree.plen():]
+        ntree = self.validate(slice, exclude)
+        if not ntree and self.syms:
             return PTree(self)
 
-        ptree.extend(struct)
+        ptree.append(rtree)
+        ptree.extend(ntree)
         return ptree
 
 class Times(XNode):
     def __init__(self, refer):
         self.refer = refer
-
-    def is_refer(self):
-        return True
 
     def consume(self, tokens, exclude=[]):
         """
