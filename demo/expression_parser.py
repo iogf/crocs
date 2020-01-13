@@ -16,10 +16,10 @@ class CalcTokens:
     LexNode(lexmap, r'[0-9]+', Num)
     LexNode(lexmap, r' +', Blank)
 
-class CalcGrammar:
-    expression = Grammar(recursive=True)
-    term       = Grammar(recursive=True)
-    factor     = Grammar()
+class CalcGrammar(Grammar):
+    expression = Struct(recursive=True)
+    term       = Struct(recursive=True)
+    factor     = Struct()
 
     r_plus = Rule(expression, Plus, term)
     r_minus = Rule(expression, Minus, term)
@@ -32,12 +32,13 @@ class CalcGrammar:
     r_paren = Rule(LP, expression, RP)
     factor.add(r_paren, Num)
 
-    expression.discard(Blank)
+    root    = expression
+    discard = [Blank]
 
 class CalcParser(Yacc):
     def __init__(self):
         self.lexer = Lexer(CalcTokens.lexmap)
-        super(CalcParser, self).__init__(CalcGrammar.expression)
+        super(CalcParser, self).__init__(CalcGrammar)
     
     def calc(self, data):
         self.lexer.feed(data)

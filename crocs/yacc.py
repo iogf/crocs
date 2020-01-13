@@ -8,6 +8,10 @@ class LexError(Exception):
 class YaccError(Exception):
     pass
 
+class Grammar:
+    
+    discard = []
+
 class TSeq(list):
     """
     This is meant to be returned by XNode's instances
@@ -28,9 +32,6 @@ class TSeq(list):
 
 class PTree(list):
     """
-    A parse tree, it is the result of a grammar rule
-    validation. It contains the rule that was used to parse
-    the tokens.
     """
 
     def __init__(self, rule, *args):
@@ -45,18 +46,19 @@ class PTree(list):
 
 class Yacc:
     def __init__(self, grammar):
-        self.grammar = grammar
+        self.root    = grammar.root
+        self.discard = grammar.discard
         self.hmap    = dict()
 
     def is_discarded(self, token):
-        for indi in self.grammar.discarded_tokens:
+        for indi in self.discard:
             if indi.consume((token, )):
                 return True
         return False
 
-    def discard_tokens(self, tokens):
-        # Maybe discarding tokens should be here not
-        # in grammar definition.
+    def remove_tokens(self, tokens):
+        """
+        """
         for indi in tokens:
             if not self.is_discarded(indi):
                 yield indi
@@ -68,7 +70,7 @@ class Yacc:
         """
         """
 
-        tokens = self.discard_tokens(tokens)
+        tokens = self.remove_tokens(tokens)
         tokens = tuple(tokens)
 
         while True:
@@ -83,7 +85,7 @@ class Yacc:
         """
         """
 
-        ptree = self.grammar.consume(tokens)
+        ptree = self.root.consume(tokens)
         if not ptree and tokens:
             if tokens[0]:
                 self.handle_error(ptree, tokens)
@@ -181,16 +183,10 @@ class LexMap(XNode):
     def __repr__(self):
         return 'LexMap(%s)' % self.children
 
-class Grammar(XNode):
+class Struct(XNode):
     def __init__(self, recursive=False):
-        super(Grammar, self).__init__()
-        self.discarded_tokens = []
+        super(Struct, self).__init__()
         self.recursive = recursive
-
-    def discard(self, *args):
-        """
-        """
-        self.discarded_tokens.extend(args)
 
     def consume(self, tokens, exclude=[]):
         """
@@ -291,7 +287,7 @@ class Rule(XNode):
         ptree.extend(struct)
         return ptree
 
-class Struct(XNode):
+class Times(XNode):
     def __init__(self, refer):
         self.refer = refer
 
