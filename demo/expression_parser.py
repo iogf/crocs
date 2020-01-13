@@ -18,7 +18,7 @@ class CalcTokens:
 
 class CalcGrammar:
     expression = Grammar(recursive=True)
-    term       = Grammar()
+    term       = Grammar(recursive=True)
     factor     = Grammar()
 
     r_plus = Rule(expression, Plus, term)
@@ -30,7 +30,6 @@ class CalcGrammar:
     term.add(factor, r_mul, r_div)
 
     r_paren = Rule(LP, expression, RP)
-    r_num = Rule(Num)
     factor.add(r_paren, Num)
 
     expression.discard(Blank)
