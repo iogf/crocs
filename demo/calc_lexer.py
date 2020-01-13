@@ -1,10 +1,10 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, LexNode
+from crocs.yacc import Lexer, LexMap, LexNode, XSpec
 from crocs.token import Token
 
-class CalcTokens:
+class CalcTokens(XSpec):
     lexmap = LexMap()
 
     LexNode(lexmap, r'\+', Token)
@@ -16,9 +16,10 @@ class CalcTokens:
 
     LexNode(lexmap, r'[0-9]+', Token)
     LexNode(lexmap, r' +', Token)
+    root = lexmap
 
 print('Example 1')
-lex = Lexer(CalcTokens.lexmap)
+lex = Lexer(CalcTokens)
 data = '1 + 2 (-1 + (1 - 2)*3)'
 lex.feed(data)
 tokens = lex.run()

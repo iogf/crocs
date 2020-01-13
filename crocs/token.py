@@ -11,6 +11,11 @@ class XNode:
     def is_refer(self):
         return False
 
+class GNode:
+    @classmethod
+    def is_refer(self):
+        return False
+
 class Token(XNode):
     def __init__(self, value, rule=None):
         self.value = value

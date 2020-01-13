@@ -1,15 +1,16 @@
 """
 """
 
-from crocs.yacc import Lexer, Yacc, LexMap, LexNode, Rule, Grammar, TokVal, Struct
+from crocs.yacc import Lexer, Yacc, LexMap, LexNode, Rule, Grammar, TokVal, Struct, XSpec
 from crocs.token import Token, Blank, Eof
 
-class NumTokens:
+class NumTokens(XSpec):
     lexmap  = LexMap()
     LexNode(lexmap, r'[1-9]+', type=Token)
     LexNode(lexmap, r'\+', type=Token)
 
     LexNode(lexmap, r' +', type=Blank)
+    root = lexmap
 
 class NumGrammar(Grammar):
     type0   = Struct(recursive=True)
@@ -25,7 +26,7 @@ class NumGrammar(Grammar):
     discard = [Blank, Eof]
 
 data = '1 + 2 + 2'
-lexer = Lexer(NumTokens.lexmap)
+lexer = Lexer(NumTokens)
 yacc  = Yacc(NumGrammar)
 lexer.feed(data)
 tokens = lexer.run()

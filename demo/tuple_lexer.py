@@ -1,10 +1,10 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, SeqNode, LexRef, LexSeq, LexNode
+from crocs.yacc import Lexer, LexMap, SeqNode, LexRef, LexSeq, LexNode, XSpec
 from crocs.token import Token
 
-class TupleTokens:
+class TupleTokens(XSpec):
     lexmap = LexMap()
     LexSeq(lexmap, 
     SeqNode(r'\(', Token),
@@ -16,16 +16,17 @@ class TupleTokens:
 
     LexNode(lexmap, r'[0-9]+', Token)
     LexNode(lexmap, r' +', Token)
+    root = lexmap
 
 print('Example 1')
-lex = Lexer(TupleTokens.lexmap)
+lex = Lexer(TupleTokens)
 data = '(1, 2, 3, (1, 2, 3))'
 lex.feed(data)
 tokens = lex.run()
 print('Consumed:', list(tokens))
 
 print('Example 2')
-lex = Lexer(TupleTokens.lexmap)
+lex = Lexer(TupleTokens)
 data = '(1, 2, (, )'
 lex.feed(data)
 tokens = lex.run()

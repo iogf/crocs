@@ -9,8 +9,10 @@ class YaccError(Exception):
     pass
 
 class Grammar:
-    
     discard = []
+
+class XSpec:
+    pass
 
 class TSeq(list):
     """
@@ -117,10 +119,10 @@ class Yacc:
         pass
 
 class Lexer:
-    def __init__(self, lexmap, no_errors=False):
+    def __init__(self, xspec, no_errors=False):
         """
         """
-        self.lexmap = lexmap
+        self.root   = xspec.root
         self.data   = ''
         self.offset = 0
         self.no_errorss = no_errors
@@ -128,6 +130,7 @@ class Lexer:
     def run(self):
         """
         """
+
         while True:
             tseq = self.consume(self.data)
             self.data = self.data[len(tseq):]
@@ -135,6 +138,7 @@ class Lexer:
                 yield from tseq
             else:
                 break
+
         # The loop stops on eof. It is useful for
         # some rules.
         yield eof
@@ -142,7 +146,7 @@ class Lexer:
     def consume(self, data):
         """
         """
-        tseq = self.lexmap.consume(data)
+        tseq = self.root.consume(data)
         if not tseq and data:
             self.handle_error()
         return tseq

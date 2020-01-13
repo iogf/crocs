@@ -1,27 +1,28 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, LexNode, Rule, Grammar, Struct, Yacc
+from crocs.yacc import Lexer, LexMap, LexNode, Rule, Grammar, Struct, Yacc, XSpec
 from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank
 
-class CalcTokens:
-    lexmap = LexMap()
-    LexNode(lexmap, r'\+', Plus)
-    LexNode(lexmap, r'\-', Minus)
-    LexNode(lexmap, r'\(', LP)
-    LexNode(lexmap, r'\)', RP)
-    LexNode(lexmap, r'\*', Mul)
-    LexNode(lexmap, r'\/', Div)
+class CalcTokens(XSpec):
+    expression = LexMap()
+    LexNode(expression, r'\+', Plus)
+    LexNode(expression, r'\-', Minus)
+    LexNode(expression, r'\(', LP)
+    LexNode(expression, r'\)', RP)
+    LexNode(expression, r'\*', Mul)
+    LexNode(expression, r'\/', Div)
 
-    LexNode(lexmap, r'[0-9]+', Num)
-    LexNode(lexmap, r' +', Blank)
+    LexNode(expression, r'[0-9]+', Num)
+    LexNode(expression, r' +', Blank)
+    root = expression
 
 class CalcGrammar(Grammar):
     expression = Struct(recursive=True)
     term       = Struct(recursive=True)
     factor     = Struct()
 
-    r_plus = Rule(expression, Plus, term)
+    r_plus  = Rule(expression, Plus, term)
     r_minus = Rule(expression, Minus, term)
     expression.add(term, r_plus,  r_minus)
 
@@ -37,7 +38,7 @@ class CalcGrammar(Grammar):
 
 class CalcParser(Yacc):
     def __init__(self):
-        self.lexer = Lexer(CalcTokens.lexmap)
+        self.lexer = Lexer(CalcTokens)
         super(CalcParser, self).__init__(CalcGrammar)
     
     def calc(self, data):
