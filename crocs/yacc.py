@@ -182,24 +182,24 @@ class LexMap(XNode):
         return 'LexMap(%s)' % self.children
 
 class Grammar(XNode):
-    def __init__(self):
+    def __init__(self, recursive=False):
         super(Grammar, self).__init__()
         self.discarded_tokens = []
-        self.stack = []
+        self.recursive = recursive
 
     def discard(self, *args):
         """
         """
         self.discarded_tokens.extend(args)
 
-    def consume(self, tokens, exclude=[], shift=True):
+    def consume(self, tokens, exclude=[]):
         """
         """
 
         for ind in self.children:
             if not ind in exclude:
                 ptree = ind.consume(tokens, exclude)
-                if ptree and shift:
+                if ptree and self.recursive:
                     return self.shift(ptree, tokens)
                 elif ptree:
                     return ptree
@@ -239,30 +239,28 @@ class Rule(XNode):
         """
         """
         self.trigger = trigger
-        self.xnodes  = args
+        self.syms  = args
 
     def push_type(self, ptree, tokens):
         """
         """
 
-        if self.trigger.is_refer():
-            return self.evaluate_trigger(ptree, tokens)
+        if not self.trigger.is_refer():
+            return PTree(self)
 
-    def evaluate_trigger(self, ptree, tokens):
         slice  = tokens[ptree.plen():]
-        rtree = self.evaluate_xnodes(slice, [self])
-
+        rtree = self.eval_symbols(slice, [self])
         if rtree:
             return  PTree(self, ptree, *rtree)
         else:
             return rtree
 
-    def evaluate_xnodes(self, tokens, exclude=[]):
+    def eval_symbols(self, tokens, exclude=[]):
         """
         """
 
         ptree = PTree(self)
-        for ind in self.xnodes:
+        for ind in self.syms:
             slice = tokens[ptree.plen():]
             struct = ind.consume(slice, exclude)
             if struct:
@@ -271,7 +269,7 @@ class Rule(XNode):
                 return PTree(self)
         return ptree
 
-    def consume(self, tokens, exclude=[], shift=True):
+    def consume(self, tokens, exclude=[]):
         """
         """
 
@@ -279,15 +277,15 @@ class Rule(XNode):
         if self.trigger.is_refer():
             exclude = exclude + [self]
 
-        struct = self.trigger.consume(tokens, exclude, shift=False)
+        struct = self.trigger.consume(tokens, exclude)
         if struct:
             ptree.append(struct)
         else:
             return PTree(self)
 
         slice = tokens[ptree.plen():]
-        struct = self.evaluate_xnodes(slice, exclude)
-        if not struct and self.xnodes:
+        struct = self.eval_symbols(slice, exclude)
+        if not struct and self.syms:
             return PTree(self)
 
         ptree.extend(struct)

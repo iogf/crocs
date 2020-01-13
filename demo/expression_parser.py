@@ -17,17 +17,17 @@ class CalcTokens:
     LexNode(lexmap, r' +', Blank)
 
 class CalcGrammar:
-    expression = Grammar()
+    expression = Grammar(recursive=True)
     term       = Grammar()
     factor     = Grammar()
 
     r_plus = Rule(expression, Plus, term)
     r_minus = Rule(expression, Minus, term)
-    expression.add(r_plus,  r_minus, term)
+    expression.add(term, r_plus,  r_minus)
 
     r_mul = Rule(term, Mul, factor)
     r_div = Rule(term, Div, factor)
-    term.add(r_mul, r_div, factor)
+    term.add(factor, r_mul, r_div)
 
     r_paren = Rule(LP, expression, RP)
     r_num = Rule(Num)
@@ -45,8 +45,7 @@ class CalcParser(Yacc):
         tokens = self.lexer.run()
         return self.build(tokens)
 
-data = '3 + 1 * (1 /(1 - (3 - (1 + (1 + (1 + (1 + (1 + (1 + (1 + (1+(3 * 10 + 3))))))))))))'
-data = '3 + 1 + (1 - (2 - 3 * 4+(4)) + 2)'
+data = '1 + 2 * (3 /(4 - (5 - (6 + (7 + (8 + (9 + (10 + (11 + (12 + (13+(14 * 15 + 16))))))))))))'
 parser = CalcParser()
 ptree = parser.calc(data)
 print('Consumed:', list(ptree))

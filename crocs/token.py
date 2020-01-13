@@ -17,7 +17,7 @@ class Token(XNode):
         self.rule = rule if rule else self
 
     @classmethod
-    def consume(cls, tokens, exclude=[], shift=False):
+    def consume(cls, tokens, exclude=[]):
         if tokens and isinstance(tokens[0], cls):
             return tokens[0]
 
