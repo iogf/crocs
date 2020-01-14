@@ -40,7 +40,32 @@ class CalcParser(Yacc):
     def __init__(self):
         self.lexer = Lexer(CalcTokens)
         super(CalcParser, self).__init__(CalcGrammar)
+
+        self.add_handle(CalcGrammar.r_plus, self.plus)
+        self.add_handle(CalcGrammar.r_minus, self.minus)
+        self.add_handle(CalcGrammar.r_div, self.div)
+        self.add_handle(CalcGrammar.r_mul, self.mul)
+        self.add_handle(CalcGrammar.r_paren, self.paren)
+        self.add_handle(Num, self.num)
+
+    def plus(self, expr, sign, term):
+        pass
+
+    def minus(self, expr, sign, term):
+        pass
+
+    def div(self, term, sign, factor):
+        pass
     
+    def mul(self, term, sign, factor):
+        pass
+
+    def paren(self, left, expression, right):
+        pass
+
+    def num(self, term, sign, factor):
+        pass
+
     def calc(self, data):
         self.lexer.feed(data)
         tokens = self.lexer.run()

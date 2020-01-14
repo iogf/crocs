@@ -40,10 +40,10 @@ class PTree(list):
         super(PTree, self).__init__(args)
         self.rule = rule
 
-    def plen(self):
+    def tlen(self):
         count = 0
         for ind in self:
-            count += ind.plen()
+            count += ind.tlen()
         return count
 
 class Yacc:
@@ -77,7 +77,7 @@ class Yacc:
 
         while True:
             ptree  = self.consume(tokens)
-            tokens = tokens[ptree.plen():]
+            tokens = tokens[ptree.tlen():]
             if ptree: 
                 yield ptree
             else:
@@ -170,7 +170,11 @@ class LexMap(XNode):
     def __init__(self):
         """
         """
+        self.children = []
         super(LexMap, self).__init__()
+
+    def register(self, xnode):
+        self.children.append(xnode)
 
     def consume(self, data):
         """
@@ -189,6 +193,7 @@ class LexMap(XNode):
 
 class Struct(XNode):
     def __init__(self, recursive=False):
+        self.children = []
         super(Struct, self).__init__()
         self.recursive = recursive
 
@@ -236,7 +241,7 @@ class Rule(XNode):
         """
         """
         self.trigger = trigger
-        self.syms  = args
+        self.items  = args
 
     def shift(self, struct, ptree, tokens):
         """
@@ -245,7 +250,7 @@ class Rule(XNode):
         if not struct is self.trigger:
             return PTree(self)
 
-        slice = tokens[ptree.plen():]
+        slice = tokens[ptree.tlen():]
         rtree = self.validate(slice, [self])
         if rtree:
             return  PTree(self, ptree, *rtree)
@@ -256,8 +261,8 @@ class Rule(XNode):
         """
 
         ptree = PTree(self)
-        for ind in self.syms:
-            slice = tokens[ptree.plen():]
+        for ind in self.items:
+            slice = tokens[ptree.tlen():]
             rtree = ind.consume(slice, exclude)
             if rtree:
                 ptree.append(rtree)
@@ -277,9 +282,9 @@ class Rule(XNode):
         if not rtree:
             return PTree(self)
 
-        slice = tokens[rtree.plen():]
+        slice = tokens[rtree.tlen():]
         ntree = self.validate(slice, exclude)
-        if not ntree and self.syms:
+        if not ntree and self.items:
             return PTree(self)
 
         ptree.append(rtree)
@@ -295,7 +300,7 @@ class Times(XNode):
         """
         ptree = PTree(self)
         while True:
-            slice = tokens[ptree.plen():]
+            slice = tokens[ptree.tlen():]
             struct = self.refer.consume(slice, exclude)
             if struct:
                 ptree.append(struct)

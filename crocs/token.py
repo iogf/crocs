@@ -1,20 +1,7 @@
 
 class XNode:
     def __init__(self):
-        self.children = []
-
-    def register(self, xnode):
-        self.children.append(xnode)
-    pass
-
-    @classmethod
-    def is_refer(self):
-        return False
-
-class GNode:
-    @classmethod
-    def is_refer(self):
-        return False
+        pass
 
 class Token(XNode):
     def __init__(self, value, rule=None):
@@ -25,9 +12,6 @@ class Token(XNode):
     def consume(cls, tokens, exclude=[]):
         if tokens and isinstance(tokens[0], cls):
             return tokens[0]
-
-    def plen(self):
-        return 1
 
     def tlen(self):
         return 1
