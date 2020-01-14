@@ -31,7 +31,8 @@ class CalcGrammar(Grammar):
     term.add(factor, r_mul, r_div)
 
     r_paren = Rule(LP, expression, RP)
-    factor.add(r_paren, Num)
+    r_num   = Rule(Num)
+    factor.add(r_paren, r_num)
 
     root    = expression
     discard = [Blank]
@@ -46,35 +47,38 @@ class CalcParser(Yacc):
         self.add_handle(CalcGrammar.r_div, self.div)
         self.add_handle(CalcGrammar.r_mul, self.mul)
         self.add_handle(CalcGrammar.r_paren, self.paren)
-        self.add_handle(Num, self.num)
+        self.add_handle(CalcGrammar.r_num, self.num)
 
     def plus(self, expr, sign, term):
-        pass
+        return expr.val() + term.val()
 
     def minus(self, expr, sign, term):
-        pass
+        return expr.val() - term.val()
 
     def div(self, term, sign, factor):
-        pass
+        return term.val()/factor.val()
     
     def mul(self, term, sign, factor):
-        pass
+        return term.val() * factor.val()
 
     def paren(self, left, expression, right):
-        pass
+        return expression.val()
 
-    def num(self, term, sign, factor):
-        pass
+    def num(self, num):
+        return int(num.val())
 
     def calc(self, data):
         self.lexer.feed(data)
         tokens = self.lexer.run()
-        return self.build(tokens)
+        ptree = self.build(tokens)
+        ptree = list(ptree)
+        return ptree
 
 data = '1 + 2 * (3 /(4 - (5 - (6 + (7 + (8 + (9 + (10 + (11 + (12 + (13+(14 * 15 + 16))))))))))))'
 parser = CalcParser()
 ptree = parser.calc(data)
-print('Consumed:', list(ptree))
+print('Consumed:', ptree)
+print('Result:', ptree[0].val())
 
 
 

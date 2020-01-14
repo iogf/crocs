@@ -39,6 +39,18 @@ class PTree(list):
     def __init__(self, rule, *args):
         super(PTree, self).__init__(args)
         self.rule = rule
+        self.result = None
+
+    def eval(self, handles):
+        result = self
+        for ind in handles:
+            result = ind(*result)
+
+        if result is not self:
+            self.result = result 
+
+    def val(self):
+        return self.result
 
     def tlen(self):
         count = 0
@@ -50,7 +62,6 @@ class Yacc:
     def __init__(self, grammar):
         self.root    = grammar.root
         self.discard = grammar.discard
-        self.hmap    = dict()
 
     def is_discarded(self, token):
         for indi in self.discard:
@@ -102,18 +113,15 @@ class Yacc:
         print('Tokens:', tokens)
         raise YaccError('Unexpected struct!')
 
-    def add_handle(self, xnode, handle):
+    def add_handle(self, rule, handle):
         """
         """
-        handles = self.hmap.get(xnode, [])
-        handles.append(handle)
-        pass
+        rule.hmap.append(handle)
 
-    def del_handle(self, xnode, handle):
+    def del_handle(self, rule, handle):
         """
         """
-        handles = self.map[xnode]
-        handles.remove(handle)
+        rule.hmap.remove(handle)
 
     def skip(self):
         pass
@@ -242,6 +250,7 @@ class Rule(XNode):
         """
         self.trigger = trigger
         self.items  = args
+        self.hmap = []
 
     def push(self, struct, ptree, tokens):
         """
@@ -257,7 +266,7 @@ class Rule(XNode):
     def validate(self, ptree, tokens, exclude=[]):
         """
         """
-        ntree  = PTree(self, ptree)
+        ntree = PTree(self, ptree)
         for ind in self.items:
             rtree = ind.consume(tokens, exclude)
             if rtree:
@@ -265,6 +274,7 @@ class Rule(XNode):
             else:
                 return PTree(self)
             tokens = tokens[rtree.tlen():]
+        ntree.eval(self.hmap)
         return ntree
 
     def consume(self, tokens, exclude=[]):

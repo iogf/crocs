@@ -13,6 +13,9 @@ class Token(XNode):
         if tokens and isinstance(tokens[0], cls):
             return tokens[0]
 
+    def val(self):
+        return self.value
+
     def tlen(self):
         return 1
 
