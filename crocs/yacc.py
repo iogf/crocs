@@ -210,11 +210,11 @@ class Struct(XNode):
                     return ptree
         return PTree(self)
 
-    def shift(self, struct, ptree, tokens):
+    def push(self, struct, ptree, tokens):
         """
         """
         for ind in self.children:
-            rtree = ind.shift(struct, ptree, tokens)
+            rtree = ind.push(struct, ptree, tokens)
             if rtree:
                 return rtree
         return PTree(self)
@@ -225,7 +225,7 @@ class Struct(XNode):
 
         rtree = None
         while True:
-            rtree = self.shift(self, ptree, tokens)
+            rtree = self.push(self, ptree, tokens)
             if rtree:
                 ptree = rtree
             else:
@@ -243,7 +243,7 @@ class Rule(XNode):
         self.trigger = trigger
         self.items  = args
 
-    def shift(self, struct, ptree, tokens):
+    def push(self, struct, ptree, tokens):
         """
         """
 
@@ -251,30 +251,26 @@ class Rule(XNode):
             return PTree(self)
 
         tokens = tokens[ptree.tlen():]
-        rtree = self.validate(tokens, [self])
-        if rtree:
-            return  PTree(self, ptree, *rtree)
+        rtree = self.validate(ptree, tokens, [self])
         return rtree
 
-    def validate(self, tokens, exclude=[]):
+    def validate(self, ptree, tokens, exclude=[]):
         """
         """
-
-        ptree = PTree(self)
+        ntree  = PTree(self, ptree)
         for ind in self.items:
             rtree = ind.consume(tokens, exclude)
             if rtree:
-                ptree.append(rtree)
+                ntree.append(rtree)
             else:
                 return PTree(self)
             tokens = tokens[rtree.tlen():]
-        return ptree
+        return ntree
 
     def consume(self, tokens, exclude=[]):
         """
         """
 
-        ptree = PTree(self)
         if isinstance(self.trigger, Struct):
             exclude = exclude + [self]
 
@@ -283,13 +279,10 @@ class Rule(XNode):
             return PTree(self)
 
         tokens = tokens[rtree.tlen():]
-        ntree = self.validate(tokens, exclude)
+        ntree = self.validate(rtree, tokens, exclude)
         if not ntree and self.items:
             return PTree(self)
-
-        ptree.append(rtree)
-        ptree.extend(ntree)
-        return ptree
+        return ntree
 
 class Times(XNode):
     def __init__(self, refer):
