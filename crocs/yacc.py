@@ -250,8 +250,8 @@ class Rule(XNode):
         if not struct is self.trigger:
             return PTree(self)
 
-        slice = tokens[ptree.tlen():]
-        rtree = self.validate(slice, [self])
+        tokens = tokens[ptree.tlen():]
+        rtree = self.validate(tokens, [self])
         if rtree:
             return  PTree(self, ptree, *rtree)
         return rtree
@@ -282,8 +282,8 @@ class Rule(XNode):
         if not rtree:
             return PTree(self)
 
-        slice = tokens[rtree.tlen():]
-        ntree = self.validate(slice, exclude)
+        tokens = tokens[rtree.tlen():]
+        ntree = self.validate(tokens, exclude)
         if not ntree and self.items:
             return PTree(self)
 
