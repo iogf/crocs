@@ -300,12 +300,13 @@ class Times(XNode):
         """
         ptree = PTree(self)
         while True:
-            slice = tokens[ptree.tlen():]
-            struct = self.refer.consume(slice, exclude)
-            if struct:
-                ptree.append(struct)
+            rtree = self.refer.consume(tokens, exclude)
+            if rtree:
+                ptree.append(rtree)
             else:
                 return ptree
+            tokens = tokens[rtree.tlen():]
+
 
 class LexSeq(XNode):
     """
