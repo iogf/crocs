@@ -76,9 +76,6 @@ class Yacc:
             if not self.is_discarded(indi):
                 yield indi
         
-    def exec_handles(self):
-        pass
-
     def build(self, tokens):
         """
         """
@@ -123,9 +120,6 @@ class Yacc:
         """
         rule.hmap.remove(handle)
 
-    def skip(self):
-        pass
-
 class Lexer:
     def __init__(self, xspec, no_errors=False):
         """
@@ -168,11 +162,6 @@ class Lexer:
         """
         self.data = data
         self.offset = 0
-
-    def skip(self):
-        """
-        """
-        pass
 
 class LexMap(XNode):
     def __init__(self):
