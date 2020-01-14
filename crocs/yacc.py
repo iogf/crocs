@@ -262,12 +262,12 @@ class Rule(XNode):
 
         ptree = PTree(self)
         for ind in self.items:
-            slice = tokens[ptree.tlen():]
-            rtree = ind.consume(slice, exclude)
+            rtree = ind.consume(tokens, exclude)
             if rtree:
                 ptree.append(rtree)
             else:
                 return PTree(self)
+            tokens = tokens[rtree.tlen():]
         return ptree
 
     def consume(self, tokens, exclude=[]):
