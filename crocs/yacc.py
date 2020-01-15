@@ -199,7 +199,7 @@ class Struct(XNode):
         """
 
         for ind in self.children:
-            if not ind in exclude and not ind in precedence:
+            if not (ind in exclude or ind in precedence):
                 ptree = ind.consume(tokens, exclude, precedence)
                 if ptree and self.recursive:
                     return self.reduce(ptree, tokens, precedence)
