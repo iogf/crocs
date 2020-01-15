@@ -223,12 +223,11 @@ class Struct(XNode):
 
         rtree = None
         while True:
-            rtree = self.push(self, ptree, tokens, precedence)
-
-            if rtree:
-                ptree = rtree
-            else:
+            rtree = self.push(self, 
+                ptree, tokens, precedence)
+            if not rtree:
                 return ptree
+            ptree = rtree
 
     def add(self, *args):
         """
@@ -240,7 +239,7 @@ class Rule(XNode):
         """
         """
         self.trigger = trigger
-        self.items   = args
+        self.symbols = args
         self.up   = up
         self.hmap = []
 
@@ -260,14 +259,15 @@ class Rule(XNode):
     def validate(self, ptree, tokens, exclude=[], precedence=[]):
         """
         """
+
         ntree = PTree(self, ptree)
-        for ind in self.items:
+        for ind in self.symbols:
             rtree = ind.consume(tokens, exclude, precedence)
             if rtree:
+                tokens = tokens[rtree.tlen():]
                 ntree.append(rtree)
             else:
-                return PTree(self)
-            tokens = tokens[rtree.tlen():]
+                return rtree
         ntree.eval(self.hmap)
         return ntree
 
@@ -284,7 +284,7 @@ class Rule(XNode):
 
         tokens = tokens[rtree.tlen():]
         ntree = self.validate(rtree, tokens, exclude, self.up)
-        if not ntree and self.items:
+        if not ntree and self.symbols:
             return PTree(self)
         return ntree
 
