@@ -194,35 +194,36 @@ class Struct(XNode):
         super(Struct, self).__init__()
         self.recursive = recursive
 
-    def consume(self, tokens, exclude=[]):
+    def consume(self, tokens, exclude=[], up=[]):
         """
         """
 
         for ind in self.children:
-            if not ind in exclude:
-                ptree = ind.consume(tokens, exclude)
+            if not ind in exclude and not ind in up:
+                ptree = ind.consume(tokens, exclude, up)
                 if ptree and self.recursive:
-                    return self.reduce(ptree, tokens)
+                    return self.reduce(ptree, tokens, up)
                 elif ptree:
                     return ptree
         return PTree(self)
 
-    def push(self, struct, ptree, tokens):
+    def push(self, struct, ptree, tokens, up=[]):
         """
         """
         for ind in self.children:
-            rtree = ind.push(struct, ptree, tokens)
-            if rtree:
-                return rtree
+            if not ind in up:
+               rtree = ind.push(struct, ptree, tokens, up)
+               if rtree:
+                   return rtree
         return PTree(self)
 
-    def reduce(self, ptree, tokens):
+    def reduce(self, ptree, tokens, up=[]):
         """
         """
 
         rtree = None
         while True:
-            rtree = self.push(self, ptree, tokens)
+            rtree = self.push(self, ptree, tokens, up)
             if rtree:
                 ptree = rtree
             else:
@@ -234,30 +235,32 @@ class Struct(XNode):
         self.children.extend(args)
 
 class Rule(XNode):
-    def __init__(self, trigger, *args):
+    def __init__(self, trigger, *args, up=[]):
         """
         """
         self.trigger = trigger
-        self.items  = args
+        self.items   = args
+        self.up   = up
         self.hmap = []
 
-    def push(self, struct, ptree, tokens):
+    def push(self, struct, ptree, tokens, up=[]):
         """
         """
 
         if not struct is self.trigger:
             return PTree(self)
-
-        tokens = tokens[ptree.tlen():]
-        rtree = self.validate(ptree, tokens, [self])
+    
+        tokens  = tokens[ptree.tlen():]
+        exclude = [self]
+        rtree = self.validate(ptree, tokens, exclude, up=self.up)
         return rtree
 
-    def validate(self, ptree, tokens, exclude=[]):
+    def validate(self, ptree, tokens, exclude=[], up=[]):
         """
         """
         ntree = PTree(self, ptree)
         for ind in self.items:
-            rtree = ind.consume(tokens, exclude)
+            rtree = ind.consume(tokens, exclude, up)
             if rtree:
                 ntree.append(rtree)
             else:
@@ -266,19 +269,19 @@ class Rule(XNode):
         ntree.eval(self.hmap)
         return ntree
 
-    def consume(self, tokens, exclude=[]):
+    def consume(self, tokens, exclude=[], up=[]):
         """
         """
 
         if isinstance(self.trigger, Struct):
             exclude = exclude + [self]
 
-        rtree = self.trigger.consume(tokens, exclude)
+        rtree = self.trigger.consume(tokens, exclude, self.up)
         if not rtree:
             return PTree(self)
 
         tokens = tokens[rtree.tlen():]
-        ntree = self.validate(rtree, tokens, exclude)
+        ntree = self.validate(rtree, tokens, exclude, self.up)
         if not ntree and self.items:
             return PTree(self)
         return ntree

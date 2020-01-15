@@ -24,13 +24,15 @@ class CalcGrammar(Grammar):
     r_num   = Rule(Num)
     expression.add(r_paren, r_num)
 
-    r_mul = Rule(expression, Mul, expression)
-    r_div = Rule(expression, Div, expression)
-    expression.add(r_mul, r_div)
-
     r_plus  = Rule(expression, Plus, expression)
-    r_minus = Rule(expression, Minus, expression)
+    r_minus = Rule(expression, Minus, expression, up=(r_plus,))
+
     expression.add(r_minus, r_plus,  )
+
+    r_mul = Rule(expression, Mul, expression, up=(r_plus, r_minus))
+    r_div = Rule(expression, Div, expression, up=(r_plus, r_minus, r_mul))
+
+    expression.add(r_mul, r_div)
 
     root    = expression
     discard = [Blank]
@@ -72,7 +74,7 @@ class CalcParser(Yacc):
         ptree = list(ptree)
         return ptree
 
-data = '2 * 5 + 10'
+data = '2 * 5 + 10 + 30/(1-3+ 4* 10 + 11/1 * 2/30- 10 +3 - 8*10/10 + (3-4*10/40))'
 parser = CalcParser()
 ptree = parser.calc(data)
 print('Consumed:', ptree)

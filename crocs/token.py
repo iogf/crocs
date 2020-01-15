@@ -9,7 +9,7 @@ class Token(XNode):
         self.rule = rule if rule else self
 
     @classmethod
-    def consume(cls, tokens, exclude=[]):
+    def consume(cls, tokens, exclude=[], up=[]):
         if tokens and isinstance(tokens[0], cls):
             return tokens[0]
 
@@ -23,7 +23,7 @@ class Token(XNode):
         return len(self.value)
 
     @classmethod
-    def push(cls, struct, ptree, tokens):
+    def push(cls, struct, ptree, tokens, up=[]):
         pass
 
     def __len__(self):
@@ -37,7 +37,7 @@ class TokVal(Token):
         self.value = value
         self.rule = rule if rule else self
 
-    def consume(self, tokens, exclude=[], shift=False):
+    def consume(self, tokens, exclude=[], up=[]):
         if self.value == tokens[0].value:
             return tokens[0]
 
