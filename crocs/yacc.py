@@ -194,36 +194,37 @@ class Struct(XNode):
         super(Struct, self).__init__()
         self.recursive = recursive
 
-    def consume(self, tokens, exclude=[], up=[]):
+    def consume(self, tokens, exclude=[], precedence=[]):
         """
         """
 
         for ind in self.children:
-            if not ind in exclude and not ind in up:
-                ptree = ind.consume(tokens, exclude, up)
+            if not ind in exclude and not ind in precedence:
+                ptree = ind.consume(tokens, exclude, precedence)
                 if ptree and self.recursive:
-                    return self.reduce(ptree, tokens, up)
+                    return self.reduce(ptree, tokens, precedence)
                 elif ptree:
                     return ptree
         return PTree(self)
 
-    def push(self, struct, ptree, tokens, up=[]):
+    def push(self, struct, ptree, tokens, precedence=[]):
         """
         """
         for ind in self.children:
-            if not ind in up:
-               rtree = ind.push(struct, ptree, tokens, up)
+            if not ind in precedence:
+               rtree = ind.push(struct, ptree, tokens, precedence)
                if rtree:
                    return rtree
         return PTree(self)
 
-    def reduce(self, ptree, tokens, up=[]):
+    def reduce(self, ptree, tokens, precedence=[]):
         """
         """
 
         rtree = None
         while True:
-            rtree = self.push(self, ptree, tokens, up)
+            rtree = self.push(self, ptree, tokens, precedence)
+
             if rtree:
                 ptree = rtree
             else:
@@ -243,7 +244,7 @@ class Rule(XNode):
         self.up   = up
         self.hmap = []
 
-    def push(self, struct, ptree, tokens, up=[]):
+    def push(self, struct, ptree, tokens, precedence=[]):
         """
         """
 
@@ -252,15 +253,16 @@ class Rule(XNode):
     
         tokens  = tokens[ptree.tlen():]
         exclude = [self]
-        rtree = self.validate(ptree, tokens, exclude, up=self.up)
+        rtree = self.validate(ptree, tokens, 
+            exclude, precedence=self.up)
         return rtree
 
-    def validate(self, ptree, tokens, exclude=[], up=[]):
+    def validate(self, ptree, tokens, exclude=[], precedence=[]):
         """
         """
         ntree = PTree(self, ptree)
         for ind in self.items:
-            rtree = ind.consume(tokens, exclude, up)
+            rtree = ind.consume(tokens, exclude, precedence)
             if rtree:
                 ntree.append(rtree)
             else:
@@ -269,7 +271,7 @@ class Rule(XNode):
         ntree.eval(self.hmap)
         return ntree
 
-    def consume(self, tokens, exclude=[], up=[]):
+    def consume(self, tokens, exclude=[], precedence=[]):
         """
         """
 
