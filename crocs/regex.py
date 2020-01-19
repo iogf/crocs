@@ -19,6 +19,9 @@ class RegexStr:
     def valid_data(self):
         return self.value
 
+    def __len__(self):
+        return len(self.value)
+
     def __str__(self):
         return re.escape(self.value)
 
@@ -182,10 +185,11 @@ class Repeat(RegexOperator):
 
     def __init__(self, regex, min=0, max=''):
         super(Repeat, self).__init__(regex)
+        self.min = min
+        self.max = max
 
-        self.regex = self.args[0]
-        self.min   = min
-        self.max   = max
+        if isinstance(regex, str) and len(regex) > 1:
+            self.args[0] = Group(regex)
 
     def invalid_data(self):
         lim = self.max if self.max else self.MAX
@@ -212,35 +216,8 @@ class Repeat(RegexOperator):
         return data 
 
     def to_regex(self):
-        return '%s{%s,%s}' % (self.regex, 
+        return '%s{%s,%s}' % (self.args[0], 
         self.min, self.max)
-
-class Times(Repeat):
-    def __init__(self, regex):
-        super(Mul, self).__init__(regex)
-
-        self.regex = self.args[0]
-
-    def to_regex(self):
-        return '%s*' % (self.regex)
-
-class Maybe(Repeat):
-    def __init__(self, regex):
-        super(Mul, self).__init__(regex)
-
-        self.regex = self.args[0]
-
-    def to_regex(self):
-        return '%s?' % (self.regex)
-
-class Plus(RegexOperator):
-    def __init__(self, regex):
-        super(Plus, self).__init__(regex, 1)
-
-        self.regex = self.args[0]
-
-    def to_regex(self):
-        return '%s+' % (self.regex)
 
 class ConsumeNext(RegexOperator):
     """
@@ -393,14 +370,6 @@ class X(RegexOperator):
         return self.TOKEN
 
     def clear(self):
-        pass
-
-
-class RegexParser:
-    def __init__(self, data):
-        self.data = data
-
-    def build(self):
         pass
 
 class Join(RegexOperator):

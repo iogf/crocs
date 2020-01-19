@@ -70,6 +70,19 @@ git pull https://github.com/cclauss/crocs.git patch-1
 git checkout development
 git merge --no-ff cclauss-patch-1
 git push origin development
+##############################################################################
+# create development branch for wiki.
+cd /home/tau/projects/crocs.wiki-code/
+git branch -a
+git checkout -b development
+git push --set-upstream origin development
+##############################################################################
+# push wiki docs.
+cd /home/tau/projects/crocs.wiki-code/
+git status
+git add *
+git commit -a 
+git push
 
 
 

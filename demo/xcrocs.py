@@ -65,3 +65,9 @@ e.test()
 
 e0 = Join(ConsumeBack('abc', 'def', neg=True))
 e0.test()
+
+e = Join(Repeat('foo'))
+e.test()
+
+e = Join('alph', Repeat('a'))
+e.test()
