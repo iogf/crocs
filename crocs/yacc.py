@@ -207,12 +207,12 @@ class Struct(XNode):
                     return ptree
         return PTree(self)
 
-    def push(self, struct, ptree, tokens, precedence=[]):
+    def replace(self, struct, ptree, tokens, precedence=[]):
         """
         """
         for ind in self.children:
             if not ind in precedence:
-               rtree = ind.push(struct, ptree, tokens, precedence)
+               rtree = ind.replace(struct, ptree, tokens, precedence)
                if rtree:
                    return rtree
         return PTree(self)
@@ -223,7 +223,7 @@ class Struct(XNode):
 
         rtree = None
         while True:
-            rtree = self.push(self, 
+            rtree = self.replace(self, 
                 ptree, tokens, precedence)
             if not rtree:
                 return ptree
@@ -243,7 +243,7 @@ class Rule(XNode):
         self.up   = up
         self.hmap = []
 
-    def push(self, struct, ptree, tokens, precedence=[]):
+    def replace(self, struct, ptree, tokens, precedence=[]):
         """
         """
 

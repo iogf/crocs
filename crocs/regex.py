@@ -354,7 +354,6 @@ class X(RegexOperator):
     .
     """
 
-    TOKEN = '.'
 
     def __init__(self):
         pass
@@ -367,7 +366,7 @@ class X(RegexOperator):
         return char
 
     def to_regex(self):
-        return self.TOKEN
+        return '.'
 
     def clear(self):
         pass
