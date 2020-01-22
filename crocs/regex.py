@@ -270,16 +270,20 @@ class ConsumeBack(RegexOperator):
         pass
 
     def valid_data(self):
-        pattern0 = (self.args[0].valid_data(), 
+        if self.neg:
+            return self.negative()
+        else:
+            return self.positive()
+
+    def positive(self):
+        hits = (self.args[0].valid_data(), 
         self.args[1].valid_data())
+        return '%s%s' % hits
 
-        if not self.neg:
-            return '%s%s' % pattern0
-
-        pattern1 = (self.args[0].valid_data(), 
+    def negative(self):
+        hits = (self.args[0].valid_data(), 
         self.args[1].invalid_data())
-
-        return '%s%s' % pattern1
+        return '%s%s' % hits
 
     def to_regex(self):
         fmt = '%s(?=%s)' if not self.neg else '%s(?!%s)'
