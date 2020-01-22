@@ -235,15 +235,19 @@ class ConsumeNext(RegexOperator):
         pass
 
     def valid_data(self):
-        pattern0 = (self.args[0].valid_data(), 
-        self.args[1].valid_data())
+        if self.neg:
+            return self.negative()
+        else:
+            return self.positive()
 
-        if not self.neg:
-            return '%s%s' % pattern0
-
-        pattern1 = (self.args[0].invalid_data(), 
+    def positive(self):
+        hits = '%s%s' % (self.args[0].valid_data(), 
         self.args[1].valid_data())
-        return '%s%s' % pattern1
+        return hits
+
+    def negative(self):
+        return '%s%s' % (self.args[0].invalid_data(), 
+        self.args[1].valid_data())
 
     def to_regex(self):
         fmt = '(?<=%s)%s' if not self.neg else '(?<!%s)%s'
