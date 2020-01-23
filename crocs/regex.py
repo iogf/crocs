@@ -1,6 +1,8 @@
 from random import choice, randint
-from string import printable
+from string import ascii_letters, punctuation, digits
 import re
+
+printable = ascii_letters + punctuation + digits
 
 class RegexStr:
     def __init__(self, value):
@@ -52,7 +54,7 @@ class RegexOperator:
 
         # It has to be search in order to work with ConsumeNext.
         regc  = re.search(regex, data)
-        print('Regex;', regex)
+        print('Regex:', regex)
         print('Input:', data)
 
         print('Group dict:', 
@@ -231,8 +233,10 @@ class ConsumeNext(RegexOperator):
         self.neg = neg
 
     def invalid_data(self):
-        # *Warning*
-        pass
+        if self.neg:
+            return self.positive()
+        else:
+            return self.negative()
 
     def valid_data(self):
         if self.neg:
@@ -265,9 +269,10 @@ class ConsumeBack(RegexOperator):
         self.neg = neg
 
     def invalid_data(self):
-        # *Warning*
-
-        pass
+        if self.neg:
+            return self.positive()
+        else:
+            return self.negative()
 
     def valid_data(self):
         if self.neg:
