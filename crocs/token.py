@@ -37,7 +37,7 @@ class TokVal(Token):
         self.value = value
         self.rule = rule if rule else self
 
-    def consume(self, tokens, exclude=[], up=[]):
+    def consume(self, tokens, exclude=[], precedence=[]):
         if self.value == tokens[0].value:
             return tokens[0]
 

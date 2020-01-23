@@ -190,31 +190,47 @@ class LexMap(XNode):
 
 class Struct(XNode):
     def __init__(self, recursive=False):
-        self.children = []
         super(Struct, self).__init__()
         self.recursive = recursive
+        self.structs = []
+        self.rules   = []
 
     def consume(self, tokens, exclude=[], precedence=[]):
         """
         """
 
-        for ind in self.children:
+        ptree = self.match_structs(tokens, exclude, precedence)
+        ptree = ptree if ptree else self.match_rules(
+        tokens, exclude, precedence)
+
+        if ptree and self.recursive:
+            return self.reduce(ptree, tokens, precedence)
+        return ptree
+
+    def match_structs(self, tokens, exclude, precedence):
+        for ind in self.structs:
+            ptree = ind.consume(tokens, exclude, precedence)
+            if ptree:
+                return ptree
+        return PTree(self)
+
+    def match_rules(self, tokens, exclude, precedence):
+        for ind in self.rules:
             if not (ind in exclude or ind in precedence):
                 ptree = ind.consume(tokens, exclude, precedence)
-                if ptree and self.recursive:
-                    return self.reduce(ptree, tokens, precedence)
-                elif ptree:
+                if ptree:
                     return ptree
         return PTree(self)
 
-    def replace(self, struct, ptree, tokens, precedence=[]):
+    def replace(self, ptree, tokens, precedence=[]):
         """
         """
-        for ind in self.children:
+        for ind in self.rules:
             if not ind in precedence:
-               rtree = ind.replace(struct, ptree, tokens, precedence)
-               if rtree:
-                   return rtree
+                if ind.trigger is self:
+                    rtree = ind.replace(ptree, tokens, precedence)
+                    if rtree:
+                        return rtree
         return PTree(self)
 
     def reduce(self, ptree, tokens, precedence=[]):
@@ -223,8 +239,7 @@ class Struct(XNode):
 
         rtree = None
         while True:
-            rtree = self.replace(self, 
-                ptree, tokens, precedence)
+            rtree = self.replace(ptree, tokens, precedence)
             if not rtree:
                 return ptree
             ptree = rtree
@@ -232,7 +247,11 @@ class Struct(XNode):
     def add(self, *args):
         """
         """
-        self.children.extend(args)
+        for ind in args:
+            if isinstance(ind, Struct):
+                self.structs.append(ind)
+            else:
+                self.rules.append(ind)
 
 class Rule(XNode):
     def __init__(self, trigger, *args, up=[]):
@@ -243,13 +262,10 @@ class Rule(XNode):
         self.up   = up
         self.hmap = []
 
-    def replace(self, struct, ptree, tokens, precedence=[]):
+    def replace(self, ptree, tokens, precedence=[]):
         """
         """
 
-        if not struct is self.trigger:
-            return PTree(self)
-    
         tokens  = tokens[ptree.tlen():]
         exclude = [self]
         rtree = self.validate(ptree, tokens, 
@@ -292,7 +308,7 @@ class Times(XNode):
     def __init__(self, refer):
         self.refer = refer
 
-    def consume(self, tokens, exclude=[]):
+    def consume(self, tokens, exclude=[], precedence=[]):
         """
         """
         ptree = PTree(self)
