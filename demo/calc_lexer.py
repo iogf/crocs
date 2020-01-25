@@ -1,7 +1,7 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, LexNode, XSpec
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
 from crocs.token import Token
 
 class CalcTokens(XSpec):

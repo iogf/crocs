@@ -1,7 +1,8 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, LexNode, Rule, Grammar, Struct, Yacc, XSpec
+from crocs.yacc import Rule, Grammar, Struct, Yacc
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
 from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank
 
 class CalcTokens(XSpec):
@@ -65,7 +66,7 @@ class CalcParser(Yacc):
         return expression.val()
 
     def num(self, num):
-        return int(num.val())
+        return int(num[0].val())
 
     def calc(self, data):
         self.lexer.feed(data)
@@ -78,7 +79,6 @@ data = '1 + 2 * (3 /(4 - (5 - (6 + (7 + (8 + (9 + (10 + (11 + (12 + (13+(14 * 15
 parser = CalcParser()
 ptree = parser.calc(data)
 print('Consumed:', ptree)
-print('Result:', ptree[0].val())
 
 
 

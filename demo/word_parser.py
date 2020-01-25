@@ -1,8 +1,9 @@
 """
 """
 
-from crocs.yacc import Lexer, Yacc, LexMap, LexNode, Rule, Grammar, TokVal, Struct, XSpec
-from crocs.token import Token, Blank
+from crocs.yacc import Yacc, Rule, Grammar, Struct
+from crocs.lexer import XSpec, Lexer, LexMap, LexNode
+from crocs.token import Token, Blank, TokVal
 
 class WordTokens(XSpec):
     expr = LexMap()

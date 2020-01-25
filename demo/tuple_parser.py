@@ -1,8 +1,9 @@
 """
 """
 
-from crocs.yacc import Lexer, LexMap, LexNode, Grammar, Rule, TokVal, Times, Yacc, Struct, XSpec
-from crocs.token import Token, Blank, Num
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
+from crocs.yacc import Grammar, Rule, Times, Yacc, Struct
+from crocs.token import Token, Blank, Num, TokVal
 
 class TupleTokens(XSpec):
     expr = LexMap()
