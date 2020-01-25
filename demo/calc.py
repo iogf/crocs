@@ -65,7 +65,7 @@ class CalcParser(Yacc):
         return expression.val()
 
     def num(self, num):
-        return int(num.val())
+        return int(num[0].val())
 
     def calc(self, data):
         self.lexer.feed(data)
@@ -74,7 +74,7 @@ class CalcParser(Yacc):
         ptree = list(ptree)
         return ptree
 
-data = '2 * 5 + 10 + 30/(1-3+ 4* 10 + 11/1 * 2/30- 10 +3 - 8*10/10 + (3-4*10/40))'
+data = '2 * 5 + 10 + 30/(1-3+ 4* 10 + 11/1 * 2/30- 10 +3 - (2 /(2 * 3/3*5+8/9)) * 8*10/10 + (3-4*10/40))'
 parser = CalcParser()
 ptree = parser.calc(data)
 print('Result:', ptree[0].val())

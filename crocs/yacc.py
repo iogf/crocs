@@ -1,4 +1,4 @@
-from crocs.token import XNode, Token, eof, TokVal
+from crocs.token import XNode, Token, eof, TokVal, TSeq, PTree
 import re
 import time
 
@@ -13,50 +13,6 @@ class Grammar:
 
 class XSpec:
     pass
-
-class TSeq(list):
-    """
-    This is meant to be returned by XNode's instances
-    that extract strings from a given doc sequentially.
-    """
-
-    def __init__(self, *args):
-        self.extend(args)
-        self.slen = 0
-        self.tlen = 0
-
-    def clen(self):
-        val = map(len, self)
-        return sum(val)
-
-    def __len__(self):
-        return self.clen()
-
-class PTree(list):
-    """
-    """
-
-    def __init__(self, rule, *args):
-        super(PTree, self).__init__(args)
-        self.rule = rule
-        self.result = None
-
-    def eval(self, handles):
-        result = self
-        for ind in handles:
-            result = ind(*result)
-
-        if result is not self:
-            self.result = result 
-
-    def val(self):
-        return self.result
-
-    def tlen(self):
-        count = 0
-        for ind in self:
-            count += ind.tlen()
-        return count
 
 class Yacc:
     def __init__(self, grammar):
@@ -276,7 +232,9 @@ class Rule(XNode):
         """
         """
 
-        ntree = PTree(self, ptree)
+        ntree = PTree(self)
+        ntree.append(ptree)
+
         for ind in self.symbols:
             rtree = ind.consume(tokens, exclude, precedence)
             if rtree:
@@ -313,13 +271,12 @@ class Times(XNode):
         """
         ptree = PTree(self)
         while True:
-            rtree = self.refer.consume(tokens, exclude)
+            rtree = self.refer.consume(tokens, exclude, precedence)
             if rtree:
+                tokens = tokens[rtree.tlen():]
                 ptree.append(rtree)
             else:
                 return ptree
-            tokens = tokens[rtree.tlen():]
-
 
 class LexSeq(XNode):
     """
