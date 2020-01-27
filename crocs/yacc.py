@@ -109,7 +109,7 @@ class Struct(XNode):
         """
         for ind in self.rules:
             if not ind in precedence:
-                if ind.trigger is self:
+                if ind.root is self:
                     rtree = ind.replace(ptree, tokens, precedence)
                     if rtree:
                         return rtree
@@ -136,10 +136,10 @@ class Struct(XNode):
                 self.rules.append(ind)
 
 class Rule(XNode):
-    def __init__(self, trigger, *args, up=[]):
+    def __init__(self, root, *args, up=[]):
         """
         """
-        self.trigger = trigger
+        self.root = root
         self.symbols = args
         self.up   = up
         self.hmap = []
@@ -175,10 +175,10 @@ class Rule(XNode):
         """
         """
 
-        if isinstance(self.trigger, Struct):
+        if isinstance(self.root, Struct):
             exclude = exclude + [self]
 
-        rtree = self.trigger.consume(tokens, exclude, self.up)
+        rtree = self.root.consume(tokens, exclude, self.up)
         if not rtree:
             return PTree(self)
 
