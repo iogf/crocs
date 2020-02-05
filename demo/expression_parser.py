@@ -19,23 +19,25 @@ class CalcTokens(XSpec):
     root = expression
 
 class CalcGrammar(Grammar):
-    expression = Struct(recursive=True)
-    term       = Struct(recursive=True)
+    expression = Struct()
+    term       = Struct()
     factor     = Struct()
 
-    r_plus  = Rule(expression, Plus, term)
-    r_minus = Rule(expression, Minus, term)
-    expression.add(term, r_plus,  r_minus)
+    r_plus  = Rule(expression, Plus, term, type=expression)
+    r_minus = Rule(expression, Minus, term, type=expression)
+    r_expression = Rule(term, type=expression)
+    expression.add(term, r_plus,  r_minus, r_expression)
 
-    r_mul = Rule(term, Mul, factor)
-    r_div = Rule(term, Div, factor)
-    term.add(factor, r_mul, r_div)
+    r_mul = Rule(term, Mul, factor, type=term)
+    r_div = Rule(term, Div, factor, type=term)
+    r_term = Rule(factor, type=term)
+    term.add(factor, r_mul, r_div, r_term)
 
-    r_paren = Rule(LP, expression, RP)
-    r_num   = Rule(Num)
+    r_paren = Rule(LP, expression, RP, type=factor)
+    r_num   = Rule(Num, type=factor)
     factor.add(r_paren, r_num)
 
-    root    = expression
+    root    = [expression, term, factor]
     discard = [Blank]
 
 class CalcParser(Yacc):
@@ -76,9 +78,9 @@ class CalcParser(Yacc):
         return ptree
 
 data = '1 + 2 * (3 /(4 - (5 - (6 + (7 + (8 + (9 + (10 + (11 + (12 + (13+(14 * 15 + 16))))))))))))'
+data = '1 + 2 + 3 - 5'
 parser = CalcParser()
 ptree = parser.calc(data)
+ptree = list(data)
 print('Consumed:', ptree)
-
-
 

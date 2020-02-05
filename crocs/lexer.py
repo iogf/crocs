@@ -22,8 +22,8 @@ class Lexer:
 
         while True:
             tseq = self.consume(self.data)
-            self.data = self.data[len(tseq):]
-            if tseq:
+            self.data = self.data[tseq.clen():]
+            if len(tseq) and tseq[0]:
                 yield from tseq
             else:
                 break
@@ -90,7 +90,7 @@ class LexSeq(XNode):
         """
         tseq = TSeq()
         for ind in self.xnodes:
-            slice = data[len(tseq):]
+            slice = data[tseq.clen():]
             token = ind.consume(slice)
             if token:
                 tseq.extend(token)
@@ -153,7 +153,7 @@ class LexRef(XNode):
 
         tseq = TSeq()
         while True:
-            slice = data[len(tseq):]
+            slice = data[tseq.clen():]
             token = self.xnode.consume(slice)
             if not token:
                 break

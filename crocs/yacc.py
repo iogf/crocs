@@ -1,4 +1,4 @@
-from crocs.token import XNode, Token, eof, TokVal, PTree
+from crocs.core import XNode, Token, eof, TokVal, TSeq, PTree, Sof
 import re
 import time
 
@@ -15,7 +15,7 @@ class Yacc:
 
     def is_discarded(self, token):
         for indi in self.discard:
-            if indi.consume((token, )):
+            if indi.validate(token):
                 return True
         return False
 
@@ -31,32 +31,47 @@ class Yacc:
         """
 
         tokens = self.remove_tokens(tokens)
-        tokens = tuple(tokens)
+        tokens = list(tokens)
+        tokens = TSeq(*tokens)
+        tokens.insert(0, Sof(''))
 
         while True:
-            ptree  = self.consume(tokens)
-            tokens = tokens[ptree.tlen():]
-            if ptree: 
-                yield ptree
+            ptree = self.process(tokens)
+            if not ptree and tokens:
+                self.handle_error(tokens)
+            elif tokens:
+                yield from ptree
             else:
                 break
+
+    def process(self, tokens):
+        data = []
+        tokens.reset()
+        
+        while True:
+            ptree = self.consume(tokens)
+            if ptree:
+                data.extend(ptree)
+            elif not tokens.iseof():
+                tokens.shift()
+            else:
+                return data
 
     def consume(self, tokens):
         """
         """
-
-        ptree = self.root.consume(tokens)
-        if not ptree and tokens:
-            if tokens[0]:
-                self.handle_error(ptree, tokens)
-        return ptree
-
-    def handle_error(self, ptree, tokens):
+        data = []
+        for ind in self.root:
+            ptree = ind.consume(tokens)
+            if ptree:
+                data.extend(ptree)
+        return data
+            
+    def handle_error(self, tokens):
         """
         """
 
         print('Crocs Yacc error!')
-        print('PTree:', ptree)
         print('Tokens:', tokens)
         raise YaccError('Unexpected struct!')
 
@@ -71,121 +86,56 @@ class Yacc:
         rule.hmap.remove(handle)
 
 class Struct(XNode):
-    def __init__(self, recursive=False):
+    def __init__(self):
         super(Struct, self).__init__()
-        self.recursive = recursive
-        self.structs = []
         self.rules   = []
 
-    def consume(self, tokens, exclude=[], precedence=[]):
+    def validate(self, tok):
+        if self in tok.type:
+            return tok
+
+    def consume(self, tokens):
         """
         """
-
-        ptree = self.match_structs(tokens, exclude, precedence)
-        ptree = ptree if ptree else self.match_rules(
-        tokens, exclude, precedence)
-
-        if ptree and self.recursive:
-            return self.reduce(ptree, tokens, precedence)
-        return ptree
-
-    def match_structs(self, tokens, exclude, precedence):
-        for ind in self.structs:
-            ptree = ind.consume(tokens, exclude, precedence)
+        
+        data = []
+        for ind in self.rules:
+            ptree = ind.consume(tokens)
             if ptree:
-                return ptree
-        return PTree(self)
-
-    def match_rules(self, tokens, exclude, precedence):
-        for ind in self.rules:
-            if not (ind in exclude or ind in precedence):
-                ptree = ind.consume(tokens, exclude, precedence)
-                if ptree:
-                    return ptree
-        return PTree(self)
-
-    def replace(self, ptree, tokens, precedence=[]):
-        """
-        """
-        for ind in self.rules:
-            if not ind in precedence:
-                if ind.root is self:
-                    rtree = ind.replace(ptree, tokens, precedence)
-                    if rtree:
-                        return rtree
-        return PTree(self)
-
-    def reduce(self, ptree, tokens, precedence=[]):
-        """
-        """
-
-        rtree = None
-        while True:
-            rtree = self.replace(ptree, tokens, precedence)
-            if not rtree:
-                return ptree
-            ptree = rtree
+                data.append(ptree)
+        return data                  
 
     def add(self, *args):
         """
         """
-        for ind in args:
-            if isinstance(ind, Struct):
-                self.structs.append(ind)
-            else:
-                self.rules.append(ind)
+        self.rules.extend(args)
 
 class Rule(XNode):
-    def __init__(self, root, *args, up=[]):
+    def __init__(self, *args, type=[]):
         """
         """
-        self.root = root
-        self.symbols = args
-        self.up   = up
+        self.args = args
+        self.type = type
         self.hmap = []
 
-    def replace(self, ptree, tokens, precedence=[]):
+    def consume(self, tokens):
         """
         """
 
-        tokens  = tokens[ptree.tlen():]
-        exclude = [self]
-        rtree = self.validate(ptree, tokens, 
-            exclude, precedence=self.up)
-        return rtree
-
-    def validate(self, ptree, tokens, exclude=[], precedence=[]):
-        """
-        """
-
-        ntree = PTree(self)
-        ntree.append(ptree)
-
-        for ind in self.symbols:
-            rtree = ind.consume(tokens, exclude, precedence)
-            if rtree:
-                tokens = tokens[rtree.tlen():]
-                ntree.append(rtree)
+        ntree = PTree(self, type=self.type)
+        count = 0
+        for ind in self.args:
+            tok = tokens.get(count)
+            if tok == None:
+                return None
+            ptree = ind.validate(tok)
+            if ptree:
+                ntree.append(ptree)
             else:
-                return rtree
+                return None
+            count = count + 1
+        tokens.reduce(ntree)
         ntree.eval(self.hmap)
-        return ntree
-
-    def consume(self, tokens, exclude=[], precedence=[]):
-        """
-        """
-
-        if isinstance(self.root, Struct):
-            exclude = exclude + [self]
-
-        rtree = self.root.consume(tokens, exclude, self.up)
-        if not rtree:
-            return PTree(self)
-
-        tokens = tokens[rtree.tlen():]
-        ntree = self.validate(rtree, tokens, exclude, self.up)
-        if not ntree and self.symbols:
-            return PTree(self)
         return ntree
 
 class Times(XNode):
@@ -195,12 +145,5 @@ class Times(XNode):
     def consume(self, tokens, exclude=[], precedence=[]):
         """
         """
-        ptree = PTree(self)
-        while True:
-            rtree = self.refer.consume(tokens, exclude, precedence)
-            if rtree:
-                tokens = tokens[rtree.tlen():]
-                ptree.append(rtree)
-            else:
-                return ptree
+        pass
 
