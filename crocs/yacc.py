@@ -1,4 +1,5 @@
 from crocs.core import XNode, Token, eof, TokVal, TSeq, PTree, Sof
+from collections.abc import Iterable
 import re
 import time
 
@@ -115,8 +116,13 @@ class Rule(XNode):
         """
         """
         self.args = args
-        self.type = type
+        self.type = []
         self.hmap = []
+
+        if isinstance(type, Iterable):
+            self.type.extend(type)
+        else:
+            self.type.append(type)
 
     def consume(self, tokens):
         """
@@ -124,6 +130,7 @@ class Rule(XNode):
 
         ntree = PTree(self, type=self.type)
         count = 0
+
         for ind in self.args:
             tok = tokens.get(count)
             if tok == None:

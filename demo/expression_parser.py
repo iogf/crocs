@@ -35,7 +35,9 @@ class CalcGrammar(Grammar):
 
     r_paren = Rule(LP, expression, RP, type=factor)
     r_num   = Rule(Num, type=factor)
-    factor.add(r_paren, r_num)
+    r_end   = Rule(Sof, expression, Eof)
+
+    factor.add(r_paren, r_num, r_end)
 
     root    = [expression, term, factor]
     discard = [Blank]

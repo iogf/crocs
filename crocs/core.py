@@ -72,6 +72,7 @@ class PTree(list):
 class Token(XNode):
     def __init__(self, value):
         self.value = value
+        self.type = [self,]
 
     @classmethod
     def validate(cls, token):
