@@ -3,7 +3,7 @@
 
 from crocs.yacc import Rule, Grammar, Struct, Yacc
 from crocs.lexer import Lexer, LexMap, LexNode, XSpec
-from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank
+from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
 
 class CalcTokens(XSpec):
     expression = LexMap()
@@ -19,23 +19,20 @@ class CalcTokens(XSpec):
     root = expression
 
 class CalcGrammar(Grammar):
-    expression = Struct(recursive=True)
+    expression = Struct()
 
-    r_paren = Rule(LP, expression, RP)
-    r_num   = Rule(Num)
-    expression.add(r_paren, r_num)
+    r_paren = Rule(LP, Num, RP, type=Num)
+    r_div   = Rule(Num, Div, Num, type=Num)
+    r_mul   = Rule(Num, Mul, Num, type=Num, up=(r_div,))
 
-    r_plus  = Rule(expression, Plus, expression)
-    r_minus = Rule(expression, Minus, expression, up=(r_plus,))
+    r_plus  = Rule(Num, Plus, Num, type=Num, up=(r_mul, r_div))
+    r_minus = Rule(Num, Minus, Num, type=Num, up=(r_mul, r_div))
 
-    expression.add(r_minus, r_plus,  )
+    r_done  = Rule(Sof, Num, Eof)
 
-    r_mul = Rule(expression, Mul, expression, up=(r_plus, r_minus))
-    r_div = Rule(expression, Div, expression, up=(r_plus, r_minus, r_mul))
+    expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_done)
 
-    expression.add(r_mul, r_div)
-
-    root    = expression
+    root    = [expression]
     discard = [Blank]
 
 class CalcParser(Yacc):
@@ -48,25 +45,32 @@ class CalcParser(Yacc):
         self.add_handle(CalcGrammar.r_div, self.div)
         self.add_handle(CalcGrammar.r_mul, self.mul)
         self.add_handle(CalcGrammar.r_paren, self.paren)
-        self.add_handle(CalcGrammar.r_num, self.num)
+        self.add_handle(CalcGrammar.r_done, self.done)
 
     def plus(self, expr, sign, term):
-        return expr.val() + term.val()
+        print('Sum:', expr, sign, term)
+        return float(expr.val()) + float(term.val())
 
     def minus(self, expr, sign, term):
-        return expr.val() - term.val()
+        print('Minus:', expr, sign, term)
+        return float(expr.val()) - float(term.val())
 
     def div(self, term, sign, factor):
-        return term.val()/factor.val()
-    
+        result = float(term.val())/float(factor.val())
+        print('Div:', term, sign, factor)
+        return result
+
     def mul(self, term, sign, factor):
-        return term.val() * factor.val()
+        result = float(term.val()) * float(factor.val())
+        print('Mul:', term.val(), sign, factor.val())
+        return result
 
     def paren(self, left, expression, right):
         return expression.val()
 
-    def num(self, num):
-        return int(num[0].val())
+    def done(self, sof, num, eof):
+        print('Result:', num.val())
+        return float(num.val())
 
     def calc(self, data):
         self.lexer.feed(data)
@@ -76,6 +80,8 @@ class CalcParser(Yacc):
         return ptree
 
 data = '2 * 5 + 10 + 30/(1-3+ 4* 10 + 11/1 * 2/30- 10 +3 - (2 /(2 * 3/3*5+8/9)) * 8*10/10 + (3-4*10/40))'
+# data = '2 * 5 + 1 - 2 * 10/5 * 2 * 10/5 + 2'
+# data = '2 * (1 - 3 + (4 * 10 - 4)) /10'
+data = '10/(4+1) * 2'
 parser = CalcParser()
 ptree = parser.calc(data)
-print('Result:', ptree[0].val())

@@ -3,7 +3,7 @@
 
 from crocs.yacc import Rule, Grammar, Struct, Yacc
 from crocs.lexer import Lexer, LexMap, LexNode, XSpec
-from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank
+from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
 
 class CalcTokens(XSpec):
     expression = LexMap()
@@ -26,12 +26,12 @@ class CalcGrammar(Grammar):
     r_plus  = Rule(expression, Plus, term, type=expression)
     r_minus = Rule(expression, Minus, term, type=expression)
     r_expression = Rule(term, type=expression)
-    expression.add(term, r_plus,  r_minus, r_expression)
+    expression.add(r_expression, r_plus,  r_minus)
 
     r_mul = Rule(term, Mul, factor, type=term)
     r_div = Rule(term, Div, factor, type=term)
     r_term = Rule(factor, type=term)
-    term.add(factor, r_mul, r_div, r_term)
+    term.add(r_term, r_mul, r_div)
 
     r_paren = Rule(LP, expression, RP, type=factor)
     r_num   = Rule(Num, type=factor)
@@ -39,7 +39,7 @@ class CalcGrammar(Grammar):
 
     factor.add(r_paren, r_num, r_end)
 
-    root    = [expression, term, factor]
+    root    = [factor, term, expression]
     discard = [Blank]
 
 class CalcParser(Yacc):
@@ -53,6 +53,12 @@ class CalcParser(Yacc):
         self.add_handle(CalcGrammar.r_mul, self.mul)
         self.add_handle(CalcGrammar.r_paren, self.paren)
         self.add_handle(CalcGrammar.r_num, self.num)
+        self.add_handle(CalcGrammar.r_term, self.amend)
+        self.add_handle(CalcGrammar.r_expression, self.amend)
+
+    def amend(self, ptree):
+        print(ptree)
+        return ptree.val()
 
     def plus(self, expr, sign, term):
         return expr.val() + term.val()
@@ -80,7 +86,7 @@ class CalcParser(Yacc):
         return ptree
 
 data = '1 + 2 * (3 /(4 - (5 - (6 + (7 + (8 + (9 + (10 + (11 + (12 + (13+(14 * 15 + 16))))))))))))'
-data = '1 + 2 + 3 - 5'
+data = '1 + 2'
 parser = CalcParser()
 ptree = parser.calc(data)
 ptree = list(data)

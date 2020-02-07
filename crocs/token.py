@@ -1,4 +1,90 @@
-from crocs.core import XNode, Token, eof, TokVal, TSeq, PTree, Sof, Eof
+class XNode:
+    def __init__(self):
+        pass
+
+class PTree(list):
+    """
+    """
+
+    def __init__(self, rule, *args, type=[]):
+        super(PTree, self).__init__(args)
+
+        self.rule = rule
+        self.type = type
+        self.result = None
+
+    def eval(self, handles):
+        result = self
+        for ind in handles:
+            result = ind(*result)
+
+        if result is not self:
+            self.result = result 
+
+    def val(self):
+        return self.result
+
+class Token(XNode):
+    def __init__(self, value):
+        self.value = value
+        self.type = self.__class__
+
+    @classmethod
+    def validate(cls, tokens):
+        tok = tokens.get()
+        if tok != None:
+            return cls.istype(tok)
+
+    @classmethod
+    def istype(cls, tok):
+        if tok.type is cls:
+            return tok
+
+    def val(self):
+        return self.value
+    
+    def tlen(self):
+        return 1
+
+    def clen(self):
+        return len(self.value)
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__class__.__name__, repr(self.value))
+
+class TokVal(Token):
+    def __init__(self, value):
+        self.value = value
+
+    def validate(self, tokens):
+        tok = tokens.get()
+        if tok != None:
+            return self.istype(tok)
+
+    def istype(self, tok):
+        if self.value == tok.value:
+            return tok
+
+class Eof(Token):
+    pass
+
+class Sof(Token):
+    pass
+
+class TSeq(list):
+    """
+    This is meant to be returned by XNode's instances
+    that extract strings from a given doc sequentially.
+    """
+
+    def __init__(self, *args):
+        self.extend(args)
+
+    def clen(self):
+        count = 0
+        for ind in self:
+            count += ind.clen()
+        return count
 
 class Num(Token):
     pass

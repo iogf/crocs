@@ -1,4 +1,4 @@
-from crocs.token import XNode, Token, eof, TokVal, TSeq, PTree
+from crocs.token import *
 import re
 
 class LexError(Exception):
@@ -20,17 +20,18 @@ class Lexer:
         """
         """
 
+        yield Sof('')
         while True:
             tseq = self.consume(self.data)
             self.data = self.data[tseq.clen():]
-            if len(tseq) and tseq[0]:
+            if tseq:
                 yield from tseq
             else:
                 break
 
         # The loop stops on eof. It is useful for
         # some rules.
-        yield eof
+        yield Eof('')
 
     def consume(self, data):
         """
@@ -64,7 +65,7 @@ class LexMap(XNode):
         """
         """
         if not data:
-            return TSeq(eof)
+            return TSeq()
 
         for ind in self.children:
             tseq = ind.consume(data)
