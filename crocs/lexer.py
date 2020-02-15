@@ -107,12 +107,13 @@ class LexSeq(XNode):
         return 'LexSeq(%s)' % self.xnodes
 
 class SeqNode(XNode):
-    def __init__(self, regex, type=Token, cast=None):
+    def __init__(self, regstr, type=Token, cast=None):
         """
         """
 
         super(XNode, self).__init__()
-        self.regex = regex
+        self.regex = re.compile(regstr)
+        self.regstr = regstr
         self.type  = type
         self.cast  = cast
 
@@ -120,7 +121,7 @@ class SeqNode(XNode):
         """
         """
 
-        regobj = re.match(self.regex, data)
+        regobj = self.regex.match(data)
         if regobj:
             return self.mktoken(regobj)
                         
@@ -131,14 +132,14 @@ class SeqNode(XNode):
 
     def __repr__(self):
         return 'SeqNode(%s(%s))' % (
-            self.type.__name__, repr(self.regex))
+            self.type.__name__, repr(self.regstr))
 
 class LexNode(SeqNode):
-    def __init__(self, lexmap, regex, type=Token, cast=None):
+    def __init__(self, lexmap, regstr, type=Token, cast=None):
         """
         """
 
-        super(LexNode, self).__init__(regex, type, cast)
+        super(LexNode, self).__init__(regstr, type, cast)
         self.lexmap = lexmap
         self.lexmap.register(self)
 
