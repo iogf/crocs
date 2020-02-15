@@ -34,10 +34,6 @@ class Grouper:
         else:
             return False
 
-    def match(self, tok):
-        if not self.iseof():
-            return self.data[self.index].validate(tok)
-
     def get(self):
         """
         """
@@ -91,38 +87,34 @@ class Yacc:
             ptree = self.process(tokens)
             if not ptree and tokens.data:
                 self.handle_error(tokens)
-            elif tokens.data:
-                yield from ptree
+            elif ptree:
+                yield ptree
+                if ptree.type:
+                    tokens.reset()
             else:
                 break
 
     def process(self, tokens):
-        data = []
-        tokens.reset()
-        
         while True:
             ptree = self.consume(tokens)
             if ptree:
-                data.extend(ptree)
+                return ptree
             elif not tokens.iseof():
                 tokens.shift()
             else:
-                return data
+                break
 
     def consume(self, tokens):
         """
         """
-        data = []
         for ind in self.root:
             ptree = ind.consume(tokens)
             if ptree:
-                data.extend(ptree)
-        return data
-            
+                return ptree
+                            
     def handle_error(self, tokens):
         """
         """
-        print(len(tokens.data))
         print('Crocs Yacc error!')
         print('Tokens:', tokens)
         raise YaccError('Unexpected struct!')
@@ -151,12 +143,10 @@ class Struct(XNode):
         """
         """
         
-        data = []
         for ind in self.rules:
             ptree = ind.consume(tokens)
             if ptree:
-                data.append(ptree)
-        return data                  
+                return ptree
 
     def add(self, *args):
         """
@@ -186,7 +176,7 @@ class Rule(XNode):
 
         ntree = self.lookahead(grouper)
         if ntree:
-            return ntree
+            return None
 
         tokens.reduce(ptree)
         ptree.eval(self.hmap)
@@ -201,13 +191,12 @@ class Rule(XNode):
            else:
                return None
         return ntree
-    
+
     def lookahead(self, tokens):
         """
         """
-        tokens.shift(-1)
         for ind in self.up:
-            ptree = ind.consume(tokens)
+            ptree = ind.validate(tokens)
             if ptree:
                 return ptree
 

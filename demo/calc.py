@@ -22,11 +22,14 @@ class CalcGrammar(Grammar):
     expression = Struct()
 
     r_paren = Rule(LP, Num, RP, type=Num)
-    r_div   = Rule(Num, Div, Num, type=Num)
-    r_mul   = Rule(Num, Mul, Num, type=Num, up=(r_div,))
 
-    r_plus  = Rule(Num, Plus, Num, type=Num, up=(r_mul, r_div))
-    r_minus = Rule(Num, Minus, Num, type=Num, up=(r_mul, r_div))
+    r_div   = Rule(Num, Div, Num, type=Num)
+    r_mul   = Rule(Num, Mul, Num, type=Num)
+    o_div   = Rule(Div)
+    o_mul   = Rule(Mul)
+
+    r_plus  = Rule(Num, Plus, Num, type=Num, up=(o_mul, o_div))
+    r_minus = Rule(Num, Minus, Num, type=Num, up=(o_mul, o_div))
 
     r_done  = Rule(Sof, Num, Eof)
 
@@ -79,9 +82,9 @@ class CalcParser(Yacc):
         ptree = list(ptree)
         return ptree
 
-data = '2 * 5 + 10 + 30/(1-3+ 4* 10 + 11/1 * 2/30- 10 +3 - (2 /(2 * 3/3*5+8/9)) * 8*10/10 + (3-4*10/40))'
+data = '2 * 5 + 10 + 30/(1-3+ 4* 10 + (11/1) * (2/30)- 10 +3 - (2 /(2 * (3/3)*5+(8/9))) * 8*(10/10) + (3-4*(10/40)))'
 # data = '2 * 5 + 1 - 2 * 10/5 * 2 * 10/5 + 2'
 # data = '2 * (1 - 3 + (4 * 10 - 4)) /10'
-data = '10/(4+1) * 2'
+# data = '(10/(4+1)) * 2'
 parser = CalcParser()
 ptree = parser.calc(data)
