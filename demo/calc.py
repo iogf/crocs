@@ -14,7 +14,7 @@ class CalcTokens(XSpec):
     LexNode(expression, r'\*', Mul)
     LexNode(expression, r'\/', Div)
 
-    LexNode(expression, r'[0-9]+', Num)
+    LexNode(expression, r'[0-9]+', Num, float)
     LexNode(expression, r' +', Blank)
     root = expression
 
@@ -51,21 +51,21 @@ class CalcParser(Yacc):
         self.add_handle(CalcGrammar.r_done, self.done)
 
     def plus(self, expr, sign, term):
-        print('Sum:', expr, sign, term)
-        return float(expr.val()) + float(term.val())
+        # print('Sum:', expr, sign, term)
+        return expr.val() + term.val()
 
     def minus(self, expr, sign, term):
-        print('Minus:', expr, sign, term)
-        return float(expr.val()) - float(term.val())
+        # print('Minus:', expr, sign, term)
+        return expr.val() - term.val()
 
     def div(self, term, sign, factor):
-        result = float(term.val())/float(factor.val())
-        print('Div:', term, sign, factor)
+        result = term.val()/factor.val()
+        # print('Div:', term, sign, factor)
         return result
 
     def mul(self, term, sign, factor):
-        result = float(term.val()) * float(factor.val())
-        print('Mul:', term.val(), sign, factor.val())
+        result = term.val() * factor.val()
+        # print('Mul:', term.val(), sign, factor.val())
         return result
 
     def paren(self, left, expression, right):
@@ -73,15 +73,15 @@ class CalcParser(Yacc):
 
     def done(self, sof, num, eof):
         print('Result:', num.val())
-        return float(num.val())
+        return num.val()
 
     def calc(self, data):
         self.lexer.feed(data)
         tokens = self.lexer.run()
         ptree = self.build(tokens)
-        ptree = list(ptree)
-        return ptree
+        # ptree = list(ptree)
+        # return ptree
 
-data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1) * (2/30)- 10 +3 - (2 /(2 * (3/3)*5+(8/9))) * 8*(10/10) + (3-4*(10/40)))'
+data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1) * (2/30)- 10 +3 - (2 /(2 * (3/3)*5+(8/9))) * 8*(10/10) + (3-4*(10/40)))+' * 100 + '2'
 parser = CalcParser()
 ptree = parser.calc(data)

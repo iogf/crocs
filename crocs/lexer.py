@@ -107,13 +107,14 @@ class LexSeq(XNode):
         return 'LexSeq(%s)' % self.xnodes
 
 class SeqNode(XNode):
-    def __init__(self, regex, type=Token):
+    def __init__(self, regex, type=Token, cast=None):
         """
         """
 
         super(XNode, self).__init__()
         self.regex = regex
         self.type  = type
+        self.cast  = cast
 
     def consume(self, data):
         """
@@ -125,7 +126,7 @@ class SeqNode(XNode):
                         
     def mktoken(self, regobj):
         tokval = regobj.group(0)
-        token  = self.type(tokval)
+        token  = self.type(tokval, self.cast)
         return TSeq(token)
 
     def __repr__(self):
@@ -133,11 +134,11 @@ class SeqNode(XNode):
             self.type.__name__, repr(self.regex))
 
 class LexNode(SeqNode):
-    def __init__(self, lexmap, regex, type=Token):
+    def __init__(self, lexmap, regex, type=Token, cast=None):
         """
         """
 
-        super(LexNode, self).__init__(regex, type)
+        super(LexNode, self).__init__(regex, type, cast)
         self.lexmap = lexmap
         self.lexmap.register(self)
 

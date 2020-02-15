@@ -13,20 +13,17 @@ class PTree(list):
         self.type = type
         self.result = None
 
-    def eval(self, handles):
-        result = self
-        for ind in handles:
-            result = ind(*result)
-
-        if result is not self:
-            self.result = result 
+    def eval(self, handle):
+        if handle:
+            self.result = handle(*self)
 
     def val(self):
         return self.result
 
 class Token(XNode):
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, data, cast=None):
+        self.data = data
+        self.value = cast(data) if cast else data
         self.type = self.__class__
 
     @classmethod
@@ -47,10 +44,10 @@ class Token(XNode):
         return 1
 
     def clen(self):
-        return len(self.value)
+        return len(self.data)
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.value))
+        return '%s(%s)' % (self.__class__.__name__, repr(self.data))
 
 class TokVal(Token):
     def __init__(self, value):

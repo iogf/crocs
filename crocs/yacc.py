@@ -88,7 +88,7 @@ class Yacc:
             if not ptree and tokens.data:
                 self.handle_error(tokens)
             elif ptree:
-                yield ptree
+                # yield ptree
                 if ptree.type:
                     tokens.reset()
             else:
@@ -122,17 +122,17 @@ class Yacc:
     def add_handle(self, rule, handle):
         """
         """
-        rule.hmap.append(handle)
+        rule.hmap = handle
 
     def del_handle(self, rule, handle):
         """
         """
-        rule.hmap.remove(handle)
+        rule.hmap = handle
 
 class Struct(XNode):
     def __init__(self):
         super(Struct, self).__init__()
-        self.rules   = []
+        self.rules = []
 
     def validate(self, tokens):
         tok = tokens.get()
@@ -159,7 +159,7 @@ class Rule(XNode):
         """
         self.args = args
         self.type = type
-        self.hmap = []
+        self.hmap = None
         self.up   = []
 
         self.up.extend(up)
