@@ -6,8 +6,8 @@ class PTree(list):
     """
     """
 
-    def __init__(self, rule, *args, type=[]):
-        super(PTree, self).__init__(args)
+    def __init__(self, iterable=(), rule=None, type=None):
+        super(PTree, self).__init__(iterable)
 
         self.rule = rule
         self.type = type

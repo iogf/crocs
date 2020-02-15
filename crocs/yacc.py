@@ -88,7 +88,7 @@ class Yacc:
             if not ptree and tokens.data:
                 self.handle_error(tokens)
             elif ptree:
-                # yield ptree
+                yield ptree
                 if ptree.type:
                     tokens.reset()
             else:
@@ -183,7 +183,7 @@ class Rule(XNode):
         return ptree
 
     def validate(self, tokens):
-        ntree = PTree(self, type=self.type)
+        ntree = PTree(rule=self, type=self.type)
         for ind in self.args:
            ptree = ind.validate(tokens)
            if ptree:
