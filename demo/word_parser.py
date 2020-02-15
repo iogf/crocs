@@ -15,8 +15,10 @@ class WordGrammar(Grammar):
     expr = Struct()
     r_phrase0  = Rule(TokVal('alpha'), TokVal('beta'))
     r_phrase1  = Rule(TokVal('gamma'), TokVal('zeta'))
-    r_end      = Rule(Sof, Eof)
-    expr.add(r_phrase0, r_phrase1, r_end)
+    r_sof      = Rule(Sof)
+    r_eof      = Rule(Eof)
+
+    expr.add(r_phrase0, r_phrase1, r_sof, r_eof)
 
     root = [expr]
     discard = [Blank]

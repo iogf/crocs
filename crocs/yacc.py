@@ -196,7 +196,7 @@ class Rule(XNode):
         """
         """
         for ind in self.up:
-            ptree = ind.validate(tokens)
+            ptree = ind.validate(tokens.clone())
             if ptree:
                 return ptree
 
