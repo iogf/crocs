@@ -5,6 +5,7 @@ class XNode:
 class PTree(list):
     """
     """
+    __slots__ = ['rule', 'type', 'result']
 
     def __init__(self, iterable=(), rule=None, type=None):
         super(PTree, self).__init__(iterable)

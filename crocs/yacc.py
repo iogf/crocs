@@ -10,6 +10,7 @@ class Grammar:
     discard = []
 
 class LinkedNode:
+    __slots__ = ['elem', 'next', 'back']
     def __init__(self, elem, back=None, next=None):
         self.elem = elem
         self.next = next
@@ -96,6 +97,7 @@ class LinkedList:
 class Grouper:
     """
     """
+    __slots__ = ['linked', 'index']
 
     def __init__(self):
         self.linked = LinkedList()
@@ -176,10 +178,8 @@ class Yacc:
         """
 
         data = self.remove_tokens(tokens)
-        data = list(data)
         tokens = Grouper()
         tokens.expand(data)
-
         ptree = self.process(tokens)
         yield from ptree
 
