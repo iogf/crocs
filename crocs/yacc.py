@@ -9,54 +9,147 @@ class YaccError(Exception):
 class Grammar:
     discard = []
 
+class LinkedNode:
+    def __init__(self, elem, back=None, next=None):
+        self.elem = elem
+        self.next = next
+        self.back = back
+
+    def islast(self):
+        return False
+
+class HeadNode:
+    def __init__(self):
+        self.next = None
+
+class LastNode:
+    def __init__(self):
+        self.back = None
+
+    def islast(self):
+        return True
+
+class LinkedList:
+    def __init__(self):
+        self.head = HeadNode()
+        self.last = LastNode()
+        self.head.next = self.last
+        self.last.back = self.head
+
+    def append(self, elem):
+        lnode = LinkedNode(elem, self.last.back, self.last)
+        self.last.back.next = lnode
+        self.last.back = lnode
+        return lnode
+
+    def appendleft(self, elem):
+        lnode = LinkedNode(elem, self.head, self.head.next)
+        self.head.next.back = lnode
+        self.head.next = lnode
+        return lnode
+
+    def pop(self):
+        pass
+        
+    def popleft(self, elem):
+        pass
+
+    def insert(self, index, elem):
+        lnode = LinkedNode(elem, index.back, index)
+        index.back.next = lnode
+        index.back = lnode
+        return lnode
+
+    def next(self, index):
+        if index is self.last:
+            return index
+        else:
+            return index.next
+
+    def back(self, index):
+        pass
+
+    def delone(self, index):
+        index.back.next = index.next
+        indext.next.back = index.back
+
+    def delete(self, index, lindex):
+        index.back.next = lindex
+        lindex.back = index.back
+
+    def empty(self):    
+        return self.head.next == self.last
+
+    def first(self):
+        return self.head.next
+
+    def __str__(self):
+        data = []
+        index = self.head.next
+        while index != self.last:
+            data.append(index.elem)
+            index = index.next
+        return data.__str__()
+
+    __repr__ = __str__
+
 class Grouper:
     """
     """
 
-    def __init__(self, data):
-        self.data  = data
-        self.index = 0
+    def __init__(self):
+        self.linked = LinkedList()
+        self.index = None
+
+    def expand(self, data):
+        for ind in data:
+            self.linked.append(ind)
+        self.index = self.linked.first()
 
     def reset(self):
-        self.index = 0
+        self.index = self.linked.first()
 
     def clone(self):
-        grouper = Grouper(self.data)
+        grouper = Grouper()
+        grouper.linked = self.linked
         grouper.index = self.index
         return grouper
 
-    def shift(self, index=1):
-        self.index = self.index + index
+    def shift(self):
+        self.index = self.linked.next(self.index)
 
     def iseof(self):
-        if self.index >= len(self.data):
-            return True
-        else:
-            return False
+        return self.index.islast()
 
     def get(self):
         """
         """
-        if self.index >= len(self.data):
-            return None
+        lnode = self.index
+        self.index = self.linked.next(self.index)
+        
+        if not lnode.islast():
+            return lnode.elem
 
-        tok = self.data[self.index]
-        self.index += 1
-        return tok
-
-    def reduce(self, ptree):
+    def reduce(self, lindex, ptree):
         """
         """
-        count = self.index + len(ptree)
-        del self.data[self.index: count]
+
         if ptree.type:
-            self.data.insert(self.index, ptree)
+            self.replace(lindex, ptree)
+        else:
+            self.delete(lindex)
+
+    def delete(self, lindex):
+        self.linked.delete(self.index, lindex)
+
+    def replace(self, lindex, ptree):
+        self.linked.delete(self.index, lindex)
+        self.linked.insert(lindex, ptree)
 
     def __str__(self):
-        return self.data.__str__()
+        return self.linked.__str__()
 
-    def __repr__(self):
-        return self.data.__repr__()
+    __repr__ = __str__
 
 class Yacc:
     def __init__(self, grammar):
@@ -80,13 +173,15 @@ class Yacc:
         """
         """
 
-        tokens = self.remove_tokens(tokens)
-        tokens = Grouper(list(tokens))
-        
+        data = self.remove_tokens(tokens)
+        data = list(data)
+        tokens = Grouper()
+        tokens.expand(data)
+
         ptree = self.process(tokens)
         yield from ptree
 
-        if tokens.data:
+        if not tokens.linked.empty():
             self.handle_error(tokens)
 
     def process(self, tokens):
@@ -96,6 +191,8 @@ class Yacc:
                 yield ptree
                 if ptree.type:
                     tokens.reset()
+            elif tokens.linked.empty():
+                break
             elif not tokens.iseof():
                 tokens.shift()
             else:
@@ -170,23 +267,23 @@ class Rule(XNode):
         ptree = self.validate(grouper)
         if not ptree:
             return None
-
         ntree = self.lookahead(grouper)
         if ntree:
             return None
 
-        tokens.reduce(ptree)
+        tokens.reduce(grouper.index, ptree)
         ptree.eval(self.hmap)
         return ptree
 
     def validate(self, tokens):
         ntree = PTree(rule=self, type=self.type)
         for ind in self.args:
-           ptree = ind.validate(tokens)
-           if ptree:
-               ntree.append(ptree)
-           else:
-               return None
+            ptree = ind.validate(tokens)
+            if ptree:
+                ntree.append(ptree)
+            else:
+                return None
+ 
         return ntree
 
     def lookahead(self, tokens):
