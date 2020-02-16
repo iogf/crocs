@@ -67,6 +67,11 @@ class LinkedList:
         else:
             return index.next
 
+    def lst(self, index, lindex):
+        while index != lindex:
+            yield index.elem
+            index = index.next
+
     def back(self, index):
         pass
 
@@ -85,11 +90,8 @@ class LinkedList:
         return self.head.next
 
     def __str__(self):
-        data = []
-        index = self.head.next
-        while index != self.last:
-            data.append(index.elem)
-            index = index.next
+        data = self.lst(self.head.next, self.last)
+        data = list(data)
         return data.__str__()
 
     __repr__ = __str__
@@ -266,27 +268,27 @@ class Rule(XNode):
 
         grouper = tokens.clone()
 
-        ptree = self.validate(grouper)
-        if not ptree:
-            return None
-        ntree = self.lookahead(grouper)
-        if ntree:
+        valid = self.validate(grouper)
+        if not valid:
             return None
 
+        valid = self.lookahead(grouper)
+        if valid:
+            return None
+
+        data = tokens.linked.lst(tokens.index, grouper.index)
+        ptree = PTree(data, rule=self, type=self.type)
         tokens.reduce(grouper.index, ptree)
         ptree.eval(self.hmap)
+
         return ptree
 
     def validate(self, tokens):
-        ntree = PTree(rule=self, type=self.type)
         for ind in self.args:
             ptree = ind.validate(tokens)
-            if ptree:
-                ntree.append(ptree)
-            else:
-                return None
- 
-        return ntree
+            if not ptree:
+                return False
+        return True
 
     def lookahead(self, tokens):
         """
