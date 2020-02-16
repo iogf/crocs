@@ -82,23 +82,20 @@ class Yacc:
 
         tokens = self.remove_tokens(tokens)
         tokens = Grouper(list(tokens))
+        
+        ptree = self.process(tokens)
+        yield from ptree
 
-        while True:
-            ptree = self.process(tokens)
-            if not ptree and tokens.data:
-                self.handle_error(tokens)
-            elif ptree:
-                yield ptree
-                if ptree.type:
-                    tokens.reset()
-            else:
-                break
+        if tokens.data:
+            self.handle_error(tokens)
 
     def process(self, tokens):
         while True:
             ptree = self.consume(tokens)
             if ptree:
-                return ptree
+                yield ptree
+                if ptree.type:
+                    tokens.reset()
             elif not tokens.iseof():
                 tokens.shift()
             else:
