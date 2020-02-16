@@ -267,8 +267,8 @@ class Rule(XNode):
         """
 
         grouper = tokens.clone()
+        valid  = self.validate(grouper)
 
-        valid = self.validate(grouper)
         if not valid:
             return None
 
@@ -277,7 +277,7 @@ class Rule(XNode):
             return None
 
         data = tokens.linked.lst(tokens.index, grouper.index)
-        ptree = PTree(data, rule=self, type=self.type)
+        ptree = PTree(data, self, self.type)
         tokens.reduce(grouper.index, ptree)
         ptree.eval(self.hmap)
 
@@ -285,8 +285,8 @@ class Rule(XNode):
 
     def validate(self, tokens):
         for ind in self.args:
-            ptree = ind.validate(tokens)
-            if not ptree:
+            valid = ind.validate(tokens)
+            if not valid:
                 return False
         return True
 
@@ -294,9 +294,10 @@ class Rule(XNode):
         """
         """
         for ind in self.up:
-            ptree = ind.validate(tokens.clone())
-            if ptree:
-                return ptree
+            valid = ind.validate(tokens.clone())
+            if valid:
+                return True
+        return False
 
 class Times(XNode):
     def __init__(self, refer):

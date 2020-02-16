@@ -30,13 +30,11 @@ class Token(XNode):
     @classmethod
     def validate(cls, tokens):
         tok = tokens.get()
-        if tok != None:
-            return cls.istype(tok)
+        return tok != None and cls.istype(tok)
 
     @classmethod
     def istype(cls, tok):
-        if tok.type is cls:
-            return tok
+        return tok.type is cls
 
     def val(self):
         return self.value
@@ -56,12 +54,10 @@ class TokVal(Token):
 
     def validate(self, tokens):
         tok = tokens.get()
-        if tok != None:
-            return self.istype(tok)
+        return tok != None and self.istype(tok)
 
     def istype(self, tok):
-        if self.value == tok.value:
-            return tok
+        return self.value == tok.value
 
 class Eof(Token):
     pass
