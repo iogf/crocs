@@ -84,7 +84,7 @@ class CalcParser(Yacc):
         return ptree
 
 data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1) * (2/30)- 10 +3 - (2 /(2 * (3/3)*5+(8/9))) * 8*(10/10) + (3-4*(10/40)))+' * 100 + '2'
-data = '2 + 2 +' * 10000 + '2'
-data = '1+1'
+# data = '2 + 2 +' * 10000 + '2'
+# data = '1+1'
 parser = CalcParser()
 ptree = parser.calc(data)

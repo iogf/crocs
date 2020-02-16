@@ -141,10 +141,12 @@ class Grouper:
 
     def delete(self, lindex):
         self.linked.delete(self.index, lindex)
+        self.index = lindex
 
     def replace(self, lindex, ptree):
         self.linked.delete(self.index, lindex)
         self.linked.insert(lindex, ptree)
+        self.index = lindex
 
     def __str__(self):
         return self.linked.__str__()
