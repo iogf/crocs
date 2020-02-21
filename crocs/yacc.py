@@ -275,11 +275,7 @@ class Rule(XNode):
         grouper = tokens.clone()
         ptree   = self.validate(grouper)
 
-        if not ptree:
-            return None
-
-        valid = self.lookahead(grouper)
-        if valid:
+        if not ptree or ptree and self.lookahead(grouper):
             return None
 
         tokens.reduce(grouper.index, ptree)
