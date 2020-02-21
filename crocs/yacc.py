@@ -49,12 +49,6 @@ class LinkedList:
         self.head.next = lnode
         return lnode
 
-    def pop(self):
-        pass
-        
-    def popleft(self, elem):
-        pass
-
     def insert(self, index, elem):
         lnode = LinkedNode(elem, index.back, index)
         index.back.next = lnode
@@ -77,10 +71,6 @@ class LinkedList:
             return index
         else:
             return index.back
-
-    def delone(self, index):
-        index.back.next = index.next
-        indext.next.back = index.back
 
     def delete(self, index, lindex):
         index.back.next = lindex

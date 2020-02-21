@@ -33,12 +33,35 @@ A regex can be thuoght as a sequence of patterns that are joined together. Crocs
 Regex's operators as Python classes. You reason using these classes specification to implement
 your desired patterns of search.
 
+A simple regex sequence would look like:
+
+~~~python
+from crocs.regex import Join, Include, Seq
+
+e = Join('x', Include(Seq('0', '9')))
+e.test()
+e.hits()
+~~~
+
+That would give you the possible hits:
+
+~~~
+[tau@archlinux demo]$ python sequence.py 
+Regex: x[0-9]
+Input: x0
+Group dict: {}
+Group 0: x0
+Groups: ()
+Match with:
+ x0 x2 x4 x9 x2 x5 x0 x5 x7 x3
+~~~
+
 Crocs also implements a powerful parsing library. It uses a similar syntax to Naur Backus. The main
 idea consists of implementing token patterns and specifying a type for them. When these patterns
 are matched they are assigned a type and rematched against other existing patterns. That allows one
 to handle some grammars in a consistent and expressive manner.
 
-The lexer is really expressive it can handle some interesting cases in a short and simple manner.
+The lexer is really powerful it can handle some interesting cases in a short and simple manner.
 
 ~~~python
 
@@ -63,6 +86,10 @@ data = 'if ifnum: foobar()'
 tokens = lex.feed(data)
 print('Consumed:', list(tokens))
 ~~~
+
+The above example handles the task of tokenizing keywords correctly. The SeqNode class works together with
+LexSeq to extract the tokens based on a given regex while LexNode works on its own to extract tokens that
+do not demand a lookahead step.
 
 The parser syntax is consistent and concrete. It allows you to link handles to token patterns and
 evaluate these rules according to your necessities.
