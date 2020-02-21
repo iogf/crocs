@@ -18,16 +18,7 @@ class StringTokens(XSpec):
 lex = Lexer(StringTokens)
 print('Example 1!')
 data = '" This will"       "rock!"     "For sure!"'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
-
-print('Example 2!')
-
-# Now displays an error due to Tok0 not being a token nor a string.
-data = '" foo" bar " boo "'
-lex.feed(data)
-tokens = lex.run()
+tokens = lex.feed(data)
 print('Consumed:', list(tokens))
 
 

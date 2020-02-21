@@ -73,7 +73,10 @@ class LinkedList:
             index = index.next
 
     def back(self, index):
-        pass
+        if index.back is self.head:
+            return index
+        else:
+            return index.back
 
     def delone(self, index):
         index.back.next = index.next
@@ -121,6 +124,9 @@ class Grouper:
 
     def shift(self):
         self.index = self.linked.next(self.index)
+
+    def shift_back(self):
+        self.index = self.linked.back(self.index)
 
     def iseof(self):
         return self.index.islast()
@@ -280,8 +286,11 @@ class Rule(XNode):
         ptree = PTree(data, self, self.type)
         tokens.reduce(grouper.index, ptree)
         ptree.eval(self.hmap)
-
+        print('ptree', ptree)
         return ptree
+
+    def evaluate(self, tokens, index, lindex):
+        pass
 
     def validate(self, tokens):
         for ind in self.args:
@@ -300,11 +309,22 @@ class Rule(XNode):
         return False
 
 class Times(XNode):
-    def __init__(self, refer):
+    def __init__(self, refer, min=1, max=None):
         self.refer = refer
+        self.min = min
+        self.max = max
 
-    def consume(self, tokens, exclude=[], precedence=[]):
-        """
-        """
-        pass
+    def validate(self, tokens):
+        count   = 0
 
+        while True:
+            valid  = self.refer.validate(tokens)
+            if not valid:
+                tokens.shift_back()
+                if self.max:
+                    return self.min <= count <= self.max
+                else:
+                    return self.min <= count
+            else:
+                count += 1
+        

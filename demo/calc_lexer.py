@@ -21,8 +21,7 @@ class CalcTokens(XSpec):
 print('Example 1')
 lex = Lexer(CalcTokens)
 data = '1 + 2 (-1 + (1 - 2)*3)'
-lex.feed(data)
-tokens = lex.run()
+tokens = lex.feed(data)
 print('Consumed:', list(tokens))
 
 

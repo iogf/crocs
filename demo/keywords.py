@@ -29,6 +29,5 @@ lex = Lexer(KeywordTokens)
 
 print('Example 1!')
 data = 'flow if foo for bar end pears'
-lex.feed(data)
-tokens = lex.run()
+tokens = lex.feed(data)
 print('Consumed:', list(tokens))

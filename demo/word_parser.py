@@ -23,12 +23,9 @@ class WordGrammar(Grammar):
     root = [expr]
     discard = [Blank]
 
-data = 'alpha beta gamma zeta ' * 10000
+data = 'alpha beta gamma zeta' 
 lexer = Lexer(WordTokens)
 yacc  = Yacc(WordGrammar)
-lexer.feed(data)
-tokens = lexer.run()
+tokens = lexer.feed(data)
 ptree  = yacc.build(tokens)
-for ind in ptree:
-    pass
-# print(list(ptree))
+print(list(ptree))

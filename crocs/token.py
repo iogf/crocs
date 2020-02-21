@@ -5,13 +5,14 @@ class XNode:
 class PTree(list):
     """
     """
-    __slots__ = ['rule', 'type', 'result']
+    __slots__ = ['rule', 'type', 'result', 'data']
 
     def __init__(self, iterable=(), rule=None, type=None):
         super(PTree, self).__init__(iterable)
 
         self.rule = rule
         self.type = type
+        self.data = type
         self.result = None
 
     def eval(self, handle):
@@ -49,15 +50,12 @@ class Token(XNode):
         return '%s(%s)' % (self.__class__.__name__, repr(self.data))
 
 class TokVal(Token):
-    def __init__(self, value):
-        self.value = value
-
     def validate(self, tokens):
         tok = tokens.get()
         return tok != None and self.istype(tok)
 
     def istype(self, tok):
-        return self.value == tok.value
+        return self.data == tok.data
 
 class Eof(Token):
     pass

@@ -18,15 +18,5 @@ class ListTokens(XSpec):
 print('Example 1')
 lex = Lexer(ListTokens)
 data = '[ 1 2 [1 3 4] [2 4 [ 1 2]]]'
-lex.feed(data)
-tokens = lex.run()
+tokens = lex.feed(data)
 print('Consumed:', list(tokens))
-
-print('Example 2')
-lex = Lexer(ListTokens)
-data = '[1 2] ]'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
-
-

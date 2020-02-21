@@ -77,8 +77,7 @@ class CalcParser(Yacc):
         return num.val()
 
     def calc(self, data):
-        self.lexer.feed(data)
-        tokens = self.lexer.run()
+        tokens = self.lexer.feed(data)
         ptree = self.build(tokens)
         ptree = list(ptree)
         return ptree

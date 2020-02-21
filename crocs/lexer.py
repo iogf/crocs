@@ -12,18 +12,16 @@ class Lexer:
         """
         """
         self.root   = xspec.root
-        self.data   = ''
-        self.offset = 0
         self.no_errorss = no_errors
 
-    def run(self):
+    def feed(self, data):
         """
         """
 
         yield Sof('')
         while True:
-            tseq = self.consume(self.data)
-            self.data = self.data[tseq.clen():]
+            tseq = self.consume(data)
+            data = data[tseq.clen():]
             if tseq:
                 yield from tseq
             else:
@@ -44,12 +42,6 @@ class Lexer:
     def handle_error(self):
         msg = 'Unexpected token: %s' % repr(self.data[:30])
         raise LexError(msg)
-
-    def feed(self, data):
-        """
-        """
-        self.data = data
-        self.offset = 0
 
 class LexMap(XNode):
     def __init__(self):

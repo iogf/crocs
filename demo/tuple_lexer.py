@@ -21,13 +21,5 @@ class TupleTokens(XSpec):
 print('Example 1')
 lex = Lexer(TupleTokens)
 data = '(1, 2, 3, (1, 2, 3))'
-lex.feed(data)
-tokens = lex.run()
-print('Consumed:', list(tokens))
-
-print('Example 2')
-lex = Lexer(TupleTokens)
-data = '(1, 2, (, )'
-lex.feed(data)
-tokens = lex.run()
+tokens = lex.feed(data)
 print('Consumed:', list(tokens))

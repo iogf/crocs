@@ -15,8 +15,7 @@ class WordTokens(XSpec):
 lex = Lexer(WordTokens)
 print('Example 1!')
 data = 'Iury is known as t2u or i0gf.'
-lex.feed(data)
-tokens = lex.run()
+tokens = lex.feed(data)
 print('Consumed:', list(tokens))
 
 
