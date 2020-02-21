@@ -21,8 +21,8 @@ class Lexer:
         yield Sof('')
         while True:
             tseq = self.consume(data)
-            data = data[tseq.clen():]
             if tseq:
+                data = data[tseq.clen():]
                 yield from tseq
             else:
                 break
@@ -36,11 +36,11 @@ class Lexer:
         """
         tseq = self.root.consume(data)
         if not tseq and data:
-            self.handle_error()
+            self.handle_error(data)
         return tseq
 
-    def handle_error(self):
-        msg = 'Unexpected token: %s' % repr(self.data[:30])
+    def handle_error(self, data):
+        msg = 'Unexpected token: %s' % repr(data[:30])
         raise LexError(msg)
 
 class LexMap(XNode):
@@ -57,13 +57,12 @@ class LexMap(XNode):
         """
         """
         if not data:
-            return TSeq()
+            return None
 
         for ind in self.children:
             tseq = ind.consume(data)
             if tseq:
                 return tseq
-        return TSeq()
 
     def __repr__(self):
         return 'LexMap(%s)' % self.children
@@ -71,7 +70,7 @@ class LexMap(XNode):
 class LexSeq(XNode):
     """
     """
-    def __init__(self, lexmap, *args, type=None):
+    def __init__(self, lexmap, *args):
         self.lexmap = lexmap
         self.xnodes = []
         self.type   = type
@@ -83,16 +82,12 @@ class LexSeq(XNode):
         """
         tseq = TSeq()
         for ind in self.xnodes:
-            slice = data[tseq.clen():]
-            token = ind.consume(slice)
+            token = ind.consume(data)
             if token:
+                data = data[token.clen():]
                 tseq.extend(token)
             else:
-                return TSeq()
-        pass
-
-        if self.type:
-            return TSeq(self.type(tseq))
+                return None
         return tseq
         
     def __repr__(self):
@@ -148,10 +143,10 @@ class LexRef(XNode):
 
         tseq = TSeq()
         while True:
-            slice = data[tseq.clen():]
-            token = self.xnode.consume(slice)
-            if not token:
-                break
-            else:
+            token = self.xnode.consume(data)
+            if token:
+                data = data[token.clen():]
                 tseq.extend(token)
+            else:
+                break
         return tseq

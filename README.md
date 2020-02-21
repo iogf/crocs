@@ -57,8 +57,9 @@ Match with:
 ~~~
 
 Crocs also implements a powerful parsing library. It uses a similar syntax to Naur Backus. The main
-idea consists of implementing token patterns and specifying a type for them. When these patterns
-are matched they are assigned a type and rematched against other existing patterns. That allows one
+idea consists of implementing token patterns and specifying a type for them. 
+
+When patterns are matched they are assigned a type and rematched against other existing patterns. That allows one
 to handle some grammars in a consistent and expressive manner.
 
 The lexer is really powerful it can handle some interesting cases in a short and simple manner.
