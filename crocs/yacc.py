@@ -273,31 +273,28 @@ class Rule(XNode):
         """
 
         grouper = tokens.clone()
-        valid  = self.validate(grouper)
+        ptree  = self.validate(grouper)
 
-        if not valid:
+        if not ptree:
             return None
 
         valid = self.lookahead(grouper)
         if valid:
             return None
 
-        data = tokens.linked.lst(tokens.index, grouper.index)
-        ptree = PTree(data, self, self.type)
         tokens.reduce(grouper.index, ptree)
         ptree.eval(self.hmap)
-        print('ptree', ptree)
         return ptree
 
-    def evaluate(self, tokens, index, lindex):
-        pass
-
     def validate(self, tokens):
+        ptree = PTree(rule=self, type=self.type)
         for ind in self.args:
-            valid = ind.validate(tokens)
-            if not valid:
-                return False
-        return True
+            tok = ind.validate(tokens)
+            if tok:
+                ptree.append(tok)
+            else:
+                return None
+        return ptree
 
     def lookahead(self, tokens):
         """
@@ -315,16 +312,15 @@ class Times(XNode):
         self.max = max
 
     def validate(self, tokens):
-        count   = 0
+        ptree = PTree(rule=self)
 
         while True:
-            valid  = self.refer.validate(tokens)
-            if not valid:
+            token = self.refer.validate(tokens)
+            if not token:
                 tokens.shift_back()
-                if self.max:
-                    return self.min <= count <= self.max
+                if self.max and (self.min <= len(ptree) <= self.max):
+                    return ptree
+                elif self.min <= len(ptree):
+                    return ptree
                 else:
-                    return self.min <= count
-            else:
-                count += 1
-        
+                    return 
