@@ -30,7 +30,6 @@ class CalcGrammar(Grammar):
 
     r_plus  = Rule(Num, Plus, Num, type=Num, up=(o_mul, o_div))
     r_minus = Rule(Num, Minus, Num, type=Num, up=(o_mul, o_div))
-
     r_done  = Rule(Sof, Num, Eof)
 
     expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_done)
@@ -38,52 +37,38 @@ class CalcGrammar(Grammar):
     root    = [expression]
     discard = [Blank]
 
-class CalcParser(Yacc):
-    def __init__(self):
-        self.lexer = Lexer(CalcTokens)
-        super(CalcParser, self).__init__(CalcGrammar)
+def plus(expr, sign, term):
+    return expr.val() + term.val()
 
-        self.add_handle(CalcGrammar.r_plus, self.plus)
-        self.add_handle(CalcGrammar.r_minus, self.minus)
-        self.add_handle(CalcGrammar.r_div, self.div)
-        self.add_handle(CalcGrammar.r_mul, self.mul)
-        self.add_handle(CalcGrammar.r_paren, self.paren)
-        self.add_handle(CalcGrammar.r_done, self.done)
+def minus(expr, sign, term):
+    return expr.val() - term.val()
 
-    def plus(self, expr, sign, term):
-        # print('Sum:', expr, sign, term)
-        return expr.val() + term.val()
+def div(term, sign, factor):
+    return term.val()/factor.val()
 
-    def minus(self, expr, sign, term):
-        # print('Minus:', expr, sign, term)
-        return expr.val() - term.val()
+def mul(term, sign, factor):
+    return term.val() * factor.val()
 
-    def div(self, term, sign, factor):
-        result = term.val()/factor.val()
-        # print('Div:', term, sign, factor)
-        return result
+def paren(left, expression, right):
+    return expression.val()
 
-    def mul(self, term, sign, factor):
-        result = term.val() * factor.val()
-        # print('Mul:', term.val(), sign, factor.val())
-        return result
+def done(sof, num, eof):
+    print('Result:', num.val())
+    return num.val()
 
-    def paren(self, left, expression, right):
-        return expression.val()
-
-    def done(self, sof, num, eof):
-        print('Result:', num.val())
-        # raise Exception()
-        return num.val()
-
-    def calc(self, data):
-        tokens = self.lexer.feed(data)
-        ptree = self.build(tokens)
-        ptree = list(ptree)
-        return ptree
 
 data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1) * (2/30)- 10 +3 - (2 /(2 * (3/3)*5+(8/9))) * 8*(10/10) + (3-4*(10/40)))+' * 100 + '2'
-data = '2 + 2 +' * 10000 + '2'
-# data = '1+1'
-parser = CalcParser()
-ptree = parser.calc(data)
+lexer  = Lexer(CalcTokens)
+tokens = lexer.feed(data)
+yacc   = Yacc(CalcGrammar)
+
+yacc.add_handle(CalcGrammar.r_plus, plus)
+yacc.add_handle(CalcGrammar.r_minus, minus)
+yacc.add_handle(CalcGrammar.r_div, div)
+yacc.add_handle(CalcGrammar.r_mul, mul)
+yacc.add_handle(CalcGrammar.r_paren, paren)
+yacc.add_handle(CalcGrammar.r_done, done)
+
+ptree = yacc.build(tokens)
+ptree = list(ptree)
+

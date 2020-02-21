@@ -104,3 +104,11 @@ class LP(Token):
 class Blank(Token):
     pass
 
+class Keyword(Token):
+    pass
+
+class Identifier(Token):
+    pass
+
+class Colon(Token):
+    pass

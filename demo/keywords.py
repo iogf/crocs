@@ -2,32 +2,22 @@
 """
 
 from crocs.lexer import XSpec, Lexer, LexMap, SeqNode, LexNode, LexSeq
-from crocs.token import Token
-
-class Keyword(Token):
-    pass
-
-class Identifier(Token):
-    pass
+from crocs.token import Token, Keyword, Identifier, RP, LP, Colon
 
 class KeywordTokens(XSpec):
     lexmap = LexMap()
     LexSeq(lexmap, SeqNode(r'if', type=Keyword),
     SeqNode(r'\s+', type=Token))
 
-    LexSeq(lexmap, SeqNode(r'for', type=Keyword),
-    SeqNode(r'\s+', type=Token))
-
-    LexSeq(lexmap, SeqNode(r'end', type=Keyword),
-    SeqNode(r'\s+', type=Token))
-
     LexNode(lexmap, r' +', type=Token)
+    LexNode(lexmap, r'\(', type=LP)
+    LexNode(lexmap, r'\)', type=RP)
+    LexNode(lexmap, r'\:', type=Colon)
+
     LexNode(lexmap, r'[a-zA-Z0-9]+', type=Identifier)
     root = lexmap
 
 lex = Lexer(KeywordTokens)
-
-print('Example 1!')
-data = 'flow if foo for bar end pears'
+data = 'if ifnum: foobar()'
 tokens = lex.feed(data)
 print('Consumed:', list(tokens))

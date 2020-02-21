@@ -273,7 +273,7 @@ class Rule(XNode):
         """
 
         grouper = tokens.clone()
-        ptree  = self.validate(grouper)
+        ptree   = self.validate(grouper)
 
         if not ptree:
             return None
