@@ -8,6 +8,7 @@ class XSpec:
     pass
 
 class Lexer:
+    offset = 0
     def __init__(self, xspec, no_errors=False):
         """
         """
@@ -17,8 +18,9 @@ class Lexer:
     def feed(self, data):
         """
         """
+        self.offset = 0
 
-        yield Token('', Sof)
+        yield Token('', Sof, offset=0)
         while True:
             tseq = self.consume(data)
             if tseq:
@@ -29,7 +31,7 @@ class Lexer:
 
         # The loop stops on eof. It is useful for
         # some rules.
-        yield Token('', Eof)
+        yield Token('', Eof, offset=self.offset)
 
     def consume(self, data):
         """
@@ -113,8 +115,9 @@ class SeqNode(XNode):
             return self.mktoken(regobj)
                         
     def mktoken(self, regobj):
-        data = regobj.group(0)
-        token  = Token(data, self.type, self.cast)
+        data  = regobj.group(0)
+        token = Token(data, self.type, self.cast, Lexer.offset)
+        Lexer.offset += token.clen()
         return TSeq(token)
 
     def __repr__(self):
