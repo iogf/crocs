@@ -89,7 +89,8 @@ print('Consumed:', list(tokens))
 That would give:
 
 ~~~
-Consumed: [Sof(''), Keyword('if'), Blank(' '), Identifier('ifnum'), Colon(':'), Blank(' '), Identifier('foobar'), LP('('), RP(')'), Eof('')]
+Consumed: [Sof(''), Keyword('if'), Blank(' '), Identifier('ifnum'), 
+Colon(':'), Blank(' '), Identifier('foobar'), LP('('), RP(')'), Eof('')]
 ~~~
 
 The above example handles the task of tokenizing keywords correctly. The SeqNode class works together with
