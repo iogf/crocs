@@ -275,7 +275,7 @@ expression : expression PLUS expression
             | NUMBER
 ~~~
 
-The type parameter maps to expression string so defind above. There is a naur_calc.py file that implements the
+The type parameter maps to expression string so defined above. There is a naur_calc.py file that implements the
 Backus-Naur-like approach.
 
 The idea behind Crocs arouse when i was working to abstract a set of existing tools to improve 
