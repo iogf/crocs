@@ -1,8 +1,8 @@
 # crocs
 
-Regex-like and Naur Backus-like on python classes. An expressive parsing library.
-Crocs is set of python classes that allow you to reason about regex's using a different approach.
-It also implements a lexer and a Yacc-like thing whose syntax is similar to Naur Backus.
+Regex-like and Naur Backus-like on python classes.  Crocs is set of python classes 
+that allow you to reason about regex's using a different approach. It also implements 
+a lexer and a Yacc-like thing whose syntax is similar to Naur Backus.
 
 In Crocs you use classes to express regex it gets serialized to regex strings. You can also
 get hits for the patteerns a given regex matches.
