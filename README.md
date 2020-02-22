@@ -238,6 +238,51 @@ then Crocs would raise an error. It is important to mention that rules aren't ne
 There will exist situations that you may want to define a rule with a type just to handle some specific
 parts of a given document.
 
+You may be wondering why it looks like Naur Backus, the reason is shown below:
+
+~~~python
+class CalcGrammar(Grammar):
+    expression = Struct()
+
+    r_paren = Rule(LP, expression, RP, type=expression)
+
+    r_div   = Rule(expression, Div, expression, type=expression)
+    r_mul   = Rule(expression, Mul, expression, type=expression)
+    o_div   = Rule(Div)
+    o_mul   = Rule(Mul)
+
+    r_plus  = Rule(expression, Plus, expression, type=expression, up=(o_mul, o_div))
+    r_minus = Rule(expression, Minus, expression, type=expression, up=(o_mul, o_div))
+    r_num = Rule(Num, type=expression)
+
+    r_done  = Rule(Sof, expression, Eof)
+
+    expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_num, r_done)
+
+    root    = [expression]
+    discard = [Blank]
+~~~
+
+When replacing the the previous example CalcGrammar code for the below one then you get something similar to:
+
+~~~
+expression : expression PLUS expression
+            | expression MINUS expression
+            | expression TIMES expression
+            | expression DIVIDE expression
+            | LPAREN expression RPAREN
+            | NUMBER
+~~~
+
+The type parameter maps to expression string so defind above. There is a naur_calc.py file that implements the
+Naur Backus-like approach.
+
+The idea behind Crocs arouse when i was working to abstract a set of existng tools to improve 
+
+https://github.com/vyapp/vy
+
+That is my vim-like thing in python.
+
 Crocs is under heavy development, there are a lot of interesting things left to be implemented and also heavy
 optmizations.
 
