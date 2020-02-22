@@ -58,7 +58,7 @@ Crocs also implements a powerful parsing library. It uses a similar syntax to Na
 The main idea consists of implementing token patterns and specifying a type for them. 
 
 When patterns are matched they are assigned a type and rematched against other existing patterns. That allows one
-to handle some grammars in a consistent and expressive manner.
+to handle some parsing problems in a consistent and expressive manner.
 
 The lexer is really powerful it can handle some interesting cases in a short and simple manner.
 
@@ -98,6 +98,148 @@ do not demand a lookahead step.
 
 The parser syntax is consistent and concrete. It allows you to link handles to token patterns and
 evaluate these rules according to your necessities.
+
+The below code specifies a lexer and a parsing approach for a simple expression calculator.
+
+~~~python
+
+from crocs.yacc import Rule, Grammar, Struct, Yacc
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
+from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
+
+class CalcTokens(XSpec):
+    expression = LexMap()
+    LexNode(expression, r'\+', Plus)
+    LexNode(expression, r'\-', Minus)
+    LexNode(expression, r'\(', LP)
+    LexNode(expression, r'\)', RP)
+    LexNode(expression, r'\*', Mul)
+    LexNode(expression, r'\/', Div)
+
+    LexNode(expression, r'[0-9]+', Num, float)
+    LexNode(expression, r' +', Blank)
+    root = expression
+
+class CalcGrammar(Grammar):
+    expression = Struct()
+
+    r_paren = Rule(LP, Num, RP, type=Num)
+
+    r_div   = Rule(Num, Div, Num, type=Num)
+    r_mul   = Rule(Num, Mul, Num, type=Num)
+    o_div   = Rule(Div)
+    o_mul   = Rule(Mul)
+
+    r_plus  = Rule(Num, Plus, Num, type=Num, up=(o_mul, o_div))
+    r_minus = Rule(Num, Minus, Num, type=Num, up=(o_mul, o_div))
+    r_done  = Rule(Sof, Num, Eof)
+
+    expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_done)
+
+    root    = [expression]
+    discard = [Blank]
+
+def plus(expr, sign, term):
+    return expr.val() + term.val()
+
+def minus(expr, sign, term):
+    return expr.val() - term.val()
+
+def div(term, sign, factor):
+    return term.val()/factor.val()
+
+def mul(term, sign, factor):
+    return term.val() * factor.val()
+
+def paren(left, expression, right):
+    return expression.val()
+
+def done(sof, num, eof):
+    print('Result:', num.val())
+    return num.val()
+
+
+data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1))'
+lexer  = Lexer(CalcTokens)
+tokens = lexer.feed(data)
+yacc   = Yacc(CalcGrammar)
+
+yacc.add_handle(CalcGrammar.r_plus, plus)
+yacc.add_handle(CalcGrammar.r_minus, minus)
+yacc.add_handle(CalcGrammar.r_div, div)
+yacc.add_handle(CalcGrammar.r_mul, mul)
+yacc.add_handle(CalcGrammar.r_paren, paren)
+yacc.add_handle(CalcGrammar.r_done, done)
+
+ptree = yacc.build(tokens)
+ptree = list(ptree)
+
+~~~
+
+That would give you:
+
+~~~
+[tau@archlinux demo]$ python calc.py 
+Result: 24.612244897959183
+~~~
+
+The approach consists of defining the expression tokens in Calctokens class then the way of these tokens
+should be parsed. The CalcGrammar class defines pattern rules that when matched each one of the rules
+are evaluated to a type that is rematched again against the grammar rules.
+
+It is pretty much as if when a token pattern is matched then it produces a new token that has a type
+and such a token is rematched again with the defined rules.
+
+The parser has a lookahead mechanism based on rules as well.
+
+~~~python
+    r_plus  = Rule(Num, Plus, Num, type=Num, up=(o_mul, o_div))
+~~~
+
+The above rule will be matched only if the below rules aren't matched ahead.
+
+~~~python
+    o_div   = Rule(Div)
+    o_mul   = Rule(Mul)
+~~~
+
+When a rule is matched it will call a handle with its defined tokens pattern. You can evaluate
+the tokens and return a value from the handle that will be stored in the resulting parse tree
+for further processing.
+
+You can subclass Yacc and build your own parse tree for the document easily or construct it pretty much
+as it is done when processing the above expression calculator value.
+
+The fact of matched rules producing parse trees which have a specific type and being rematched
+against other tokens it all allows handling parsing of documents in an interesting and powerful manner.
+
+You can define types for some document structures that would be trigged with tokens in some specific
+circumstances. It raises creativity and also gives the opportunity for optmizing parsing of specific documents.
+
+When a given rule has a type and is matched its parse tree result is rematched with the next tokens.
+Such a process would give you a resulting structure in the end, it is one that is no longer matched
+against the defined rules.
+
+~~~python
+    r_done  = Rule(Sof, Num, Eof)
+~~~
+
+The above rule consumes the last structure and is mapped to the below handle.
+
+~~~python
+def done(sof, num, eof):
+    print('Result:', num.val())
+    return num.val()
+~~~
+
+That just prints the resulting value. When a given document is not entirely consumed by the parsing rules
+then Crocs would raise an error. It is important to mention that rules aren't necessarily having a type.
+
+There will exist situations that you may want to define a rule with a type just to handle some specific
+parts of a given document.
+
+Crocs is under heavy development, there are a lot of interesting things left to be implemented and also heavy
+optmizations.
 
 # Install
 

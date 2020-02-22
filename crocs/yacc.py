@@ -170,7 +170,7 @@ class Yacc:
         for indi in tokens:
             if not self.is_discarded(indi):
                 yield indi
-        
+
     def build(self, tokens):
         """
         """
