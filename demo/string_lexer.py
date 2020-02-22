@@ -2,17 +2,17 @@
 """
 
 from crocs.lexer import Lexer, LexMap, LexSeq, LexNode, SeqNode, XSpec
-from crocs.token import Token
+from crocs.token import DoubleQuote, TokVal, Blank
 
 class StringTokens(XSpec):
     lexmap = LexMap()
 
     LexSeq(lexmap, 
-    SeqNode(r'\"', Token),
-    SeqNode(r'[^\"]+', Token),
-    SeqNode(r'\"', Token))
+    SeqNode(r'\"', DoubleQuote),
+    SeqNode(r'[^\"]+', TokVal),
+    SeqNode(r'\"', DoubleQuote))
 
-    LexNode(lexmap, r' +', type=Token)
+    LexNode(lexmap, r' +', type=Blank)
     root = lexmap
 
 lex = Lexer(StringTokens)

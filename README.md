@@ -18,7 +18,6 @@ e.hits()
 The above code would give you the regex's string and also possible matches.
 
 ~~~
-[tau@archlinux demo]$ python wildcard.py 
 Regex: a.b
 Input: aob
 Group dict: {}
@@ -46,7 +45,6 @@ e.hits()
 That would give you the possible hits:
 
 ~~~
-[tau@archlinux demo]$ python sequence.py 
 Regex: x[0-9]
 Input: x0
 Group dict: {}
@@ -56,8 +54,8 @@ Match with:
  x0 x2 x4 x9 x2 x5 x0 x5 x7 x3
 ~~~
 
-Crocs also implements a powerful parsing library. It uses a similar syntax to Naur Backus. The main
-idea consists of implementing token patterns and specifying a type for them. 
+Crocs also implements a powerful parsing library. It uses a similar syntax to Naur Backus on Python classes. 
+The main idea consists of implementing token patterns and specifying a type for them. 
 
 When patterns are matched they are assigned a type and rematched against other existing patterns. That allows one
 to handle some grammars in a consistent and expressive manner.

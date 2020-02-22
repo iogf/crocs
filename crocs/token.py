@@ -133,3 +133,18 @@ class Identifier(TokType):
 
 class Colon(TokType):
     pass
+
+class DoubleQuote(TokType):
+    pass
+
+class Quote(TokType):
+    pass
+
+class Comma(TokType):
+    pass
+
+class LB(TokType):
+    pass
+
+class RB(TokType):
+    pass
