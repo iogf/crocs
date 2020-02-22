@@ -184,7 +184,7 @@ That would give you:
 Result: 24.612244897959183
 ~~~
 
-The approach consists of defining the expression tokens in Calctokens class then the way of these tokens
+The approach consists of defining the expression tokens in CalcTokens class then the way of these tokens
 should be parsed. The CalcGrammar class defines pattern rules that when matched each one of the rules
 are evaluated to a type that is rematched again against the grammar rules.
 
