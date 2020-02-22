@@ -2,14 +2,14 @@
 """
 
 from crocs.lexer import XSpec, Lexer, LexMap, SeqNode, LexNode, LexSeq
-from crocs.token import Token, Keyword, Identifier, RP, LP, Colon
+from crocs.token import Token, Keyword, Identifier, RP, LP, Colon, Blank
 
 class KeywordTokens(XSpec):
     lexmap = LexMap()
     LexSeq(lexmap, SeqNode(r'if', type=Keyword),
-    SeqNode(r'\s+', type=Token))
+    SeqNode(r'\s+', type=Blank))
 
-    LexNode(lexmap, r' +', type=Token)
+    LexNode(lexmap, r' +', type=Blank)
     LexNode(lexmap, r'\(', type=LP)
     LexNode(lexmap, r'\)', type=RP)
     LexNode(lexmap, r'\:', type=Colon)

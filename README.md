@@ -65,16 +65,15 @@ to handle some grammars in a consistent and expressive manner.
 The lexer is really powerful it can handle some interesting cases in a short and simple manner.
 
 ~~~python
-
 from crocs.lexer import XSpec, Lexer, LexMap, SeqNode, LexNode, LexSeq
-from crocs.token import Token, Keyword, Identifier, RP, LP, Colon
+from crocs.token import Token, Keyword, Identifier, RP, LP, Colon, Blank
 
 class KeywordTokens(XSpec):
     lexmap = LexMap()
     LexSeq(lexmap, SeqNode(r'if', type=Keyword),
-    SeqNode(r'\s+', type=Token))
+    SeqNode(r'\s+', type=Blank))
 
-    LexNode(lexmap, r' +', type=Token)
+    LexNode(lexmap, r' +', type=Blank)
     LexNode(lexmap, r'\(', type=LP)
     LexNode(lexmap, r'\)', type=RP)
     LexNode(lexmap, r'\:', type=Colon)
@@ -86,6 +85,13 @@ lex = Lexer(KeywordTokens)
 data = 'if ifnum: foobar()'
 tokens = lex.feed(data)
 print('Consumed:', list(tokens))
+
+~~~
+
+That would give:
+
+~~~
+Consumed: [Sof(''), Keyword('if'), Blank(' '), Identifier('ifnum'), Colon(':'), Blank(' '), Identifier('foobar'), LP('('), RP(')'), Eof('')]
 ~~~
 
 The above example handles the task of tokenizing keywords correctly. The SeqNode class works together with
