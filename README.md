@@ -264,7 +264,15 @@ class CalcGrammar(Grammar):
     discard = [Blank]
 ~~~
 
-When replacing the previous example CalcGrammar code for the above one then you get something similar to:
+When replacing the previous example CalcGrammar code for the above one and mapping r_num rule like.
+
+~~~python
+def num(num):
+    return num.val()
+
+~~~
+
+Then you get something similar to:
 
 ~~~
 expression : expression PLUS expression
