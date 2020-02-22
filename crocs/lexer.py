@@ -18,7 +18,7 @@ class Lexer:
         """
         """
 
-        yield Sof('')
+        yield Token('', Sof)
         while True:
             tseq = self.consume(data)
             if tseq:
@@ -29,7 +29,7 @@ class Lexer:
 
         # The loop stops on eof. It is useful for
         # some rules.
-        yield Eof('')
+        yield Token('', Eof)
 
     def consume(self, data):
         """
@@ -94,7 +94,7 @@ class LexSeq(XNode):
         return 'LexSeq(%s)' % self.xnodes
 
 class SeqNode(XNode):
-    def __init__(self, regstr, type=Token, cast=None):
+    def __init__(self, regstr, type=TokVal, cast=None):
         """
         """
 
@@ -113,8 +113,8 @@ class SeqNode(XNode):
             return self.mktoken(regobj)
                         
     def mktoken(self, regobj):
-        tokval = regobj.group(0)
-        token  = self.type(tokval, self.cast)
+        data = regobj.group(0)
+        token  = Token(data, self.type, self.cast)
         return TSeq(token)
 
     def __repr__(self):
@@ -122,7 +122,7 @@ class SeqNode(XNode):
             self.type.__name__, repr(self.regstr))
 
 class LexNode(SeqNode):
-    def __init__(self, lexmap, regstr, type=Token, cast=None):
+    def __init__(self, lexmap, regstr, type=TokVal, cast=None):
         """
         """
 

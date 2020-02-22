@@ -22,21 +22,24 @@ class PTree(list):
     def val(self):
         return self.result
 
-class Token(XNode):
-    def __init__(self, data, cast=None):
+# class Token(namedtuple('Token', ('data', 'type', 'value'))):
+    # def val(self):
+        # return self.value
+    # 
+    # def tlen(self):
+        # return 1
+# 
+    # def clen(self):
+        # return len(self.data)
+# 
+    # def __repr__(self):
+        # return '%s(%s)' % (self.type.__name__, repr(self.data))
+
+class Token:
+    def __init__(self, data, type=None, cast=None):
         self.data = data
         self.value = cast(data) if cast else data
-        self.type = self.__class__
-
-    @classmethod
-    def validate(cls, tokens):
-        tok = tokens.get()
-        if tok != None and cls.istype(tok):
-            return tok
-
-    @classmethod
-    def istype(cls, tok):
-        return tok.type is cls
+        self.type = type
 
     def val(self):
         return self.value
@@ -48,22 +51,7 @@ class Token(XNode):
         return len(self.data)
 
     def __repr__(self):
-        return '%s(%s)' % (self.__class__.__name__, repr(self.data))
-
-class TokVal(Token):
-    def validate(self, tokens):
-        tok = tokens.get()
-        if tok != None and self.istype(tok):
-            return tok
-
-    def istype(self, tok):
-        return self.data == tok.data
-
-class Eof(Token):
-    pass
-
-class Sof(Token):
-    pass
+        return '%s(%s)' % (self.type.__name__, repr(self.data))
 
 class TSeq(list):
     """
@@ -80,35 +68,68 @@ class TSeq(list):
             count += ind.clen()
         return count
 
-class Num(Token):
+class TokType:
+    @classmethod
+    def validate(cls, tokens):
+        tok = tokens.get()
+        if tok != None and cls.istype(tok):
+            return tok
+
+    @classmethod
+    def istype(cls, tok):
+        return tok.type is cls
+
+class TokVal:
+    
+    def __init__(self, data):
+        self.data = data
+
+    def validate(self, tokens):
+        tok = tokens.get()
+        if tok != None and self.istype(tok):
+            return tok
+
+    def istype(self, tok):
+        return self.data == tok.data
+
+    def __repr__(self):
+        return '%s(%s)' % (self.__name__, repr(self.data))
+
+class Eof(TokType):
     pass
 
-class Plus(Token):
+class Sof(TokType):
     pass
 
-class Minus(Token):
+class Num(TokType):
     pass
 
-class Div(Token):
+class Plus(TokType):
     pass
 
-class Mul(Token):
+class Minus(TokType):
     pass
 
-class RP(Token):
+class Div(TokType):
     pass
 
-class LP(Token):
+class Mul(TokType):
     pass
 
-class Blank(Token):
+class RP(TokType):
     pass
 
-class Keyword(Token):
+class LP(TokType):
     pass
 
-class Identifier(Token):
+class Blank(TokType):
     pass
 
-class Colon(Token):
+class Keyword(TokType):
+    pass
+
+class Identifier(TokType):
+    pass
+
+class Colon(TokType):
     pass

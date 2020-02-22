@@ -7,7 +7,7 @@ from crocs.token import Token, Blank, TokVal, Sof, Eof
 
 class WordTokens(XSpec):
     expr = LexMap()
-    LexNode(expr, r'[a-zA-Z]+', type=Token)
+    LexNode(expr, r'[a-zA-Z]+', TokVal)
     LexNode(expr, r' +', type=Blank)
     root = expr
 
