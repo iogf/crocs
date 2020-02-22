@@ -293,7 +293,7 @@ class Rule(XNode):
 
 class Times(XNode):
     def __init__(self, refer, min=1, max=None):
-        self.refer = refer
+        self.rule = rule
         self.min = min
         self.max = max
 
@@ -301,7 +301,7 @@ class Times(XNode):
         ptree = PTree(rule=self)
 
         while True:
-            token = self.refer.validate(tokens)
+            token = self.rule.validate(tokens)
             if not token:
                 tokens.shift_back()
                 if self.max and (self.min <= len(ptree) <= self.max):

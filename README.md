@@ -1,8 +1,8 @@
 # crocs
 
-Regex-like and Naur Backus-like on python classes.  Crocs is set of python classes 
+Regex-like and Backus-Naur-like on python classes.  Crocs is set of python classes 
 that allow you to reason about regex's using a different approach. It also implements 
-a lexer and a Yacc-like thing whose syntax is similar to Naur Backus.
+a lexer and a Yacc-like thing whose syntax is similar to Backus-Naur.
 
 In Crocs you use classes to express regex it gets serialized to regex strings. You can also
 get hits for the patterns a given regex matches.
@@ -54,7 +54,7 @@ Match with:
  x0 x2 x4 x9 x2 x5 x0 x5 x7 x3
 ~~~
 
-Crocs also implements a powerful parsing library. It uses a similar syntax to Naur Backus on Python classes. 
+Crocs also implements a powerful parsing library. It uses a similar syntax to Backus-Naur on Python classes. 
 The main idea consists of implementing token patterns and specifying a type for them. 
 
 When patterns are matched they are assigned a type and rematched against other existing patterns. That allows one
@@ -238,7 +238,7 @@ then Crocs would raise an error. It is important to mention that rules aren't ne
 There will exist situations that you may want to define a rule with a type just to handle some specific
 parts of a given document.
 
-You may be wondering why it looks like Naur Backus, the reason is shown below:
+You may be wondering why it looks like Backus-Naur, the reason is shown below:
 
 ~~~python
 class CalcGrammar(Grammar):
@@ -275,7 +275,7 @@ expression : expression PLUS expression
 ~~~
 
 The type parameter maps to expression string so defind above. There is a naur_calc.py file that implements the
-Naur Backus-like approach.
+Backus-Naur-like approach.
 
 The idea behind Crocs arouse when i was working to abstract a set of existng tools to improve 
 
