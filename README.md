@@ -5,7 +5,7 @@ that allow you to reason about regex's using a different approach. It also imple
 a lexer and a Yacc-like thing whose syntax is similar to Naur Backus.
 
 In Crocs you use classes to express regex it gets serialized to regex strings. You can also
-get hits for the patteerns a given regex matches.
+get hits for the patterns a given regex matches.
 
 ~~~python
 from crocs.regex import Join, X
@@ -28,7 +28,7 @@ Match with:
 
 ~~~
 
-A regex can be thuoght as a sequence of patterns that are joined together. Crocs offers
+A regex can be thought as a sequence of patterns that are joined together. Crocs offers
 Regex's operators as Python classes. You reason using these classes specification to implement
 your desired patterns of search.
 
@@ -211,7 +211,7 @@ You can subclass Yacc and build your own parse tree for the document easily or c
 as it is done when processing the above expression calculator value.
 
 The fact of matched rules producing parse trees which have a specific type and being rematched
-against other tokens it all allows handling parsing of documents in an interesting and powerful manner.
+against other tokens it all allows documents parsing in an interesting and powerful manner.
 
 You can define types for some document structures that would be trigged with tokens in some specific
 circumstances. It raises creativity and also gives the opportunity for optmizing parsing of specific documents.
@@ -263,7 +263,7 @@ class CalcGrammar(Grammar):
     discard = [Blank]
 ~~~
 
-When replacing the the previous example CalcGrammar code for the below one then you get something similar to:
+When replacing the previous example CalcGrammar code for the above one then you get something similar to:
 
 ~~~
 expression : expression PLUS expression
