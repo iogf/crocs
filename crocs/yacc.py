@@ -63,7 +63,7 @@ class LinkedList:
 
     def lst(self, index, lindex):
         while index != lindex:
-            yield index.elem
+            yield index
             index = index.next
 
     def back(self, index):
@@ -84,7 +84,7 @@ class LinkedList:
 
     def __str__(self):
         data = self.lst(self.head.next, self.last)
-        data = list(data)
+        data = list(map(lambda ind: ind.elem, data))
         return data.__str__()
 
     __repr__ = __str__
@@ -92,7 +92,6 @@ class LinkedList:
 class Grouper:
     """
     """
-    __slots__ = ['linked', 'index']
 
     def __init__(self):
         self.linked = LinkedList()
@@ -106,29 +105,42 @@ class Grouper:
     def reset(self):
         self.index = self.linked.first()
 
-    def clone(self):
-        grouper = Grouper()
-        grouper.linked = self.linked
-        grouper.index = self.index
-        return grouper
-
     def shift(self):
         self.index = self.linked.next(self.index)
 
-    def shift_back(self):
-        self.index = self.linked.back(self.index)
+    def match(self, rule):
+        index, ptree = self.validate(self.index, rule)
+        if not ptree:
+            return None
 
-    def iseof(self):
-        return self.index.islast()
+        lindex = self.linked.next(index)
+        if rule.up:
+            valid = self.lookahead(lindex, rule)
+            if not valid:
+                return None
 
-    def get(self):
-        """
-        """
-        lnode = self.index
-        self.index = self.linked.next(self.index)
-        
-        if not lnode.islast():
-            return lnode.elem
+        ptree.eval(rule.hmap)
+        self.reduce(lindex, ptree)
+        return ptree
+
+    def validate(self, lindex, rule):
+        ptree = PTree(rule=rule, type=rule.type)
+        chain = self.linked.lst(lindex, self.linked.last)
+
+        for ind in rule.args:
+            index = next(chain, None)
+            if index and ind == index.elem.type:
+                ptree.append(index.elem)
+            else:
+                return index, None
+        return index, ptree
+
+    def lookahead(self, lindex, rule):
+        for ind in rule.up:
+            index, ptree = self.validate(lindex, ind)
+            if ptree:
+                return False
+        return True
 
     def reduce(self, lindex, ptree):
         """
@@ -147,6 +159,7 @@ class Grouper:
         self.linked.delete(self.index, lindex)
         self.linked.insert(lindex, ptree)
         self.index = lindex
+        self.reset()
 
     def __str__(self):
         return self.linked.__str__()
@@ -189,11 +202,9 @@ class Yacc:
             ptree = self.consume(tokens)
             if ptree:
                 yield ptree
-                if ptree.type:
-                    tokens.reset()
             elif tokens.linked.empty():
                 break
-            elif not tokens.iseof():
+            elif not tokens.index.islast():
                 tokens.shift()
             else:
                 break
@@ -238,7 +249,7 @@ class Struct(XNode):
         """
         
         for ind in self.rules:
-            ptree = ind.consume(tokens)
+            ptree = tokens.match(ind)
             if ptree:
                 return ptree
 
@@ -257,56 +268,3 @@ class Rule(XNode):
         self.up   = []
 
         self.up.extend(up)
-
-    def consume(self, tokens):
-        """
-        """
-
-        grouper = tokens.clone()
-        ptree   = self.validate(grouper)
-
-        if not ptree or ptree and self.lookahead(grouper):
-            return None
-
-        tokens.reduce(grouper.index, ptree)
-        ptree.eval(self.hmap)
-        return ptree
-
-    def validate(self, tokens):
-        ptree = PTree(rule=self, type=self.type)
-        for ind in self.args:
-            tok = ind.validate(tokens)
-            if tok:
-                ptree.append(tok)
-            else:
-                return None
-        return ptree
-
-    def lookahead(self, tokens):
-        """
-        """
-        for ind in self.up:
-            valid = ind.validate(tokens.clone())
-            if valid:
-                return True
-        return False
-
-class Times(XNode):
-    def __init__(self, refer, min=1, max=None):
-        self.rule = rule
-        self.min = min
-        self.max = max
-
-    def validate(self, tokens):
-        ptree = PTree(rule=self)
-
-        while True:
-            token = self.rule.validate(tokens)
-            if not token:
-                tokens.shift_back()
-                if self.max and (self.min <= len(ptree) <= self.max):
-                    return ptree
-                elif self.min <= len(ptree):
-                    return ptree
-                else:
-                    return 
