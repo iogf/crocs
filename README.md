@@ -191,6 +191,9 @@ are evaluated to a type that is rematched again against the grammar rules.
 It is pretty much as if when a token pattern is matched then it produces a new token that has a type
 and such a token is rematched again with the defined rules.
 
+When two math operations are performed it results in a number according to the so defined context
+of math expressions. Using such a fact we can then define the math calculator mechanism to process the result.
+
 The parser has a lookahead mechanism based on rules as well.
 
 ~~~python
