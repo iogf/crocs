@@ -200,9 +200,8 @@ class Yacc:
     def process(self, tokens):
         while True:
             ptree = self.consume(tokens)
-            if ptree:
-                yield ptree
-            elif tokens.linked.empty():
+            yield from ptree
+            if tokens.linked.empty():
                 break
             elif not tokens.index.islast():
                 tokens.shift()
@@ -214,8 +213,7 @@ class Yacc:
         """
         for ind in self.root:
             ptree = ind.consume(tokens)
-            if ptree:
-                return ptree
+            yield from ptree
                             
     def handle_error(self, tokens):
         """
@@ -239,20 +237,15 @@ class Struct(XNode):
         super(Struct, self).__init__()
         self.rules = []
 
-    def validate(self, tokens):
-        tok = tokens.get()
-        if tok and self is tok.type:
-            return tok
-
     def consume(self, tokens):
         """
         """
         
         for ind in self.rules:
-            ptree = tokens.match(ind)
-            if ptree:
-                return ptree
-
+           ptree = tokens.match(ind)
+           if ptree:
+               yield ptree
+   
     def add(self, *args):
         """
         """
