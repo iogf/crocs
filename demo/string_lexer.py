@@ -7,12 +7,12 @@ from crocs.token import DoubleQuote, TokVal, Blank
 class StringTokens(XSpec):
     lexmap = LexMap()
 
-    LexSeq(lexmap, 
-    SeqNode(r'\"', DoubleQuote),
-    SeqNode(r'[^\"]+', TokVal),
-    SeqNode(r'\"', DoubleQuote))
+    t_dquote = LexSeq(SeqNode(r'\"', DoubleQuote),
+    SeqNode(r'[^\"]+', TokVal), SeqNode(r'\"', DoubleQuote))
 
-    LexNode(lexmap, r' +', type=Blank)
+    t_blank = LexNode(r' +', type=Blank)
+    lexmap.add(t_dquote, t_blank)
+
     root = lexmap
 
 lex = Lexer(StringTokens)

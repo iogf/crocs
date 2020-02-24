@@ -5,15 +5,18 @@ from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
 
 class CalcTokens(XSpec):
     expression = LexMap()
-    LexNode(expression, r'\+', Plus)
-    LexNode(expression, r'\-', Minus)
-    LexNode(expression, r'\(', LP)
-    LexNode(expression, r'\)', RP)
-    LexNode(expression, r'\*', Mul)
-    LexNode(expression, r'\/', Div)
+    t_plus  = LexNode(r'\+', Plus)
+    t_minus = LexNode(r'\-', Minus)
 
-    LexNode(expression, r'[0-9]+', Num, float)
-    LexNode(expression, r' +', Blank)
+    t_lp    = LexNode(r'\(', LP)
+    t_rp    = LexNode(r'\)', RP)
+    t_mul   = LexNode(r'\*', Mul)
+    t_div   = LexNode(r'\/', Div)
+
+    t_num   = LexNode(r'[0-9]+', Num, float)
+    t_blank = LexNode(r' +', Blank)
+
+    expression.add(t_plus, t_minus, t_lp, t_num, t_blank, t_rp, t_mul, t_div)
     root = expression
 
 class CalcGrammar(Grammar):

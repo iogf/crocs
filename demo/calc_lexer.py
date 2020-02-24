@@ -5,18 +5,20 @@ from crocs.lexer import Lexer, LexMap, LexNode, XSpec
 from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank
 
 class CalcTokens(XSpec):
-    lexmap = LexMap()
+    expression = LexMap()
+    t_plus  = LexNode(r'\+', Plus)
+    t_minus = LexNode(r'\-', Minus)
 
-    LexNode(lexmap, r'\+', Plus)
-    LexNode(lexmap, r'\-', Minus)
-    LexNode(lexmap, r'\(', LP)
-    LexNode(lexmap, r'\)', RP)
-    LexNode(lexmap, r'\*', Mul)
-    LexNode(lexmap, r'\/', Div)
+    t_lp    = LexNode(r'\(', LP)
+    t_rp    = LexNode(r'\)', RP)
+    t_mul   = LexNode(r'\*', Mul)
+    t_div   = LexNode(r'\/', Div)
 
-    LexNode(lexmap, r'[0-9]+', Num)
-    LexNode(lexmap, r' +', Blank)
-    root = lexmap
+    t_num   = LexNode(r'[0-9]+', Num, float)
+    t_blank = LexNode(r' +', Blank)
+
+    expression.add(t_plus, t_minus, t_lp, t_num, t_blank, t_rp, t_mul, t_div)
+    root = expression
 
 print('Example 1')
 lex = Lexer(CalcTokens)

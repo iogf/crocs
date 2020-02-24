@@ -12,7 +12,8 @@ class Lexer:
     def __init__(self, xspec, no_errors=False):
         """
         """
-        self.root   = xspec.root
+        self.root       = xspec.root
+        self.discarded  = xspec.root
         self.no_errorss = no_errors
 
     def feed(self, data):
@@ -52,8 +53,8 @@ class LexMap(XNode):
         self.children = []
         super(LexMap, self).__init__()
 
-    def register(self, xnode):
-        self.children.append(xnode)
+    def add(self, *args):
+        self.children.extend(args)
 
     def consume(self, data):
         """
@@ -70,14 +71,10 @@ class LexMap(XNode):
         return 'LexMap(%s)' % self.children
 
 class LexSeq(XNode):
-    """
-    """
-    def __init__(self, lexmap, *args):
-        self.lexmap = lexmap
+    def __init__(self, *args):
         self.xnodes = []
         self.type   = type
         self.xnodes.extend(args)
-        lexmap.register(self)
 
     def consume(self, data):
         """
@@ -125,13 +122,11 @@ class SeqNode(XNode):
             self.type.__name__, repr(self.regstr))
 
 class LexNode(SeqNode):
-    def __init__(self, lexmap, regstr, type=TokVal, cast=None):
+    def __init__(self, regstr, type=TokVal, cast=None):
         """
         """
 
         super(LexNode, self).__init__(regstr, type, cast)
-        self.lexmap = lexmap
-        self.lexmap.register(self)
 
 class LexRef(XNode):
     def __init__(self, xnode):

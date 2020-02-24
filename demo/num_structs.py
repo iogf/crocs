@@ -7,10 +7,12 @@ from crocs.token import Token, Blank, Eof, Sof
 
 class NumTokens(XSpec):
     lexmap  = LexMap()
-    LexNode(lexmap, r'[1-9]+', type=TokVal)
-    LexNode(lexmap, r'\+', type=TokVal)
+    t_num = LexNode(r'[1-9]+', type=TokVal)
+    t_plus = LexNode(r'\+', type=TokVal)
 
-    LexNode(lexmap, r' +', type=Blank)
+    t_blank = LexNode(r' +', type=Blank)
+    lexmap.add(t_num, t_plus, t_blank)
+
     root = lexmap
 
 class NumGrammar(Grammar):

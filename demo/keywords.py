@@ -6,15 +6,16 @@ from crocs.token import Token, Keyword, Identifier, RP, LP, Colon, Blank
 
 class KeywordTokens(XSpec):
     lexmap = LexMap()
-    LexSeq(lexmap, SeqNode(r'if', type=Keyword),
+    t_keyword = LexSeq(SeqNode(r'if', type=Keyword),
     SeqNode(r'\s+', type=Blank))
 
-    LexNode(lexmap, r' +', type=Blank)
-    LexNode(lexmap, r'\(', type=LP)
-    LexNode(lexmap, r'\)', type=RP)
-    LexNode(lexmap, r'\:', type=Colon)
+    t_blank = LexNode(r' +', type=Blank)
+    t_lp = LexNode(r'\(', type=LP)
+    t_rp = LexNode(r'\)', type=RP)
+    t_colon = LexNode(r'\:', type=Colon)
 
-    LexNode(lexmap, r'[a-zA-Z0-9]+', type=Identifier)
+    t_id = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
+    lexmap.add(t_keyword, t_blank, t_lp, t_rp, t_colon, t_id)
     root = lexmap
 
 lex = Lexer(KeywordTokens)

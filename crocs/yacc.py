@@ -7,7 +7,7 @@ class YaccError(Exception):
     pass
 
 class Grammar:
-    discard = []
+    pass
 
 class LinkedNode:
     __slots__ = ['elem', 'next', 'back']
@@ -97,8 +97,8 @@ class Grouper:
         self.linked = LinkedList()
         self.index = None
 
-    def expand(self, data):
-        for ind in data:
+    def expand(self, tokens):
+        for ind in tokens:
             self.linked.append(ind)
         self.index = self.linked.first()
 
@@ -129,7 +129,7 @@ class Grouper:
 
         for ind in rule.args:
             index = next(chain, None)
-            if index and ind == index.elem.type:
+            if index and ind.istype(index.elem):
                 ptree.append(index.elem)
             else:
                 return index, None
@@ -159,7 +159,6 @@ class Grouper:
         self.linked.delete(self.index, lindex)
         self.linked.insert(lindex, ptree)
         self.index = lindex
-        self.reset()
 
     def __str__(self):
         return self.linked.__str__()
@@ -168,7 +167,7 @@ class Grouper:
 
 class Yacc:
     def __init__(self, grammar):
-        self.root    = grammar.root
+        self.root = grammar.root
         self.discard = grammar.discard
 
     def is_discarded(self, token):
@@ -189,8 +188,10 @@ class Yacc:
         """
 
         data = self.remove_tokens(tokens)
+        data = list(data)
         tokens = Grouper()
         tokens.expand(data)
+
         ptree = self.process(tokens)
         yield from ptree
 
@@ -200,8 +201,11 @@ class Yacc:
     def process(self, tokens):
         while True:
             ptree = self.consume(tokens)
-            yield from ptree
-            if tokens.linked.empty():
+            if ptree:
+                yield ptree
+                if ptree.type:
+                    tokens.reset()
+            elif tokens.linked.empty():
                 break
             elif not tokens.index.islast():
                 tokens.shift()
@@ -213,8 +217,9 @@ class Yacc:
         """
         for ind in self.root:
             ptree = ind.consume(tokens)
-            yield from ptree
-                            
+            if ptree:
+                return ptree
+                                                        
     def handle_error(self, tokens):
         """
         """
@@ -237,6 +242,10 @@ class Struct(XNode):
         super(Struct, self).__init__()
         self.rules = []
 
+    def istype(self, tok):
+        if self is tok.type:
+            return tok
+
     def consume(self, tokens):
         """
         """
@@ -244,7 +253,7 @@ class Struct(XNode):
         for ind in self.rules:
            ptree = tokens.match(ind)
            if ptree:
-               yield ptree
+               return ptree
    
     def add(self, *args):
         """

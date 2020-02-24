@@ -5,22 +5,24 @@ from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
 
 class CalcTokens(XSpec):
     expression = LexMap()
-    LexNode(expression, r'\+', Plus)
-    LexNode(expression, r'\-', Minus)
-    LexNode(expression, r'\(', LP)
-    LexNode(expression, r'\)', RP)
-    LexNode(expression, r'\*', Mul)
-    LexNode(expression, r'\/', Div)
+    t_plus  = LexNode(r'\+', Plus)
+    t_minus = LexNode(r'\-', Minus)
 
-    LexNode(expression, r'[0-9]+', Num, float)
-    LexNode(expression, r' +', Blank)
+    t_lp    = LexNode(r'\(', LP)
+    t_rp    = LexNode(r'\)', RP)
+    t_mul   = LexNode(r'\*', Mul)
+    t_div   = LexNode(r'\/', Div)
+
+    t_num   = LexNode(r'[0-9]+', Num, float)
+    t_blank = LexNode(r' +', Blank)
+
+    expression.add(t_plus, t_minus, t_lp, t_num, t_blank, t_rp, t_mul, t_div)
     root = expression
 
 class CalcGrammar(Grammar):
     expression = Struct()
 
     r_paren = Rule(LP, Num, RP, type=Num)
-
     r_div   = Rule(Num, Div, Num, type=Num)
     r_mul   = Rule(Num, Mul, Num, type=Num)
     o_div   = Rule(Div)
@@ -31,9 +33,9 @@ class CalcGrammar(Grammar):
     r_done  = Rule(Sof, Num, Eof)
 
     expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_done)
-
-    root    = [expression]
+    
     discard = [Blank]
+    root    = [expression]
 
 def plus(expr, sign, term):
     return expr.val() + term.val()
@@ -54,8 +56,8 @@ def done(sof, num, eof):
     print('Result:', num.val())
     return num.val()
 
-
 data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1))'
+
 lexer  = Lexer(CalcTokens)
 tokens = lexer.feed(data)
 yacc   = Yacc(CalcGrammar)

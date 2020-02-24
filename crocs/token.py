@@ -73,30 +73,19 @@ class TSeq(list):
 
 class TokType:
     @classmethod
-    def validate(cls, tokens):
-        tok = tokens.get()
-        if tok != None and cls.istype(tok):
-            return tok
-
-    @classmethod
     def istype(cls, tok):
         return tok.type is cls
 
 class TokVal:
-    
     def __init__(self, data):
         self.data = data
-
-    def validate(self, tokens):
-        tok = tokens.get()
-        if tok != None and self.istype(tok):
-            return tok
+        self.type = TokVal
 
     def istype(self, tok):
         return self.data == tok.data
 
     def __repr__(self):
-        return '%s(%s)' % (self.__name__, repr(self.data))
+        return 'TokVal(%s)' % repr(self.data)
 
 class Eof(TokType):
     pass
@@ -151,3 +140,7 @@ class LB(TokType):
 
 class RB(TokType):
     pass
+
+class Word(TokType):
+    pass
+

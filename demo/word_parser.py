@@ -3,12 +3,14 @@
 
 from crocs.yacc import Yacc, Rule, Grammar, Struct
 from crocs.lexer import XSpec, Lexer, LexMap, LexNode
-from crocs.token import Token, Blank, TokVal, Sof, Eof
+from crocs.token import Token, Blank, Word, TokVal, Sof, Eof
 
 class WordTokens(XSpec):
     expr = LexMap()
-    LexNode(expr, r'[a-zA-Z]+', TokVal)
-    LexNode(expr, r' +', type=Blank)
+    t_word = LexNode(r'[a-zA-Z]+', Word)
+    t_blank = LexNode(r' +', type=Blank)
+
+    expr.add(t_word, t_blank)
     root = expr
 
 class WordGrammar(Grammar):
@@ -18,7 +20,7 @@ class WordGrammar(Grammar):
     r_sof      = Rule(Sof)
     r_eof      = Rule(Eof)
 
-    expr.add(r_phrase0, r_phrase1, r_sof, r_eof)
+    expr.add(r_phrase1, r_phrase0, r_sof, r_eof)
 
     root = [expr]
     discard = [Blank]
