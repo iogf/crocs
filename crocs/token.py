@@ -7,7 +7,7 @@ class PTree(list):
     """
     __slots__ = ['type', 'result', 'data']
 
-    def __init__(self, type=None):
+    def __init__(self, type):
         super(PTree, self).__init__()
         self.type = type
         self.data = type
