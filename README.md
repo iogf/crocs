@@ -7,6 +7,9 @@ a lexer and a Yacc-like thing whose syntax is similar to Backus-Naur.
 In Crocs you use classes to express regex it gets serialized to regex strings. You can also
 get hits for the patterns a given regex matches.
 
+The fact of using python code to construct regex's patterns it allows better documenting, better debugging
+which improves reliability and speeds up development.
+
 ### Wildcard
 
 ~~~python
@@ -79,6 +82,73 @@ Group 0: abH
 Groups: ('bH',)
 Match with:
  abH abH abH abH abH abH abH abH abH abH
+~~~
+
+### A concrete Regex's example
+
+It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
+contains 'python' in the beginning too. It makes sure that the first 
+letter in the mail name is in the set a-z as well.
+
+~~~python
+from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
+
+# First we define how our Joins look like.
+name_valid_letters = Seq('a', 'z')
+name_valid_numbers = Seq('0', '9')
+name_valid_signs   = '_.-'
+
+# The include works sort of Repeat except for one char. 
+# You can think of it as fetching one from the described sets.
+name_valid_chars = Include(name_valid_letters, 
+name_valid_numbers, name_valid_signs)
+
+# Think of the Repeat class as meaning: fetch the
+# described Joins one or more Repeat.
+name_chunk = Repeat(name_valid_chars, 1)
+
+# The first letter in the mail name has to be a in 'a-z'.
+name_fmt = Join(Include(name_valid_letters), name_chunk)
+
+# Think of group as a way to keep reference
+# to the fetched chunk.
+name = NamedGroup('name', name_fmt)
+
+# The random's hostname part looks like the name except
+# it starts with 'python' in the beginning, 
+# so we fetch the random chars.
+hostname_chars = Include(name_valid_letters)
+hostname_chunk = Repeat(hostname_chars, 1)
+
+# We format finally the complete hostname Join.
+hostname_fmt = Join('python', hostname_chunk)
+
+# Keep reference for the group.
+hostname = NamedGroup('hostname', hostname_fmt)
+
+# Keep reference of the domain chunk.
+domain  = NamedGroup('domain', 'br')
+
+# Finally we generate the regex and check how it looks like.
+match_mail = Join(name, '@', hostname, '.', domain)
+match_mail.test()
+match_mail.hits()
+
+~~~
+
+That would output:
+
+~~~
+[tau@archlinux demo]$ python xmails.py 
+Regex: (?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
+Input: jd7.gs2@pythontritd.br
+Group dict: {'name': 'jd7.gs2', 'hostname': 'pythontritd', 'domain': 'br'}
+Group 0: jd7.gs2@pythontritd.br
+Groups: ('jd7.gs2', 'pythontritd', 'br')
+Match with:
+ ppm4nh5s@pythong.br xc61_c_qic@pythonvbyzldk.br qpq.63@pythonzwwl.br 
+t8@pythongfmwhje.br pqf@pythonbofrqbrcfk.br k65vyirxs@pythonttahjeup.br 
+i.e3ui._@pythonylsg.br m0@pythonubjdm.br ijbf_ktux@pythonhdlh.br rtza45@pythonerypbo.br
 ~~~
 
 ### Lexer
@@ -276,7 +346,7 @@ then Crocs would raise an error. It is important to mention that rules aren't ne
 There will exist situations that you may want to define a rule with a type just to handle some specific
 parts of a given document.
 
-### Backus-Naur 
+### Backus-Naur Form
 
 You may be wondering why it looks like Backus-Naur, the reason is shown below:
 
