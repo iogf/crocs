@@ -124,7 +124,7 @@ class Grouper:
         return ptree
 
     def validate(self, lindex, rule):
-        ptree = PTree(rule=rule, type=rule.type)
+        ptree = PTree(rule.type)
         chain = self.linked.lst(lindex, self.linked.last)
 
         for ind in rule.args:
