@@ -8,13 +8,13 @@ class CalcTokens(XSpec):
     t_plus  = LexNode(r'\+', Plus)
     t_minus = LexNode(r'\-', Minus)
 
-    t_lparen    = LexNode(r'\(', LP)
-    t_rparen    = LexNode(r'\)', RP)
-    t_mul   = LexNode(r'\*', Mul)
-    t_div   = LexNode(r'\/', Div)
+    t_lparen = LexNode(r'\(', LP)
+    t_rparen = LexNode(r'\)', RP)
+    t_mul    = LexNode(r'\*', Mul)
+    t_div    = LexNode(r'\/', Div)
 
-    t_num   = LexNode(r'[0-9]+', Num, float)
-    t_blank = LexNode(r' +', Blank)
+    t_num    = LexNode(r'[0-9]+', Num, float)
+    t_blank  = LexNode(r' +', Blank)
 
     expression.add(t_plus, t_minus, t_lparen, t_num, 
     t_blank, t_rparen, t_mul, t_div)
@@ -25,7 +25,6 @@ class CalcGrammar(Grammar):
     expression = Struct()
 
     r_paren = Rule(LP, expression, RP, type=expression)
-
     r_div   = Rule(expression, Div, expression, type=expression)
     r_mul   = Rule(expression, Mul, expression, type=expression)
     o_div   = Rule(Div)
@@ -36,7 +35,6 @@ class CalcGrammar(Grammar):
     r_num = Rule(Num, type=expression)
 
     r_done  = Rule(Sof, expression, Eof)
-
     expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_num, r_done)
 
     root    = [expression]
