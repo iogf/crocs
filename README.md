@@ -71,10 +71,10 @@ class KeywordTokens(XSpec):
     t_keyword = LexSeq(SeqNode(r'if', type=Keyword),
     SeqNode(r'\s+', type=Blank))
 
-    t_blank = LexNode(r' +', type=Blank)
+    t_blank  = LexNode(r' +', type=Blank)
     t_lparen = LexNode(r'\(', type=LP)
     t_rparen = LexNode(r'\)', type=RP)
-    t_colon = LexNode(r'\:', type=Colon)
+    t_colon  = LexNode(r'\:', type=Colon)
 
     t_identifier = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
     lexmap.add(t_keyword, t_blank, t_lparen, t_rparen, t_colon, t_identifier)
@@ -107,18 +107,20 @@ from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
 
 class CalcTokens(XSpec):
     expression = LexMap()
-    t_plus  = LexNode(r'\+', Plus)
-    t_minus = LexNode(r'\-', Minus)
+    t_plus   = LexNode(r'\+', Plus)
+    t_minus  = LexNode(r'\-', Minus)
 
-    t_lp    = LexNode(r'\(', LP)
-    t_rp    = LexNode(r'\)', RP)
-    t_mul   = LexNode(r'\*', Mul)
-    t_div   = LexNode(r'\/', Div)
+    t_lparen = LexNode(r'\(', LP)
+    t_rparen = LexNode(r'\)', RP)
+    t_mul    = LexNode(r'\*', Mul)
+    t_div    = LexNode(r'\/', Div)
 
-    t_num   = LexNode(r'[0-9]+', Num, float)
-    t_blank = LexNode(r' +', Blank)
+    t_num    = LexNode(r'[0-9]+', Num, float)
+    t_blank  = LexNode(r' +', Blank)
 
-    expression.add(t_plus, t_minus, t_lp, t_num, t_blank, t_rp, t_mul, t_div)
+    expression.add(t_plus, t_minus, t_lparen, t_num, 
+    t_blank, t_rparen, t_mul, t_div)
+
     root = expression
 
 class CalcGrammar(Grammar):
@@ -173,6 +175,9 @@ yacc.add_handle(CalcGrammar.r_done, done)
 
 ptree = yacc.build(tokens)
 ptree = list(ptree)
+
+
+
 ~~~
 
 That would give you:
@@ -286,6 +291,10 @@ expression : expression PLUS expression
 
 The type parameter maps to expression string so defined above. There is a naur_calc.py file that implements the
 Backus-Naur-like approach.
+
+It is also interesting the fact that when a grammar is defined in such a way it allows inheritance, that is
+in the same manner as it happens with the lexer definition. Thus it is possible to modify some grammar rules
+or just extend a given grammar.
 
 The idea behind Crocs arouse when i was working to abstract a set of existing tools to improve 
 
