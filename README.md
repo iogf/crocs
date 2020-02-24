@@ -72,12 +72,12 @@ class KeywordTokens(XSpec):
     SeqNode(r'\s+', type=Blank))
 
     t_blank = LexNode(r' +', type=Blank)
-    t_lp = LexNode(r'\(', type=LP)
-    t_rp = LexNode(r'\)', type=RP)
+    t_lparen = LexNode(r'\(', type=LP)
+    t_rparen = LexNode(r'\)', type=RP)
     t_colon = LexNode(r'\:', type=Colon)
 
-    t_id = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
-    lexmap.add(t_keyword, t_blank, t_lp, t_rp, t_colon, t_id)
+    t_identifier = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
+    lexmap.add(t_keyword, t_blank, t_lparen, t_rparen, t_colon, t_identifier)
     root = lexmap
 
 lex = Lexer(KeywordTokens)
@@ -86,16 +86,13 @@ tokens = lex.feed(data)
 print('Consumed:', list(tokens))
 ~~~
 
-That would give:
-
-~~~
-Consumed: [Sof(''), Keyword('if'), Blank(' '), Identifier('ifnum'), 
-Colon(':'), Blank(' '), Identifier('foobar'), LP('('), RP(')'), Eof('')]
-~~~
-
 The above example handles the task of tokenizing keywords correctly. The SeqNode class works together with
 LexSeq to extract the tokens based on a given regex while LexNode works on its own to extract tokens that
 do not demand a lookahead step.
+
+The fact of grammar lexers being defined in such a way it also allows inheritance of token regex rules. 
+That means one could easily redefine a given grammar lexer on his own to work with some other grammar in an
+easy and straightforward manner..
 
 The parser syntax is consistent and concrete. It allows you to link handles to token patterns and
 evaluate these rules according to your necessities.
