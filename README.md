@@ -1,7 +1,7 @@
 # crocs
 
-Regex-like and Backus-Naur-like on python classes.  Crocs is set of python classes 
-that allow you to reason about regex's using a different approach. It also implements 
+Regex-like and Backus-Naur-like on python classes.  Crocs is a set of python classes 
+that allows you to reason about regex's using a different approach. It also implements 
 a lexer and a Yacc-like thing whose syntax is similar to Backus-Naur.
 
 In Crocs you use classes to express regex it gets serialized to regex strings. You can also
@@ -91,7 +91,7 @@ LexSeq to extract the tokens based on a given regex while LexNode works on its o
 do not demand a lookahead step.
 
 The fact of grammar lexers being defined in such a way it also allows inheritance of token regex rules. 
-That means one could easily redefine a given grammar lexer on his own to work with some other grammar in an
+That means one could easily redefine a given grammar lexer on its own to work with some other grammar in an
 easy and straightforward manner..
 
 The parser syntax is consistent and concrete. It allows you to link handles to token patterns and
