@@ -316,5 +316,7 @@ pip install crocs
 Documentation
 =============
 
+The docs may be missing some parts however there are many examples in the demo folder.
+
 [Wiki](https://github.com/iogf/crocs/wiki)
 
