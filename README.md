@@ -7,6 +7,8 @@ a lexer and a Yacc-like thing whose syntax is similar to Backus-Naur.
 In Crocs you use classes to express regex it gets serialized to regex strings. You can also
 get hits for the patterns a given regex matches.
 
+### Wildcard
+
 ~~~python
 from crocs.regex import Join, X
 
@@ -32,6 +34,8 @@ A regex can be thought as a sequence of patterns that are joined together. Crocs
 Regex's operators as Python classes. You reason using these classes specification to implement
 your desired patterns of search.
 
+### Sets
+
 A simple regex sequence would look like:
 
 ~~~python
@@ -53,6 +57,31 @@ Groups: ()
 Match with:
  x0 x2 x4 x9 x2 x5 x0 x5 x7 x3
 ~~~
+
+### Groups
+
+~~~python
+from crocs.regex import Join, Group, X
+
+e = Join('a', Group('b', X()))
+e.test()
+e.hits()
+~~~
+
+Would output.
+
+~~~
+[tau@archlinux demo]$ python group.py 
+Regex: a(b.)
+Input: abH
+Group dict: {}
+Group 0: abH
+Groups: ('bH',)
+Match with:
+ abH abH abH abH abH abH abH abH abH abH
+~~~
+
+### Lexer
 
 Crocs also implements a powerful parsing library. It uses a similar syntax to Backus-Naur on Python classes. 
 The main idea consists of implementing token patterns and specifying a type for them. 
@@ -93,6 +122,8 @@ do not demand a lookahead step.
 The fact of grammar lexers being defined in such a way it also allows inheritance of token regex rules. 
 That means one could easily redefine a given grammar lexer on its own to work with some other grammar in an
 easy and straightforward manner..
+
+### Yacc-like/Parser
 
 The parser syntax is consistent and concrete. It allows you to link handles to token patterns and
 evaluate these rules according to your necessities.
@@ -244,6 +275,8 @@ then Crocs would raise an error. It is important to mention that rules aren't ne
 
 There will exist situations that you may want to define a rule with a type just to handle some specific
 parts of a given document.
+
+### Backus-Naur 
 
 You may be wondering why it looks like Backus-Naur, the reason is shown below:
 
