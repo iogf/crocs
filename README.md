@@ -84,7 +84,7 @@ Match with:
  abH abH abH abH abH abH abH abH abH abH
 ~~~
 
-### A concrete Regex's example
+### Concrete Example
 
 It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
 contains 'python' in the beginning too. It makes sure that the first 
@@ -398,6 +398,67 @@ Backus-Naur-like approach.
 It is also interesting the fact that when a grammar is defined in such a way it allows inheritance, that is
 in the same manner as it happens with the lexer definition. Thus it is possible to modify some grammar rules
 or just extend a given grammar.
+
+Another interesting example consists in the specification of a simple tuple parser.
+
+~~~python
+
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
+from crocs.yacc import Grammar, Rule, Group, Yacc, Struct
+from crocs.token import Token, Blank, Num, Sof, Eof, LP, RP
+
+class TupleTokens(XSpec):
+    expr = LexMap()
+    r_lparen = LexNode(r'\(', LP)
+    r_rparen = LexNode(r'\)', RP)
+
+    r_num    = LexNode(r'[0-9]+', Num)
+    r_blank  = LexNode(r' +', Blank)
+
+    expr.add(r_lparen, r_rparen, r_num, r_blank)
+    root = expr
+
+class TupleGrammar(Grammar):
+    expr = Struct()
+
+    # It means to accumulate as many Num tokens as possible.
+    g_num = Group(Num, min=1)
+
+    # Then we trigge such a pattern in this rule.
+    r_paren = Rule(LP, g_num, RP, type=Num)
+    r_done  = Rule(Sof, Num, Eof)
+
+    expr.add(r_paren, r_done)
+
+    discard = [Blank]
+    root = [expr]
+
+def done(sof, expr, eof):
+    print('Result:', expr)
+
+print('Example 1')
+lexer  = Lexer(TupleTokens)
+yacc   = Yacc(TupleGrammar)
+yacc.add_handle(TupleGrammar.r_done, done)
+
+data   = '(1 (2 3) 4 (5 (6) 7))'
+tokens = lexer.feed(data)
+ptree  = yacc.build(tokens)
+ptree  = list(ptree)
+~~~
+
+That would output:
+
+~~~
+Example 1
+Result: [LP('('), [Num('1'), [LP('('), [Num('2'), Num('3')], RP(')')], 
+Num('4'), [LP('('), [Num('5'), [LP('('), [Num('6')], RP(')')], Num('7')], RP(')')]], RP(')')]
+~~~
+
+The class Group in the context plays the role to accumulate tokens whose type is Num. The r_paren rule makes usage of such
+an operator to build the basic pattern of tuples. That basically means that a sequence of Num tokens will have type Num
+and if it is between a left paren and a right paren then it also becomes an object whose type is Num. 
+Thus we have a minimalist but yet powerful recursive rule.
 
 The idea behind Crocs arouse when i was working to abstract a set of existing tools to improve 
 

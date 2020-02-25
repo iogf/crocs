@@ -3,7 +3,7 @@
 
 from crocs.lexer import Lexer, LexMap, LexNode, XSpec
 from crocs.yacc import Grammar, Rule, Group, Yacc, Struct
-from crocs.token import Token, Blank, Num, TokVal, Sof, Eof, LP, RP
+from crocs.token import Token, Blank, Num, Sof, Eof, LP, RP
 
 class TupleTokens(XSpec):
     expr = LexMap()
