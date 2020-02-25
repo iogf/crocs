@@ -455,10 +455,15 @@ Result: [LP('('), [Num('1'), [LP('('), [Num('2'), Num('3')], RP(')')],
 Num('4'), [LP('('), [Num('5'), [LP('('), [Num('6')], RP(')')], Num('7')], RP(')')]], RP(')')]
 ~~~
 
-The class Group in the context plays the role to accumulate tokens whose type is Num. The r_paren rule makes usage of such
-an operator to build the basic pattern of tuples. That basically means that a sequence of Num tokens will have type Num
-and if it is between a left paren and a right paren then it also becomes an object whose type is Num. 
-Thus we have a minimalist but yet powerful recursive rule.
+The class Group in the context plays the role to accumulate tokens whose type is Num. It accepts two arguments
+min and max that determin the number of repetitions that corresponds to a valid pattern.
+
+The r_paren rule makes usage of the group pattern to build the basic pattern of tuples. 
+That basically means that a sequence of Num tokens will have type Num and if it is between 
+a left paren and a right paren then it also becomes an object whose type is Num.  
+
+Other operators can be implemented to speed and also improve expressivity.
+Thus we have a minimalist but yet powerful mechanism to express recursive rule.
 
 The idea behind Crocs arouse when i was working to abstract a set of existing tools to improve 
 
