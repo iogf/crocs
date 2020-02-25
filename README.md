@@ -474,6 +474,12 @@ That is my vim-like thing in python.
 Crocs is under heavy development, there are a lot of interesting things left to be implemented and also heavy
 optmizations.
 
+**Notes**
+
+The actual algorithm used is not efficient both in terms of memory and cpu usage. A more sophisticated
+algorithm will be implemented as early as i get free time. Crocs actually has the goal of being a proof
+of concept however it is likely to work for many situations.
+
 # Install
 
 **Note:** Work with python3 only.

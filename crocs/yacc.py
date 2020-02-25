@@ -272,7 +272,6 @@ class Struct(XNode):
         if tok and tok.type is self:
             return tok
 
-
     def consume(self, tokens):
         """
         """
