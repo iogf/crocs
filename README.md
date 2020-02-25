@@ -471,14 +471,79 @@ https://github.com/vyapp/vy
 
 That is my vim-like thing in python.
 
+**Notes**
+
 Crocs is under heavy development, there are a lot of interesting things left to be implemented and also heavy
 optmizations.
-
-**Notes**
 
 The actual algorithm used is not efficient both in terms of memory and cpu usage. A more sophisticated
 algorithm will be implemented as early as i get free time. Crocs actually has the goal of being a proof
 of concept however it is likely to work for many situations.
+
+Crocs will also eventually improve regarding other aspects. It is straightforward
+to use the actual approach to write Backus Naur grammars that are ambiguous
+and solve ambiguity through precedence rules. However it is not practical to use such
+an approach when the Backus Naur Form has ambiguity removed.
+
+A more succinct approach will be implemented to handle Backus Naur Form using purely python classes.
+Such an algorithm should work for both ambiguous and unambiguous grammar specs.
+
+The approach implemented in the actual parser makes usage of backtracking, Crocs performance will improve
+highly with the new algorithm.
+
+The lexer suffers from performance issues as well, it will be improved altogether with the parser. It will allow
+specification of multiple LexMap classes. It actually allows handling some lexical errors but with 
+infinite recursion issues.
+
+~~~python
+from crocs.lexer import Lexer, LexMap, SeqNode, LexRef, LexSeq, LexNode, XSpec
+from crocs.token import Num, LP, RP, Blank, Comma
+
+class TupleTokens(XSpec):
+    lexmap = LexMap()
+    t_paren = LexSeq(SeqNode(r'\(', LP), LexRef(lexmap),
+    SeqNode(r'\)', RP))
+
+    t_elem = LexSeq(SeqNode(r',', Comma), LexRef(lexmap))
+
+    t_num = LexNode(r'[0-9]+', Num)
+    t_blank = LexNode(r' +', Blank)
+    lexmap.add(t_paren, t_elem, t_num, t_blank)
+    root = lexmap
+
+print('Example 1')
+lex = Lexer(TupleTokens)
+data = '(1, 2, 3, 1, 2, 3))'
+tokens = lex.feed(data)
+print('Consumed:', list(tokens))
+~~~
+
+Would output:
+
+~~~
+Example 1
+[tau@archlinux demo]$ python tuple_lexer.py 
+Example 1
+Traceback (most recent call last):
+  File "tuple_lexer.py", line 23, in <module>
+    print('Consumed:', list(tokens))
+  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 26, in feed
+    tseq = self.consume(data)
+  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 42, in consume
+    self.handle_error(data)
+  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 47, in handle_error
+    raise LexError(msg)
+crocs.lexer.LexError: Unexpected token: ')'
+
+~~~
+
+The exception occurs because the tuple being tokenized is not correct. Actually you can define
+multiple LexMap instances with specific extraction rules and use them in LexSeq instances. However
+it is not possible to define multiple LexMap instances and process them altogether it will be possible
+in the future.
+
+A Golang version of crocs will be implemented as early as i finish with the actual necessary improvements
+in the python version.
 
 # Install
 
