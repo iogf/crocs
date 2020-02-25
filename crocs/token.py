@@ -85,8 +85,7 @@ class TokVal:
         self.data = data
         self.type = TokVal
 
-    @classmethod
-    def validate(slc):
+    def validate(self, slc):
         tok = slc.get()
         if tok and self.istype(tok):
             return tok
