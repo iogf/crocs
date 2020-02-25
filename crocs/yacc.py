@@ -89,6 +89,28 @@ class LinkedList:
 
     __repr__ = __str__
 
+class Slice:
+    def __init__(self, start, end):
+        self.start = start
+        self.end = end
+        self.index = start
+
+    def get(self):
+        if self.index == self.end:
+            return None
+
+        elem = self.index.elem
+        self.shift()
+        return elem
+
+    def shift(self):
+        if self.index != self.end:
+            self.index = self.index.next
+
+    def lshift(self):
+        if self.index != self.start:
+            self.index = self.index.back
+        
 class Grouper:
     """
     """
@@ -113,27 +135,26 @@ class Grouper:
         if not ptree:
             return None
 
-        lindex = self.linked.next(index)
         if rule.up:
-            valid = self.lookahead(lindex, rule)
+            valid = self.lookahead(index, rule)
             if not valid:
                 return None
 
         ptree.eval(rule.hmap)
-        self.reduce(lindex, ptree)
+        self.reduce(index, ptree)
         return ptree
 
     def validate(self, lindex, rule):
         ptree = PTree(rule.type)
-        chain = self.linked.lst(lindex, self.linked.last)
+        slc   = Slice(lindex, self.linked.last)
 
         for ind in rule.args:
-            index = next(chain, None)
-            if index and ind.istype(index.elem):
-                ptree.append(index.elem)
+            token = ind.validate(slc)
+            if token:
+                ptree.append(token)
             else:
-                return index, None
-        return index, ptree
+                return slc.index, None
+        return slc.index, ptree
 
     def lookahead(self, lindex, rule):
         for ind in rule.up:
@@ -270,3 +291,27 @@ class Rule(XNode):
         self.up   = []
 
         self.up.extend(up)
+
+class Group(XNode):
+    def __init__(self, token, min=1, max=None):
+        self.token = token
+        self.min = min
+
+        self.max = max
+
+    def validate(self, slc):
+        ptree = PTree(None)
+        while True:
+            token = self.token.validate(slc)
+            if token:
+                ptree.append(token)
+            elif self.max and self.min <= len(ptree) < self.max:
+                slc.lshift()
+                return ptree
+            elif not self.max and self.min <= len(ptree):
+                slc.lshift()
+                return ptree
+            else:
+                return
+
+

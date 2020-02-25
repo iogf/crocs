@@ -2,36 +2,44 @@
 """
 
 from crocs.lexer import Lexer, LexMap, LexNode, XSpec
-from crocs.yacc import Grammar, Rule, Times, Yacc, Struct
+from crocs.yacc import Grammar, Rule, Group, Yacc, Struct
 from crocs.token import Token, Blank, Num, TokVal, Sof, Eof, LP, RP
 
 class TupleTokens(XSpec):
     expr = LexMap()
-    LexNode(expr, r'\(', LP),
-    LexNode(expr, r'\)', RP)
+    r_lparen = LexNode(r'\(', LP)
+    r_rparen = LexNode(r'\)', RP)
 
-    LexNode(expr, r'[0-9]+', Num)
-    LexNode(expr, r' +', Blank)
+    r_num    = LexNode(r'[0-9]+', Num)
+    r_blank  = LexNode(r' +', Blank)
+
+    expr.add(r_lparen, r_rparen, r_num, r_blank)
     root = expr
 
 class TupleGrammar(Grammar):
-    expr    = Struct()
-    r_num   = Rule(Num)
-    r_paren = Rule(Times(r_num), type=expr)
-    r_expr  = Rule(LP, expr, RP, type=expr)
-    r_expr0 = Rule(LP, Times(Rule(expr)), RP, type=expr)
+    expr = Struct()
 
-    r_done  = Rule(Sof, expr, Eof)
+    # It means to accumulate as many Num tokens as possible.
+    g_num = Group(Num, min=1)
 
-    expr.add(r_paren, r_expr, r_done, r_expr0)
+    # Then we trigge such a pattern in this rule.
+    r_paren = Rule(LP, g_num, RP, type=Num)
+    r_done  = Rule(Sof, Num, Eof)
+
+    expr.add(r_paren, r_done)
 
     discard = [Blank]
     root = [expr]
 
+def done(sof, expr, eof):
+    print('Result:', expr)
+
 print('Example 1')
-lex = Lexer(TupleTokens)
-data = '(1 2 3 4 (1))'
-tokens = lex.feed(data)
-yacc = Yacc(TupleGrammar)
-ptree = yacc.build(tokens)
-print('Consumed:', list(ptree))
+lexer  = Lexer(TupleTokens)
+yacc   = Yacc(TupleGrammar)
+yacc.add_handle(TupleGrammar.r_done, done)
+
+data   = '(1 (2 3) 4 (5 (6) 7))'
+tokens = lexer.feed(data)
+ptree  = yacc.build(tokens)
+ptree  = list(ptree)

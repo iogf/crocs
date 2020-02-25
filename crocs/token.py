@@ -71,6 +71,12 @@ class TSeq(list):
 
 class TokType:
     @classmethod
+    def validate(cls, slc):
+        tok = slc.get()
+        if tok and cls.istype(tok):
+            return tok
+
+    @classmethod
     def istype(cls, tok):
         return tok.type is cls
 
@@ -78,6 +84,12 @@ class TokVal:
     def __init__(self, data):
         self.data = data
         self.type = TokVal
+
+    @classmethod
+    def validate(slc):
+        tok = slc.get()
+        if tok and self.istype(tok):
+            return tok
 
     def istype(self, tok):
         return self.data == tok.data
