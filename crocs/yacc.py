@@ -267,6 +267,12 @@ class Struct(XNode):
         if self is tok.type:
             return tok
 
+    def validate(self, slc):
+        tok = slc.get()
+        if tok and tok.type is self:
+            return tok
+
+
     def consume(self, tokens):
         """
         """
