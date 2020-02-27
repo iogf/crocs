@@ -8,7 +8,6 @@ class XSpec:
     pass
 
 class Lexer:
-    offset = 0
     def __init__(self, xspec, no_errors=False):
         """
         """
@@ -27,14 +26,18 @@ class Lexer:
         yield from tseq
         yield Token('', Eof)
 
+    def validate(self, tseq):
+        """
+        """
+            # self.handle_error(data)
+        pass
+
     def consume(self, data):
         """
         """
-        tseq = self.root.consume(data)
-        yield from tseq
-
-        # if data:
-            # self.handle_error(data)
+        for ind in self.root:
+            tseq = ind.consume(data)
+            yield from tseq
 
     def handle_error(self, data):
         msg = 'Unexpected token: %s' % repr(data[:30])

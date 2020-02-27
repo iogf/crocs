@@ -19,7 +19,7 @@ class CalcTokens(XSpec):
     expression.add(t_plus, t_minus, t_lparen, t_num, 
     t_blank, t_rparen, t_mul, t_div)
 
-    root = expression
+    root = [expression]
 
 class CalcGrammar(Grammar):
     expression = Struct()

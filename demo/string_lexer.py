@@ -13,7 +13,7 @@ class StringTokens(XSpec):
     t_blank = LexNode(r' +', type=Blank)
     lexmap.add(t_dquote, t_blank)
 
-    root = lexmap
+    root = [lexmap]
 
 lex = Lexer(StringTokens)
 print('Example 1!')

@@ -20,12 +20,12 @@ class CalcTokens(XSpec):
     expression.add(t_plus, t_minus, t_lparen, t_num, 
     t_blank, t_rparen, t_mul, t_div)
 
-    root = expression
+    root = [expression]
 
 print('Example 1')
 lex = Lexer(CalcTokens)
 data = '1+1+(3*2+4)+' * 30000 + '2'
-# data = '1+1+(3*2+4)'
+data = '1+1+(3*2+4)'
 
 tokens = lex.feed(data)
 tk = list(tokens)

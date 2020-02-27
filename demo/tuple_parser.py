@@ -6,18 +6,18 @@ from crocs.yacc import Grammar, Rule, Group, Yacc, Struct
 from crocs.token import Token, Blank, Num, Sof, Eof, LP, RP
 
 class TupleTokens(XSpec):
-    expr = LexMap()
+    lexmap = LexMap()
     r_lparen = LexNode(r'\(', LP)
     r_rparen = LexNode(r'\)', RP)
 
     r_num    = LexNode(r'[0-9]+', Num)
     r_blank  = LexNode(r' +', Blank)
 
-    expr.add(r_lparen, r_rparen, r_num, r_blank)
-    root = expr
+    lexmap.add(r_lparen, r_rparen, r_num, r_blank)
+    root = [lexmap]
 
 class TupleGrammar(Grammar):
-    expr = Struct()
+    struct = Struct()
 
     # It means to accumulate as many Num tokens as possible.
     g_num = Group(Num, min=1)
@@ -26,10 +26,9 @@ class TupleGrammar(Grammar):
     r_paren = Rule(LP, g_num, RP, type=Num)
     r_done  = Rule(Sof, Num, Eof)
 
-    expr.add(r_paren, r_done)
-
+    struct.add(r_paren, r_done)
     discard = [Blank]
-    root = [expr]
+    root = [struct]
 
 def done(sof, expr, eof):
     print('Result:', expr)
