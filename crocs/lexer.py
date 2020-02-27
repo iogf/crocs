@@ -91,23 +91,21 @@ class LexNode(XNode):
         """
         self.offset = 0
         while True:
-            data, tok = self.mktoken(data)
-            if tok:
-                yield tok
+            token = self.mktoken(data)
+            if token:
+                yield token
             else:
                 break
 
     def mktoken(self, data):
-        regobj = self.regex.search(data)
+        regobj = self.regex.search(data, self.offset)
         if not regobj:
-            return data, None
+            return None
 
-        tokstr  = regobj.group(0)
-        self.offset = self.offset + regobj.end()
-        data = data[regobj.end():]
-
-        token = Token(tokstr, self.type, self.cast, self.offset)
-        return data, token
+        self.offset = regobj.end()
+        token = Token(regobj.group(), self.type, 
+        self.cast, regobj.end())
+        return token
 
     def __repr__(self):
         return 'SeqNode(%s(%s))' % (
