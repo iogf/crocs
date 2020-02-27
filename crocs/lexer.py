@@ -20,27 +20,21 @@ class Lexer:
         """
         """
         self.offset = 0
+        yield Token('', Sof)
+        tseq = self.consume(data)
+        tseq = sorted(tseq, key=lambda ind: ind.offset)
 
-        yield Token('', Sof, offset=0)
-        while True:
-            tseq = self.consume(data)
-            if tseq:
-                data = data[tseq.clen():]
-                yield from tseq
-            else:
-                break
-
-        # The loop stops on eof. It is useful for
-        # some rules.
-        yield Token('', Eof, offset=self.offset)
+        yield from tseq
+        yield Token('', Eof)
 
     def consume(self, data):
         """
         """
         tseq = self.root.consume(data)
-        if not tseq and data:
-            self.handle_error(data)
-        return tseq
+        yield from tseq
+
+        # if data:
+            # self.handle_error(data)
 
     def handle_error(self, data):
         msg = 'Unexpected token: %s' % repr(data[:30])
@@ -59,13 +53,9 @@ class LexMap(XNode):
     def consume(self, data):
         """
         """
-        if not data:
-            return None
-
         for ind in self.children:
-            tseq = ind.consume(data)
-            if tseq:
-                return tseq
+            token = ind.consume(data)
+            yield from token
 
     def __repr__(self):
         return 'LexMap(%s)' % self.children
@@ -79,20 +69,12 @@ class LexSeq(XNode):
     def consume(self, data):
         """
         """
-        tseq = TSeq()
-        for ind in self.xnodes:
-            token = ind.consume(data)
-            if token:
-                data = data[token.clen():]
-                tseq.extend(token)
-            else:
-                return None
-        return tseq
+        pass
         
     def __repr__(self):
         return 'LexSeq(%s)' % self.xnodes
 
-class SeqNode(XNode):
+class LexNode(XNode):
     def __init__(self, regstr, type=TokVal, cast=None):
         """
         """
@@ -102,49 +84,31 @@ class SeqNode(XNode):
         self.regstr = regstr
         self.type  = type
         self.cast  = cast
+        self.offset = 0
 
     def consume(self, data):
         """
         """
+        self.offset = 0
+        while True:
+            data, tok = self.mktoken(data)
+            if tok:
+                yield tok
+            else:
+                break
 
-        regobj = self.regex.match(data)
-        if regobj:
-            return self.mktoken(regobj)
-                        
-    def mktoken(self, regobj):
-        data  = regobj.group(0)
-        token = Token(data, self.type, self.cast, Lexer.offset)
-        Lexer.offset += token.clen()
-        return TSeq(token)
+    def mktoken(self, data):
+        regobj = self.regex.search(data)
+        if not regobj:
+            return data, None
+
+        tokstr  = regobj.group(0)
+        self.offset = self.offset + regobj.end()
+        data = data[regobj.end():]
+
+        token = Token(tokstr, self.type, self.cast, self.offset)
+        return data, token
 
     def __repr__(self):
         return 'SeqNode(%s(%s))' % (
             self.type.__name__, repr(self.regstr))
-
-class LexNode(SeqNode):
-    def __init__(self, regstr, type=TokVal, cast=None):
-        """
-        """
-
-        super(LexNode, self).__init__(regstr, type, cast)
-
-class LexRef(XNode):
-    def __init__(self, xnode):
-        self.xnode = xnode
-        super(LexRef, self).__init__()
-        """
-        """
-
-    def consume(self, data):
-        """
-        """
-
-        tseq = TSeq()
-        while True:
-            token = self.xnode.consume(data)
-            if token:
-                data = data[token.clen():]
-                tseq.extend(token)
-            else:
-                break
-        return tseq

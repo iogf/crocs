@@ -34,9 +34,9 @@ class PTree(list):
         # return '%s(%s)' % (self.type.__name__, repr(self.data))
 
 class Token:
-    __slots__=['data', 'offset', 'type', 'value']
+    __slots__=['data', 'offset', 'type', 'value', 'index']
 
-    def __init__(self, data, type=None, cast=None, offset=0):
+    def __init__(self, data, type=None, cast=None, offset=None):
         self.data = data
         self.value = cast(data) if cast else data
         self.type = type
