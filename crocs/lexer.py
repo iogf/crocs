@@ -21,15 +21,25 @@ class Lexer:
         yield Token('', Sof)
         tseq = self.consume(data)
         tseq = sorted(tseq, key=lambda ind: ind.pos)
-
+        tseq = self.validate(tseq)
         yield from tseq
         yield Token('', Eof)
+
+    def normalize(self, tseq):
+        tseq = list(tseq)
+        for ind in range(0, len(tseq) - 1):
+            if tseq[ind].start > tseq[ind+1].start:
+                if tseq[ind].end < tseq[ind+1].end:
+                    continue
 
     def validate(self, tseq):
         """
         """
-            # self.handle_error(data)
-        pass
+        for ind in range(0, len(tseq) - 1):
+            if tseq[ind].end == tseq[ind+1].start:
+                yield ind
+            else:
+                self.handle_error(data)
 
     def consume(self, data):
         """
