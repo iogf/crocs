@@ -18,10 +18,9 @@ class Lexer:
     def feed(self, data):
         """
         """
-        self.offset = 0
         yield Token('', Sof)
         tseq = self.consume(data)
-        tseq = sorted(tseq, key=lambda ind: ind.offset)
+        tseq = sorted(tseq, key=lambda ind: ind.pos)
 
         yield from tseq
         yield Token('', Eof)
@@ -64,7 +63,7 @@ class LexMap(XNode):
         return 'LexMap(%s)' % self.children
 
 class LexNode(XNode):
-    def __init__(self, regstr, type=TokVal, cast=None):
+    def __init__(self, regstr, type=TokVal, cast=None, up=()):
         """
         """
 
@@ -74,19 +73,41 @@ class LexNode(XNode):
         self.type  = type
         self.cast  = cast
         self.pos = 0
+        self.up = up
+        self.search = self.regex.search
+        self.match = self.regex.match
 
     def consume(self, data):
         """
         """
         self.pos = 0
         while True:
-            regobj = self.regex.search(data, self.pos)
+            regobj  = self.validate(data)
             if regobj:
-                yield self.mktoken(regobj)
+                self.pos = regobj.end()
             else:
-                break
+                token = self.mktoken(data)
+                if token:
+                    yield token
+                else:
+                    break
 
-    def mktoken(self, regobj):
+    def validate(self, data):
+        for ind in self.up:
+            regobj = ind.startswith(data, self.pos)
+            if regobj:
+                return regobj
+        return None
+
+    def startswith(self, data, pos):
+        regobj = self.match(data, pos)
+        return regobj
+
+    def mktoken(self, data):
+        regobj = self.search(data, self.pos)
+        if not regobj:
+            return None
+
         self.pos = regobj.end()
         token = Token(regobj.group(), self.type, 
         self.cast, regobj.end())
@@ -100,15 +121,17 @@ class SeqNode(LexNode):
     def __init__(self, regstr, type=TokVal, cast=None):
         super(SeqNode, self).__init__(regstr, type, cast)
 
-    def validate(self, data, pos):
-        regobj = self.regex.match(data, pos)
+    def mktoken(self, data, pos):
+        regobj = self.match(data, pos)
         if regobj:
-            return self.mktoken(regobj)
+            return Token(regobj.group(), self.type, 
+                self.cast, regobj.end())
 
     def index(self, data, pos):
-        regobj = self.regex.search(data, pos)
+        regobj = self.search(data, pos)
         if regobj:
-            return self.mktoken(regobj)
+            return Token(regobj.group(), self.type, 
+                self.cast, regobj.end())
 
 class LexSeq(XNode):
     def __init__(self, *args):
@@ -117,7 +140,7 @@ class LexSeq(XNode):
 
     def consume(self, data):
         self.pos = 0
-        tseq = None
+        tseq = True
         while tseq:
             tseq = self.loop(data)
             if tseq:
@@ -131,13 +154,24 @@ class LexSeq(XNode):
 
         tseq.append(token)
         for ind in self.args[1:]:
-            token = ind.validate(tseq[-1].pos, data)
+            token = ind.mktoken(data, tseq[-1].pos)
             if token:
                 tseq.append(token)
             else:
                 return None
-        self.pos = tseq[-1]
+        self.pos = tseq[-1].pos
         return tseq
+
+    def startswith(self, data, pos):
+        regobj = self.args[0].startswith(data, pos)
+        if not regobj:
+            return None
+
+        for ind in self.args[1:]:
+            regobj = ind.startswith(data, regobj.end())
+            if not regobj:
+                return None
+        return regobj
 
     def __repr__(self):
         return 'LexSeq(%s)' % self.xnodes
