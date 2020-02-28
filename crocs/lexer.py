@@ -68,14 +68,14 @@ class LexNode(XNode):
         """
 
         super(XNode, self).__init__()
-        self.regex = re.compile(regstr)
+        self.regex  = re.compile(regstr)
         self.regstr = regstr
-        self.type  = type
-        self.cast  = cast
-        self.pos = 0
-        self.up = up
+        self.type   = type
+        self.cast   = cast
+        self.pos    = 0
+        self.up     = up
         self.search = self.regex.search
-        self.match = self.regex.match
+        self.match  = self.regex.match
 
     def consume(self, data):
         """
@@ -110,7 +110,7 @@ class LexNode(XNode):
 
         self.pos = regobj.end()
         token = Token(regobj.group(), self.type, 
-        self.cast, regobj.end())
+        self.cast, regobj.start(), regobj.end())
         return token
 
     def __repr__(self):
@@ -125,13 +125,13 @@ class SeqNode(LexNode):
         regobj = self.match(data, pos)
         if regobj:
             return Token(regobj.group(), self.type, 
-                self.cast, regobj.end())
+                self.cast, regobj.start(), regobj.end())
 
     def index(self, data, pos):
         regobj = self.search(data, pos)
         if regobj:
             return Token(regobj.group(), self.type, 
-                self.cast, regobj.end())
+                self.cast, regobj.start(), regobj.end())
 
 class LexSeq(XNode):
     def __init__(self, *args):
@@ -154,12 +154,12 @@ class LexSeq(XNode):
 
         tseq.append(token)
         for ind in self.args[1:]:
-            token = ind.mktoken(data, tseq[-1].pos)
+            token = ind.mktoken(data, tseq[-1].end)
             if token:
                 tseq.append(token)
             else:
                 return None
-        self.pos = tseq[-1].pos
+        self.pos = tseq[-1].end
         return tseq
 
     def startswith(self, data, pos):
