@@ -16,7 +16,7 @@ class KeywordTokens(XSpec):
 
     t_identifier = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
     lexmap.add(t_keyword, t_blank, t_lparen, t_rparen, t_colon, t_identifier)
-    root = lexmap
+    root = [lexmap]
 
 lex = Lexer(KeywordTokens)
 data = 'if ifnum: foobar()'
