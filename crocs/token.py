@@ -127,3 +127,6 @@ class RB(TokType):
 class Word(TokType):
     pass
 
+class UnkToken(TokType):
+    pass
+

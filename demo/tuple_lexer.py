@@ -1,20 +1,20 @@
 """
 """
 
-from crocs.lexer import Lexer, LexMap, SeqNode, LexRef, LexSeq, LexNode, XSpec
+from crocs.lexer import Lexer, LexMap, SeqNode, LexLink, LexSeq, LexNode, XSpec
 from crocs.token import Num, LP, RP, Blank, Comma
 
 class TupleTokens(XSpec):
     lexmap = LexMap()
-    t_paren = LexSeq(SeqNode(r'\(', LP), LexRef(lexmap),
+    t_paren = LexSeq(SeqNode(r'\(', LP), LexLink(lexmap),
     SeqNode(r'\)', RP))
 
-    t_elem = LexSeq(SeqNode(r',', Comma), LexRef(lexmap))
+    t_elem = LexSeq(SeqNode(r',', Comma), LexLink(lexmap))
 
     t_num = LexNode(r'[0-9]+', Num)
     t_blank = LexNode(r' +', Blank)
     lexmap.add(t_paren, t_elem, t_num, t_blank)
-    root = lexmap
+    root = [lexmap]
 
 print('Example 1')
 lex = Lexer(TupleTokens)

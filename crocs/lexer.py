@@ -68,11 +68,25 @@ class LexMap(XNode):
     def __repr__(self):
         return 'LexMap(%s)' % self.children
 
+class LexLink(XNode):
+    def __init__(self, lex):
+        self.lex = lex
+
+    def consume(self, data, pos):
+        tseq = TSeq()
+        while True:
+            token = self.lex.consume(data, pos)
+            if token:
+                tseq.extend(token)
+            else:
+                break
+            pos = token[-1].end
+        return tseq
+
 class LexNode(XNode):
     def __init__(self, regstr, type=TokVal, cast=None):
         """
         """
-
         super(XNode, self).__init__()
         self.regex  = re.compile(regstr)
         self.regstr = regstr
@@ -115,3 +129,4 @@ class LexSeq(XNode):
 
     def __repr__(self):
         return 'LexSeq(%s)' % self.xnodes
+
