@@ -15,8 +15,7 @@ class KeywordTokens(XSpec):
     t_colon  = LexNode(r'\:', type=Colon)
 
     # Match identifier only if it is not an if.
-    t_identifier = LexNode(r'[a-zA-Z0-9]+', 
-    type=Identifier, up=(t_if,))
+    t_identifier = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
 
     lexmap.add(t_if, t_blank, t_lparen, 
     t_rparen, t_colon, t_identifier)
