@@ -8,12 +8,11 @@ class XSpec:
     pass
 
 class Lexer:
-    def __init__(self, xspec, no_errors=False):
+    def __init__(self, xspec):
         """
         """
         self.root       = xspec.root
         self.discarded  = xspec.root
-        self.no_errorss = no_errors
 
     def feed(self, data):
         """

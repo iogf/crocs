@@ -93,7 +93,7 @@ letter in the mail name is in the set a-z as well.
 ~~~python
 from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
 
-# First we define how our Joins look like.
+# First we define how our patterns look like.
 name_valid_letters = Seq('a', 'z')
 name_valid_numbers = Seq('0', '9')
 name_valid_signs   = '_.-'
@@ -104,7 +104,7 @@ name_valid_chars = Include(name_valid_letters,
 name_valid_numbers, name_valid_signs)
 
 # Think of the Repeat class as meaning: fetch the
-# described Joins one or more Repeat.
+# described pattern one or more Repeat.
 name_chunk = Repeat(name_valid_chars, 1)
 
 # The first letter in the mail name has to be a in 'a-z'.
@@ -167,7 +167,7 @@ from crocs.token import Token, Keyword, Identifier, RP, LP, Colon, Blank
 
 class KeywordTokens(XSpec):
     lexmap = LexMap()
-    t_keyword = LexSeq(SeqNode(r'if', type=Keyword),
+    t_if = LexSeq(SeqNode(r'if', type=Keyword),
     SeqNode(r'\s+', type=Blank))
 
     t_blank  = LexNode(r' +', type=Blank)
@@ -175,9 +175,12 @@ class KeywordTokens(XSpec):
     t_rparen = LexNode(r'\)', type=RP)
     t_colon  = LexNode(r'\:', type=Colon)
 
+    # Match identifier only if it is not an if.
     t_identifier = LexNode(r'[a-zA-Z0-9]+', type=Identifier)
-    lexmap.add(t_keyword, t_blank, t_lparen, t_rparen, t_colon, t_identifier)
-    root = lexmap
+
+    lexmap.add(t_if, t_blank, t_lparen, 
+    t_rparen, t_colon, t_identifier)
+    root = [lexmap]
 
 lex = Lexer(KeywordTokens)
 data = 'if ifnum: foobar()'
@@ -196,6 +199,54 @@ The above example handles the task of tokenizing keywords correctly. The SeqNode
 LexSeq to extract the tokens based on a given regex while LexNode works on its own to extract tokens that
 do not demand a lookahead step.
 
+The crocs lexer allows you to use also a similar Backus-Naur notation on Python classes to validate the
+structure of documents in the lexical step.
+
+~~~python
+from crocs.lexer import Lexer, LexMap, SeqNode, LexLink, LexSeq, LexNode, XSpec
+from crocs.token import Num, LP, RP, Blank, Comma
+
+class TupleTokens(XSpec):
+    lexmap  = LexMap()
+    t_paren = LexSeq(SeqNode(r'\(', LP), 
+    LexLink(lexmap), SeqNode(r'\)', RP))
+
+    t_elem  = LexSeq(SeqNode(r',', Comma), LexLink(lexmap))
+    t_num   = LexNode(r'[0-9]+', Num)
+    t_blank = LexNode(r' +', Blank)
+
+    lexmap.add(t_paren, t_elem, t_num, t_blank)
+    root = [lexmap]
+
+print('Example 1')
+lex = Lexer(TupleTokens)
+data = '(1, 2, 3, 1, 2, (3)))'
+tokens = lex.feed(data)
+print('Consumed:', list(tokens))
+~~~
+
+Would generate a lexical error due to the tuple being bad formed.
+
+~~~
+[tau@archlinux demo]$ python tuple_lexer.py 
+Example 1
+Traceback (most recent call last):
+  File "tuple_lexer.py", line 23, in <module>
+    print('Consumed:', list(tokens))
+  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 22, in feed
+    yield from tseq
+  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 33, in process
+    self.handle_error(data, pos)
+  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 47, in handle_error
+    raise LexError(msg)
+crocs.lexer.LexError: Unexpected token: ')'
+[tau@archlinux demo]$ 
+~~~
+
+The lexer approach allows you to create multiple LexMap instances and combine them
+with a LexSeq instance. It permits one to tokenize and validate more complex structures in a reasonable
+and simplistic way.
+
 ### Yacc-like/Parser
 
 The parser syntax is consistent and concrete. It allows you to link handles to token patterns and
@@ -204,7 +255,79 @@ evaluate these rules according to your necessities.
 The below code specifies a lexer and a parsing approach for a simple expression calculator.
 
 ~~~python
+from crocs.yacc import Rule, Grammar, Struct, Yacc
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
+from crocs.token import Plus, Minus, LP, RP, Mul, Div, Num, Blank, Sof, Eof
 
+class CalcTokens(XSpec):
+    expression = LexMap()
+    t_plus   = LexNode(r'\+', Plus)
+    t_minus  = LexNode(r'\-', Minus)
+
+    t_lparen = LexNode(r'\(', LP)
+    t_rparen = LexNode(r'\)', RP)
+    t_mul    = LexNode(r'\*', Mul)
+    t_div    = LexNode(r'\/', Div)
+
+    t_num    = LexNode(r'[0-9]+', Num, float)
+    t_blank  = LexNode(r' +', Blank)
+
+    expression.add(t_plus, t_minus, t_lparen, t_num, 
+    t_blank, t_rparen, t_mul, t_div)
+
+    root = [expression]
+
+class CalcGrammar(Grammar):
+    expression = Struct()
+
+    r_paren = Rule(LP, Num, RP, type=Num)
+    r_div   = Rule(Num, Div, Num, type=Num)
+    r_mul   = Rule(Num, Mul, Num, type=Num)
+    o_div   = Rule(Div)
+    o_mul   = Rule(Mul)
+
+    r_plus  = Rule(Num, Plus, Num, type=Num, up=(o_mul, o_div))
+    r_minus = Rule(Num, Minus, Num, type=Num, up=(o_mul, o_div))
+    r_done  = Rule(Sof, Num, Eof)
+
+    expression.add(r_paren, r_plus, r_minus, r_mul, r_div, r_done)
+    
+    discard = [Blank]
+    root    = [expression]
+
+def plus(expr, sign, term):
+    return expr.val() + term.val()
+
+def minus(expr, sign, term):
+    return expr.val() - term.val()
+
+def div(term, sign, factor):
+    return term.val()/factor.val()
+
+def mul(term, sign, factor):
+    return term.val() * factor.val()
+
+def paren(left, expression, right):
+    return expression.val()
+
+def done(sof, num, eof):
+    print('Result:', num.val())
+    return num.val()
+
+data = '2 * 5 + 10 -(2 * 3 - 10 )+ 30/(1-3+ 4* 10 + (11/1))' 
+lexer  = Lexer(CalcTokens)
+tokens = lexer.feed(data)
+yacc   = Yacc(CalcGrammar)
+
+yacc.add_handle(CalcGrammar.r_plus, plus)
+yacc.add_handle(CalcGrammar.r_minus, minus)
+yacc.add_handle(CalcGrammar.r_div, div)
+yacc.add_handle(CalcGrammar.r_mul, mul)
+yacc.add_handle(CalcGrammar.r_paren, paren)
+yacc.add_handle(CalcGrammar.r_done, done)
+
+ptree = yacc.build(tokens)
+ptree = list(ptree)
 ~~~
 
 That would give you:
@@ -324,15 +447,56 @@ Backus-Naur-like approach.
 Another interesting example consists in the specification of a simple tuple parser.
 
 ~~~python
+from crocs.lexer import Lexer, LexMap, LexNode, XSpec
+from crocs.yacc import Grammar, Rule, Group, Yacc, Struct
+from crocs.token import Token, Blank, Num, Sof, Eof, LP, RP
 
+class TupleTokens(XSpec):
+    lexmap = LexMap()
+    r_lparen = LexNode(r'\(', LP)
+    r_rparen = LexNode(r'\)', RP)
+
+    r_num    = LexNode(r'[0-9]+', Num)
+    r_blank  = LexNode(r' +', Blank)
+
+    lexmap.add(r_lparen, r_rparen, r_num, r_blank)
+    root = [lexmap]
+
+class TupleGrammar(Grammar):
+    struct = Struct()
+
+    # It means to accumulate as many Num tokens as possible.
+    g_num = Group(Num, min=1)
+
+    # Then we trigge such a pattern in this rule.
+    r_paren = Rule(LP, g_num, RP, type=Num)
+    r_done  = Rule(Sof, Num, Eof)
+
+    struct.add(r_paren, r_done)
+    discard = [Blank]
+    root = [struct]
+
+def done(sof, expr, eof):
+    print('Result:', expr)
+
+print('Example 1')
+lexer  = Lexer(TupleTokens)
+yacc   = Yacc(TupleGrammar)
+yacc.add_handle(TupleGrammar.r_done, done)
+
+data   = '(1 (2 3) 4 (5 (6) 7))'
+tokens = lexer.feed(data)
+ptree  = yacc.build(tokens)
+ptree  = list(ptree)
 ~~~
 
 That would output:
 
 ~~~
 Example 1
-Result: [LP('('), [Num('1'), [LP('('), [Num('2'), Num('3')], RP(')')], 
-Num('4'), [LP('('), [Num('5'), [LP('('), [Num('6')], RP(')')], Num('7')], RP(')')]], RP(')')]
+Result: [LP('('), [Num('1'), [LP('('), [Num('2'), Num('3')], 
+RP(')')], Num('4'), [LP('('), [Num('5'), [LP('('), [Num('6')], 
+RP(')')], Num('7')], RP(')')]], RP(')')]
 ~~~
 
 The class Group in the context plays the role to accumulate tokens whose type is Num. It accepts two arguments
@@ -353,55 +517,6 @@ That is my vim-like thing in python.
 
 **Notes**
 
-Crocs is under heavy development, there are a lot of interesting things left to be implemented and also heavy
-optmizations.
-
-The actual algorithm used is not efficient both in terms of memory and cpu usage. A more sophisticated
-algorithm will be implemented as early as i get free time. Crocs actually has the goal of being a proof
-of concept however it is likely to work for many situations.
-
-Crocs will also eventually improve regarding other aspects. It is straightforward
-to use the actual approach to write Backus Naur grammars that are ambiguous
-and solve ambiguity through precedence rules. However it is not practical to use such
-an approach when the Backus Naur Form has ambiguity removed.
-
-A more succinct approach will be implemented to handle Backus Naur Form using purely python classes.
-Such an algorithm should work for both ambiguous and unambiguous grammar specs.
-
-The approach implemented in the actual parser makes usage of backtracking, Crocs performance will improve
-highly with the new algorithm.
-
-The lexer suffers from performance issues as well, it will be improved altogether with the parser. It will allow
-specification of multiple LexMap classes. It actually allows handling some lexical errors but with 
-infinite recursion issues.
-
-~~~python
-~~~
-
-Would output:
-
-~~~
-Example 1
-[tau@archlinux demo]$ python tuple_lexer.py 
-Example 1
-Traceback (most recent call last):
-  File "tuple_lexer.py", line 23, in <module>
-    print('Consumed:', list(tokens))
-  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 26, in feed
-    tseq = self.consume(data)
-  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 42, in consume
-    self.handle_error(data)
-  File "/usr/lib/python3.8/site-packages/crocs/lexer.py", line 47, in handle_error
-    raise LexError(msg)
-crocs.lexer.LexError: Unexpected token: ')'
-
-~~~
-
-The exception occurs because the tuple being tokenized is not correct. Actually you can define
-multiple LexMap instances with specific extraction rules and use them in LexSeq instances. However
-it is not possible to define multiple LexMap instances and process them altogether it will be possible
-in the future.
-
 A Golang version of crocs will be implemented as early as i finish with the actual necessary improvements
 in the python version.
 
@@ -415,8 +530,6 @@ pip install crocs
 
 Documentation
 =============
-
-The docs may be missing some parts however there are many examples in the demo folder.
 
 [Wiki](https://github.com/iogf/crocs/wiki)
 
