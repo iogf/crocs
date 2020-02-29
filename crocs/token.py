@@ -20,19 +20,6 @@ class PTree(list):
     def val(self):
         return self.result
 
-# class Token(namedtuple('Token', ('data', 'type', 'value'))):
-    # def val(self):
-        # return self.value
-    # 
-    # def tlen(self):
-        # return 1
-# 
-    # def clen(self):
-        # return len(self.data)
-# 
-    # def __repr__(self):
-        # return '%s(%s)' % (self.type.__name__, repr(self.data))
-
 class Token:
     __slots__=['data', 'offset', 'type', 'value', 'pos', 'start', 'end']
 
@@ -47,12 +34,6 @@ class Token:
     def val(self):
         return self.value
     
-    def tlen(self):
-        return 1
-
-    def clen(self):
-        return len(self.data)
-
     def __repr__(self):
         return '%s(%s)' % (self.type.__name__, repr(self.data))
 
@@ -61,15 +42,6 @@ class TSeq(list):
     This is meant to be returned by XNode's instances
     that extract strings from a given doc sequentially.
     """
-
-    def __init__(self, *args):
-        self.extend(args)
-
-    def clen(self):
-        count = 0
-        for ind in self:
-            count += ind.clen()
-        return count
 
 class TokType:
     @classmethod

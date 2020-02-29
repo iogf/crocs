@@ -24,7 +24,8 @@ class CalcTokens(XSpec):
 
 print('Example 1')
 lex = Lexer(CalcTokens)
-data = '1+1+(3*2+4)+' * 30000 + '2'
+# data = '1+1+(3*2+4)+' * 80000 + '2'
+
 data = '1+1+(3*2+4)'
 
 tokens = lex.feed(data)
