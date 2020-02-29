@@ -44,7 +44,7 @@ class Lexer:
                 return tseq
 
     def handle_error(self, data, pos):
-        msg = 'Unexpected token: %s' % repr(data[os:30])
+        msg = 'Unexpected token: %s' % repr(data[pos:pos+30])
         raise LexError(msg)
 
 class LexMap(XNode):
@@ -110,7 +110,7 @@ class LexSeq(XNode):
                 tseq.extend(token)
             else:
                 return None
-            pos = tseq[-1].emd
+            pos = tseq[-1].end
         return tseq
 
     def __repr__(self):
