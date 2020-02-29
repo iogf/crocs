@@ -246,9 +246,6 @@ crocs.lexer.LexError: Unexpected token: ')'
 That code structure corresponds basically to:
 
 ~~~
-That translates to:
-
-~~~
 lexmap : (lexmap) |
          ,lexmap  |
          Num
