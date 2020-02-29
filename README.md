@@ -225,7 +225,7 @@ tokens = lex.feed(data)
 print('Consumed:', list(tokens))
 ~~~
 
-Would generate a lexical error due to the tuple being bad formed.
+The previous example would generate a lexical error due to the tuple being bad formed.
 
 ~~~
 [tau@archlinux demo]$ python tuple_lexer.py 
@@ -242,6 +242,19 @@ Traceback (most recent call last):
 crocs.lexer.LexError: Unexpected token: ')'
 [tau@archlinux demo]$ 
 ~~~
+
+That code structure corresponds basically to:
+
+~~~
+That translates to:
+
+~~~
+lexmap : (lexmap) |
+         ,lexmap  |
+         Num
+~~~
+
+Where lexmap obviously corresponds to the definition of a tuple.
 
 The lexer approach allows you to create multiple LexMap instances and combine them
 with a LexSeq instance. It permits one to tokenize and validate more complex structures in a reasonable
