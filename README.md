@@ -1,5 +1,13 @@
 # crocs
 
+Write regex using pure python class/function syntax and test it better.
+
+The idea behind crocs is simplifying the construction and debugging of regex's. 
+It is possible to implement regex's using a function/class syntax, the resulting structure 
+is then compiled into a regex's string. it is as well possible to generate random inputs 
+for the regex that would match the regex pattern.
+
+The examples below clarifies better.
 
 ### Wildcard
 
