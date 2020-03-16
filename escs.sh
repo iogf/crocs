@@ -58,7 +58,7 @@ rm MANIFEST
 # Upload to pypi/pip.
 
 cd ~/projects/crocs-code
-python2 setup.py sdist register upload
+python setup.py sdist register upload
 rm -fr dist
 ##############################################################################
 # check patch-1
