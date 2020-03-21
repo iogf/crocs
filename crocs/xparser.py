@@ -45,7 +45,8 @@ class RegexGrammar(Grammar):
     root    = [regex]
 
 class XParser(Yacc):
-    def __init__(self):
+    def __init__(self, grammar):
+        super(XParser, self).__init__(grammar)
         # Normal groups refs.
         self.gref = {}
 
