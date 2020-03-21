@@ -1,11 +1,12 @@
 from yacc.yacc import Rule, Grammar, Struct, Yacc
 from yacc.lexer import Lexer, LexMap, LexNode, XSpec
-from yacc.token import Plus, LP, RP, Mul, Div,\
-Num, Comma, Sof, Eof, Char
+from yacc.token import Plus, LP, RP, Mul, \
+Comma, Sof, Eof, Char,  LB, RB, Question, Equal, Hash,\
+LBR, RBR
 
 class RegexTokens(XSpec):
     lexmap = LexMap()
-    t_plus   = LexNode(r'\+', Plus)
+    t_plus = LexNode(r'\+', Plus)
 
     t_lparen = LexNode(r'\(', LP)
     t_rparen = LexNode(r'\)', RP)
@@ -15,19 +16,21 @@ class RegexTokens(XSpec):
 
     t_lbrace = LexNode(r'\{', LBR)
     t_rbrace = LexNode(r'\}', RBR)
-    t_comma = LexNode(r'\,', Comma)
+    t_comma  = LexNode(r'\,', Comma)
+    t_question = LexNode(r'\*', Question)
 
-    t_mul    = LexNode(r'\*', Mul)
-    t_question    = LexNode(r'\*', Question)
+    t_mul   = LexNode(r'\*', Mul)
 
-    t_char    = LexNode(r'.', Char)
-    t_hash    = LexNode(r'\#', Hash)
-    t_equal    = LexNode(r'\equal', Hash)
+    t_char  = LexNode(r'.', Char)
+    t_hash  = LexNode(r'\#', Hash)
+    t_equal = LexNode(r'\=', Equal)
 
-    lexmap.add(t_plus, t_minus, t_lparen, t_num, 
-    t_rparen, t_mul, t_div, t_char)
+    lexmap.add(t_plus, t_lparen, 
+    t_rparen, t_mul, t_char, t_lbracket, t_rbracket,
+    t_lbrace, t_rbrace, t_comma, t_question,
+    t_char,t_hash, t_equal)
 
-    root = [expression]
+    root = [lexmap]
 
 class RegexGrammar(Grammar):
     regex = Struct()
@@ -35,7 +38,7 @@ class RegexGrammar(Grammar):
     r_paren = Rule(LP, regex, RP, type=regex)
     r_done  = Rule(Sof, regex, Eof)
 
-    expression.add(r_paren)
+    regex.add(r_paren, r_done)
     root    = [regex]
 
 class XParser(Yacc):
