@@ -2,7 +2,7 @@ from yacc.yacc import Rule, Grammar, Struct, Yacc
 from yacc.lexer import Lexer, LexMap, LexNode, XSpec
 from yacc.token import Plus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Question, Equal, Hash,\
-LBR, RBR
+LBR, RBR, Dot
 
 class RegexTokens(XSpec):
     lexmap = LexMap()
@@ -26,9 +26,9 @@ class RegexTokens(XSpec):
     t_equal = LexNode(r'\=', Equal)
 
     lexmap.add(t_plus, t_lparen, 
-    t_rparen, t_mul, t_char, t_lbracket, t_rbracket,
+    t_rparen, t_mul, t_lbracket, t_rbracket,
     t_lbrace, t_rbrace, t_comma, t_question,
-    t_char,t_hash, t_equal)
+    t_char,t_hash, t_equal, t_char)
 
     root = [lexmap]
 
@@ -36,6 +36,9 @@ class RegexGrammar(Grammar):
     regex = Struct()
 
     r_paren = Rule(LP, regex, RP, type=regex)
+    r_char = Rule(Char, type=regex)
+    r_dot = Rule(regex, Dot, type=regex)
+
     r_done  = Rule(Sof, regex, Eof)
 
     regex.add(r_paren, r_done)
@@ -43,8 +46,20 @@ class RegexGrammar(Grammar):
 
 class XParser(Yacc):
     def __init__(self):
+        # Normal groups refs.
         self.gref = {}
+
+        # Named groups refs.
+        self.gnref = {}
 
     def build(self, data):
         pass
 
+    def r_char(self, sof, regex, eof):
+        pass
+
+    def r_dot(self, sof, regex, eof):
+        pass
+
+    def r_done(self, sof, regex, eof):
+        pass
