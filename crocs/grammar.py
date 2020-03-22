@@ -45,6 +45,7 @@ class RegexGrammar(Grammar):
     r_times3 = Rule(LBR, Comma, Char, RBR, type=regex)
     r_times4 = Rule(LBR, Char, Comma, RBR, type=regex)
     r_times5   = Rule(regex, Mul, type=regex)
+    r_times6   = Rule(regex, Question, type=regex)
 
     r_nseq = Rule(Char, TokVal('-'), Char, type=regex)
     r_cseq = Rule(Char, TokVal('-'), Char, type=regex)
