@@ -1,4 +1,5 @@
 from yacc.yacc import Yacc
+from crocs.grammar import RegexLexer, RegexGrammar
 
 class XParser(Yacc):
     def __init__(self, grammar):
