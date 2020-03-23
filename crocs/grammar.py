@@ -2,10 +2,11 @@ from yacc.yacc import Rule, Grammar, Struct, T
 from yacc.lexer import LexMap, LexNode, XSpec
 from yacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Question, Equal, Hash,\
-LBR, RBR, Dot
+LBR, RBR, Dot, Escape
 
 class RegexTokens(XSpec):
     lexmap = LexMap()
+    t_escape = LexNode(r'\\', Escape)
     t_plus = LexNode(r'\+', Plus)
 
     t_lparen = LexNode(r'\(', LP)
@@ -26,7 +27,7 @@ class RegexTokens(XSpec):
     t_hash  = LexNode(r'\#', Hash)
     t_equal = LexNode(r'\=', Equal)
 
-    lexmap.add(t_plus, t_lparen, 
+    lexmap.add(t_escape, t_plus, t_lparen, 
     t_rparen, t_mul, t_lbracket, t_rbracket,
     t_lbrace, t_rbrace, t_comma, t_question,
     t_char,t_hash, t_equal, t_char)
