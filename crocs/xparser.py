@@ -1,14 +1,26 @@
-from yacc.yacc import Yacc
-from crocs.grammar import RegexLexer, RegexGrammar
+from yacc.yacc import Yacc, Lexer
+from crocs.grammar import RegexLexer, RegexGrammar, XSetGrammar
 
-class XParser(Yacc):
+class XSParser(Yacc):
     def __init__(self, grammar):
-        super(XParser, self).__init__(grammar)
+        super(XSParser, self).__init__(grammar)
+        self.add_handle(RegexGrammar.t_seq, self.r_seq)
+
+    def r_done(self, start, minus, end):
+        pass
+
+    def r_seq(self, start, minus, end):
+        pass
+
+class RegexParser(Yacc):
+    def __init__(self, grammar):
+        super(RegexParser, self).__init__(grammar)
         # Normal groups refs.
         self.gref = {}
 
         # Named groups refs.
         self.gnref = {}
+        self.xsparser = XSParser(XSetGrammar)
         self.add_handle(RegexGrammar.t_escape, self.r_escape)
         self.add_handle(RegexGrammar.t_dot, self.r_dot)
         self.add_handle(RegexGrammar.t_times0, self.r_times0)
@@ -18,13 +30,12 @@ class XParser(Yacc):
         self.add_handle(RegexGrammar.t_times4, self.r_times4)
         self.add_handle(RegexGrammar.t_times5, self.r_times5)
         self.add_handle(RegexGrammar.t_times6, self.r_times6)
-        self.add_handle(RegexGrammar.t_seq, self.r_seq)
         self.add_handle(RegexGrammar.t_set, self.r_set)
 
         self.add_handle(RegexGrammar.t_char, self.r_char)
         self.add_handle(RegexGrammar.t_done, self.r_done)
 
-    def build(self, data):
+    def build(self, tokens):
         pass
 
     def r_escape(self, escape, char):
@@ -51,10 +62,7 @@ class XParser(Yacc):
     def r_times5(self, regex, question):
         pass
 
-    def r_seq(self, start, minus, end):
-        pass
-
-    def r_set(self, lb, regex, rb):
+    def r_set(self, lb, chars, rb):
         pass
 
     def r_char(self, sof, regex, eof):
@@ -62,3 +70,10 @@ class XParser(Yacc):
 
     def r_done(self, sof, regex, eof):
         pass
+
+if __name__ == '__main__':
+    data    = input('Regex:')
+    lexer   = Lexer(RegexGrammar)
+    tokens  = lexer.feed(data)
+    xparser = RegexParser(RegexGrammar)
+    xparser.build(tokens) 

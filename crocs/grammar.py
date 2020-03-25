@@ -46,11 +46,18 @@ class RegexGrammar(Grammar):
     r_times4 = Rule(regex, Mul, type=regex)
     r_times5 = Rule(regex, Question, type=regex)
 
-    r_seq    = Rule(Char, TokVal('-'), Char, type=regex)
-    r_set    = Rule(LB, T(regex), RB, type=regex)
+    r_set    = Rule(LB, T(Char), RB, type=regex)
     r_char   = Rule(Char, type=regex)
 
     r_done   = Rule(Sof, regex, Eof)
 
     regex.add(r_char, r_paren, r_done)
-    root    = [regex]
+    root = [regex]
+
+class XSetGrammar(Grammar):
+    regex = Struct()
+
+    r_seq = Rule(regex, TokVal('-'), regex, type=regex)
+    r_done   = Rule(Sof, regex, Eof)
+
+    root = [regex]
