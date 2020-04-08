@@ -1,18 +1,26 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
-from crocs.grammar import RegexGrammar, XSetGrammar
-from crocs.regex import X, Join, Group, Repeat
+from crocs.grammar import RegexGrammar, IncludeGrammar
+from crocs.regex import X, Join, Group, Repeat, Seq, Include
 
-class XSParser(Eacc):
-    def __init__(self, grammar):
-        super(XSParser, self).__init__(grammar)
-        self.add_handle(RegexGrammar.t_seq, self.r_seq)
+class RegexSet(Eacc):
+    def __init__(self):
+        super(RegexSet, self).__init__(IncludeGrammar)
+        self.add_handle(IncludeGrammar.r_seq, self.seq)
+        self.add_handle(IncludeGrammar.r_done, self.done)
+        self.add_handle(IncludeGrammar.r_char, self.char)
 
-    def r_done(self, start, minus, end):
-        pass
+    def seq(self, start, minus, end):
+        seq = Seq(start.val(), end.val())
+        return seq
 
-    def r_seq(self, start, minus, end):
-        pass
+    def char(self, char):
+        return char.val()
+
+    def done(self, sof, regex, eof):
+        data = (ind.val() for ind in regex)
+        include = Include(*data)
+        return include
 
 class RegexParser(Eacc):
     def __init__(self):
@@ -22,7 +30,7 @@ class RegexParser(Eacc):
 
         # Named groups refs.
         self.gnref = {}
-        # self.xsparser = XSParser(XSetGrammar)
+        self.regex_set = RegexSet()
         # self.add_handle(RegexGrammar.r_escape, self.escape)
 
         self.add_handle(RegexGrammar.r_group, self.group)
@@ -38,7 +46,6 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_exclude, self.exclude)
 
         self.add_handle(RegexGrammar.r_char, self.char)
-        self.add_handle(RegexGrammar.r_join, self.join)
 
         self.add_handle(RegexGrammar.r_done, self.done)
 
@@ -53,8 +60,11 @@ class RegexParser(Eacc):
     def escape(self, escape, char):
         pass
 
-    def include(self, escape, char):
-        pass
+    def include(self, lb, chars, rb):
+        ptree = self.regex_set.build(chars)
+        ptree = list(ptree)[-1]
+        print(ptree.val())
+        return ptree.val()
 
     def exclude(self, escape, char):
         pass
@@ -94,13 +104,10 @@ class RegexParser(Eacc):
     def char(self, char):
         return char.val()
 
-    def join(self, regex):
+    def done(self, sof, regex, eof):
         data = (ind.val() for ind in regex)
         join = Join(*data)
+        join.test()
+        join.hits()
         return join
-
-    def done(self, sof, regex, eof):
-        ast = regex.val()
-        ast.test()
-        ast.hits()
 

@@ -42,6 +42,22 @@ Match with:
 
 ~~~
 
+With sets.
+
+~~~
+[tau@archlinux ~]$ regxhits 
+Regstr:a[bc1-9]{1,4}ef
+test [[Char('b')], [Char('c')], [Char('1'), Char('-'), Char('9')]]
+[bc1-9]
+Regex: a[bc1-9]{1,4}ef
+Input: a84cef
+Group dict: {}
+Group 0: a84cef
+Groups: ()
+Match with:
+ ab9ef a664ef a869bef a913ef a41ef a279bef a15ef a8ef a36cef a34ef
+~~~
+
 The examples below clarifies better.
 
 ### Wildcard

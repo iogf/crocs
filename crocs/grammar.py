@@ -22,7 +22,7 @@ class RegexTokens(XSpec):
     t_comma  = LexNode(r'\,', Comma)
     t_question = LexNode(r'\?', Question)
 
-    t_mul   = LexNode(r'\*', Mul)
+    t_mul = LexNode(r'\*', Mul)
     # t_minus  = LexNode(r'\-', Minus)
 
     t_hash  = LexNode(r'\#', Hash)
@@ -54,17 +54,17 @@ class RegexGrammar(Grammar):
 
     r_char   = Rule(Char, type=regex)
 
-    r_join   = Rule(T(regex, 2), type=regex)
-    r_done   = Rule(Sof, regex, Eof)
+    r_done   = Rule(Sof, T(regex), Eof)
 
     regex.add(r_group, r_dot, r_times0, r_times1, r_times2, r_times3,
-    r_times4, r_times5, r_times6, r_join, r_char, r_done)
+    r_times4, r_times5, r_times6, r_include, r_char, r_done)
     root = [regex]
 
-class XSetGrammar(Grammar):
-    regex = Struct()
+class IncludeGrammar(Grammar):
+    regex  = Struct()
+    r_seq  = Rule(Char, TokVal('-'), Char, type=regex)
+    r_char = Rule(Char, type=regex)
+    r_done = Rule(Sof, T(regex), Eof)
 
-    r_seq = Rule(regex, TokVal('-'), regex, type=regex)
-    r_done   = Rule(Sof, regex, Eof)
-
+    regex.add(r_seq, r_char, r_done)
     root = [regex]
