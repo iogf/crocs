@@ -55,7 +55,8 @@ class RegexGrammar(Grammar):
     r_join   = Rule(T(regex, 2), type=regex)
     r_done   = Rule(Sof, regex, Eof)
 
-    regex.add(r_group, r_dot, r_times0, r_times4, r_times5, r_times6, r_join, r_char, r_done)
+    regex.add(r_group, r_dot, r_times0, r_times1, r_times4, r_times5, 
+    r_times6, r_join, r_char, r_done)
     root = [regex]
 
 class XSetGrammar(Grammar):
