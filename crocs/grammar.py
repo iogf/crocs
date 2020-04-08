@@ -49,14 +49,16 @@ class RegexGrammar(Grammar):
     r_times5 = Rule(regex, Question, type=regex)
     r_times6 = Rule(regex, Plus, type=regex)
 
-    r_set    = Rule(LB, T(Char), RB, type=regex)
+    r_include = Rule(LB, T(Char), RB, type=regex)
+    r_exclude = Rule(LB, TokVal('^'), T(Char), RB, type=regex)
+
     r_char   = Rule(Char, type=regex)
 
     r_join   = Rule(T(regex, 2), type=regex)
     r_done   = Rule(Sof, regex, Eof)
 
-    regex.add(r_group, r_dot, r_times0, r_times1, r_times4, r_times5, 
-    r_times6, r_join, r_char, r_done)
+    regex.add(r_group, r_dot, r_times0, r_times1, r_times2, 
+    r_times4, r_times5, r_times6, r_join, r_char, r_done)
     root = [regex]
 
 class XSetGrammar(Grammar):

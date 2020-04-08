@@ -34,7 +34,8 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_times4, self.times4)
         self.add_handle(RegexGrammar.r_times5, self.times5)
         self.add_handle(RegexGrammar.r_times6, self.times6)
-        self.add_handle(RegexGrammar.r_set, self.include)
+        self.add_handle(RegexGrammar.r_include, self.include)
+        self.add_handle(RegexGrammar.r_exclude, self.exclude)
 
         self.add_handle(RegexGrammar.r_char, self.char)
         self.add_handle(RegexGrammar.r_join, self.join)
@@ -55,6 +56,9 @@ class RegexParser(Eacc):
     def include(self, escape, char):
         pass
 
+    def exclude(self, escape, char):
+        pass
+
     def dot(self, dot):
         x = X()
         return x
@@ -67,8 +71,9 @@ class RegexParser(Eacc):
         e = Repeat(regex.val(), int(num.val()), int(num.val()))
         return e
 
-    def times2(self, lbr, min, comma, rbr):
-        pass
+    def times2(self, regex, lbr, min, comma, rbr):
+        e = Repeat(regex.val(), int(min.val()))
+        return e
 
     def times3(self, lbr, comma, max, rbr):
         pass
@@ -84,9 +89,6 @@ class RegexParser(Eacc):
     def times6(self, regex, question):
         e = Repeat(regex.val(), 1)
         return e
-
-    def set(self, lb, chars, rb):
-        pass
 
     def char(self, char):
         return char.val()
