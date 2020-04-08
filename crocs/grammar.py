@@ -39,7 +39,7 @@ class RegexTokens(XSpec):
 class RegexGrammar(Grammar):
     regex = Struct()
 
-    r_paren  = Rule(LP, regex, RP, type=regex)
+    r_group  = Rule(LP, regex, RP, type=regex)
     r_dot    = Rule(Dot, type=regex)
     r_times0 = Rule(regex, LBR, Char, Comma, Char, RBR, type=regex)
     r_times1 = Rule(regex, LBR, Char, RBR, type=regex)
@@ -55,7 +55,7 @@ class RegexGrammar(Grammar):
     r_join   = Rule(T(regex, 2), type=regex)
     r_done   = Rule(Sof, regex, Eof)
 
-    regex.add(r_paren, r_dot, r_times4, r_join, r_char, r_done)
+    regex.add(r_group, r_dot, r_times4, r_times6, r_join, r_char, r_done)
     root = [regex]
 
 class XSetGrammar(Grammar):

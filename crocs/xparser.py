@@ -24,6 +24,8 @@ class RegexParser(Eacc):
         self.gnref = {}
         # self.xsparser = XSParser(XSetGrammar)
         # self.add_handle(RegexGrammar.r_escape, self.escape)
+
+        self.add_handle(RegexGrammar.r_group, self.group)
         self.add_handle(RegexGrammar.r_dot, self.dot)
         self.add_handle(RegexGrammar.r_times0, self.times0)
         self.add_handle(RegexGrammar.r_times1, self.times1)
@@ -42,6 +44,10 @@ class RegexParser(Eacc):
     def build(self, tokens):
         ptree = super(RegexParser, self).build(tokens)
         return list(ptree)
+
+    def group(self, lp, regex, rp):
+        e = Group(regex.val())
+        return e
 
     def escape(self, escape, char):
         pass
@@ -73,7 +79,8 @@ class RegexParser(Eacc):
         pass
 
     def times6(self, regex, question):
-        pass
+        e = Repeat(regex.val(), 1)
+        return e
 
     def set(self, lb, chars, rb):
         pass
