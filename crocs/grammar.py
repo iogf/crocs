@@ -20,7 +20,7 @@ class RegexTokens(XSpec):
     t_lbrace = LexNode(r'\{', LBR)
     t_rbrace = LexNode(r'\}', RBR)
     t_comma  = LexNode(r'\,', Comma)
-    t_question = LexNode(r'\*', Question)
+    t_question = LexNode(r'\?', Question)
 
     t_mul   = LexNode(r'\*', Mul)
     # t_minus  = LexNode(r'\-', Minus)
