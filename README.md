@@ -56,7 +56,24 @@ Match with:
  ab9ef a664ef a869bef a913ef a41ef a279bef a15ef a8ef a36cef a34ef
 ~~~
 
+Excluding sets.
+
+~~~
+ a0n adn arn asn ajn a0n aun ayn a1n a2n
+[tau@archlinux ~]$ regxhits 
+Regstr:a[^c-z0-9]n
+foobar
+Regex: a[^c-z0-9]n
+Input: aEn
+Group dict: {}
+Group 0: aEn
+Groups: ()
+Match with:
+ aUn a`n aGn aUn aOn a$n a<n a[n a.n a_n
+~~~
+
 The examples below clarifies better.
+
 
 ### Wildcard
 
