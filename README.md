@@ -30,17 +30,16 @@ abcDf ababababc'f
 A more complicated example.
 
 ~~~
-eacc.eacc.EaccError: Unexpected struct!
 [tau@archlinux ~]$ regxhits 
 Regstr:a(b.?c)m.n?
-Regex: a(b.\?c)m.n\?
-Input: abP?cm|n?
+Regex: a(b.{0,1}c)m.n{0,1}
+Input: abdcmin
 Group dict: {}
-Group 0: abP?cm|n?
-Groups: ('bP?c',)
+Group 0: abdcmin
+Groups: ('bdc',)
 Match with:
- abP?cm\n? abP?cmPn? abP?cmrn? abP?cm`n? abP?cmun? 
-abP?cmdn? abP?cmtn? abP?cm1n? abP?cm:n? abP?cmIn?
+ abdcm{n   abdcmcn abdcm5n abdcmHn   abdcmSn 
+
 ~~~
 
 The examples below clarifies better.
