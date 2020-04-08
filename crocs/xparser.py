@@ -1,11 +1,11 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
-from crocs.grammar import RegexGrammar, IncludeGrammar
-from crocs.regex import X, Join, Group, Repeat, Seq, Include
+from crocs.grammar import RegexGrammar, IncludeGrammar, ExcludeGrammar
+from crocs.regex import X, Join, Group, Repeat, Seq, Include, Exclude
 
-class RegexSet(Eacc):
+class IncludeSet(Eacc):
     def __init__(self):
-        super(RegexSet, self).__init__(IncludeGrammar)
+        super(IncludeSet, self).__init__(IncludeGrammar)
         self.add_handle(IncludeGrammar.r_seq, self.seq)
         self.add_handle(IncludeGrammar.r_done, self.done)
         self.add_handle(IncludeGrammar.r_char, self.char)
@@ -22,6 +22,26 @@ class RegexSet(Eacc):
         include = Include(*data)
         return include
 
+class ExcludeSet(Eacc):
+    def __init__(self):
+        super(ExcludeSet, self).__init__(ExcludeGrammar)
+
+        self.add_handle(ExcludeGrammar.r_seq, self.seq)
+        self.add_handle(ExcludeGrammar.r_char, self.char)
+        self.add_handle(ExcludeGrammar.r_done, self.done)
+
+    def seq(self, start, minus, end):
+        seq = Seq(start.val(), end.val())
+        return seq
+
+    def char(self, char):
+        return char.val()
+
+    def done(self, sof, regex, eof):
+        data = (ind.val() for ind in regex)
+        exclude = Exclude(*data)
+        return exclude
+
 class RegexParser(Eacc):
     def __init__(self):
         super(RegexParser, self).__init__(RegexGrammar)
@@ -30,7 +50,9 @@ class RegexParser(Eacc):
 
         # Named groups refs.
         self.gnref = {}
-        self.regex_set = RegexSet()
+        self.include_set = IncludeSet()
+        self.exclude_set = ExcludeSet()
+
         # self.add_handle(RegexGrammar.r_escape, self.escape)
 
         self.add_handle(RegexGrammar.r_group, self.group)
@@ -61,13 +83,14 @@ class RegexParser(Eacc):
         pass
 
     def include(self, lb, chars, rb):
-        ptree = self.regex_set.build(chars)
+        ptree = self.include_set.build(chars)
         ptree = list(ptree)[-1]
-        print(ptree.val())
         return ptree.val()
 
-    def exclude(self, escape, char):
-        pass
+    def exclude(self, lb, circumflex, chars, rb):
+        ptree = self.exclude_set.build(chars)
+        ptree = list(ptree)[-1]
+        return ptree.val()
 
     def dot(self, dot):
         x = X()

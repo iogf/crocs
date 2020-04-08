@@ -52,15 +52,23 @@ class RegexGrammar(Grammar):
     r_include = Rule(LB, T(Char), RB, type=regex)
     r_exclude = Rule(LB, TokVal('^'), T(Char), RB, type=regex)
 
-    r_char   = Rule(Char, type=regex)
-
-    r_done   = Rule(Sof, T(regex), Eof)
+    r_char = Rule(Char, type=regex)
+    r_done = Rule(Sof, T(regex), Eof)
 
     regex.add(r_group, r_dot, r_times0, r_times1, r_times2, r_times3,
-    r_times4, r_times5, r_times6, r_include, r_char, r_done)
+    r_times4, r_times5, r_times6, r_exclude, r_include, r_char, r_done)
     root = [regex]
 
 class IncludeGrammar(Grammar):
+    regex  = Struct()
+    r_seq  = Rule(Char, TokVal('-'), Char, type=regex)
+    r_char = Rule(Char, type=regex)
+    r_done = Rule(Sof, T(regex), Eof)
+
+    regex.add(r_seq, r_char, r_done)
+    root = [regex]
+
+class ExcludeGrammar(Grammar):
     regex  = Struct()
     r_seq  = Rule(Char, TokVal('-'), Char, type=regex)
     r_char = Rule(Char, type=regex)
