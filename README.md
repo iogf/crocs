@@ -47,8 +47,6 @@ With sets.
 ~~~
 [tau@archlinux ~]$ regxhits 
 Regstr:a[bc1-9]{1,4}ef
-test [[Char('b')], [Char('c')], [Char('1'), Char('-'), Char('9')]]
-[bc1-9]
 Regex: a[bc1-9]{1,4}ef
 Input: a84cef
 Group dict: {}
