@@ -61,7 +61,6 @@ Excluding sets.
 ~~~
 [tau@archlinux ~]$ regxhits 
 Regstr:a[^c-z0-9]n
-foobar
 Regex: a[^c-z0-9]n
 Input: aEn
 Group dict: {}
