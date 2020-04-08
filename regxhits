@@ -1,0 +1,12 @@
+#! /usr/bin/env python
+
+from crocs.xparser import RegexParser
+from crocs.grammar import RegexTokens
+from eacc.lexer import Lexer
+
+if __name__ == '__main__':
+    data    = input('Regstr:')
+    lexer   = Lexer(RegexTokens)
+    tokens  = lexer.feed(data)
+    xparser = RegexParser()
+    xparser.build(tokens)

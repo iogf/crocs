@@ -1,7 +1,9 @@
-from yacc.yacc import Yacc, Lexer
-from crocs.grammar import RegexLexer, RegexGrammar, XSetGrammar
+from eacc.eacc import Eacc
+from eacc.lexer import Lexer
+from crocs.grammar import RegexGrammar, XSetGrammar
+from crocs.regex import X, Join, Group, Repeat
 
-class XSParser(Yacc):
+class XSParser(Eacc):
     def __init__(self, grammar):
         super(XSParser, self).__init__(grammar)
         self.add_handle(RegexGrammar.t_seq, self.r_seq)
@@ -12,68 +14,80 @@ class XSParser(Yacc):
     def r_seq(self, start, minus, end):
         pass
 
-class RegexParser(Yacc):
-    def __init__(self, grammar):
-        super(RegexParser, self).__init__(grammar)
+class RegexParser(Eacc):
+    def __init__(self):
+        super(RegexParser, self).__init__(RegexGrammar)
         # Normal groups refs.
         self.gref = {}
 
         # Named groups refs.
         self.gnref = {}
-        self.xsparser = XSParser(XSetGrammar)
-        self.add_handle(RegexGrammar.t_escape, self.r_escape)
-        self.add_handle(RegexGrammar.t_dot, self.r_dot)
-        self.add_handle(RegexGrammar.t_times0, self.r_times0)
-        self.add_handle(RegexGrammar.t_times1, self.r_times1)
-        self.add_handle(RegexGrammar.t_times2, self.r_times2)
-        self.add_handle(RegexGrammar.t_times3, self.r_times3)
-        self.add_handle(RegexGrammar.t_times4, self.r_times4)
-        self.add_handle(RegexGrammar.t_times5, self.r_times5)
-        self.add_handle(RegexGrammar.t_times6, self.r_times6)
-        self.add_handle(RegexGrammar.t_set, self.r_set)
+        # self.xsparser = XSParser(XSetGrammar)
+        # self.add_handle(RegexGrammar.r_escape, self.escape)
+        self.add_handle(RegexGrammar.r_dot, self.dot)
+        self.add_handle(RegexGrammar.r_times0, self.times0)
+        self.add_handle(RegexGrammar.r_times1, self.times1)
+        self.add_handle(RegexGrammar.r_times2, self.times2)
+        self.add_handle(RegexGrammar.r_times3, self.times3)
+        self.add_handle(RegexGrammar.r_times4, self.times4)
+        self.add_handle(RegexGrammar.r_times5, self.times5)
+        self.add_handle(RegexGrammar.r_times6, self.times6)
+        self.add_handle(RegexGrammar.r_set, self.include)
 
-        self.add_handle(RegexGrammar.t_char, self.r_char)
-        self.add_handle(RegexGrammar.t_done, self.r_done)
+        self.add_handle(RegexGrammar.r_char, self.char)
+        self.add_handle(RegexGrammar.r_join, self.join)
+
+        self.add_handle(RegexGrammar.r_done, self.done)
 
     def build(self, tokens):
+        ptree = super(RegexParser, self).build(tokens)
+        return list(ptree)
+
+    def escape(self, escape, char):
         pass
 
-    def r_escape(self, escape, char):
+    def include(self, escape, char):
         pass
 
-    def r_dot(self, sof, regex, eof):
+    def dot(self, dot):
+        x = X()
+        return x
+
+    def times0(self, lbr, min, comma, max, rbr):
         pass
 
-    def r_times0(self, lbr, min, comma, max, rbr):
+    def times1(self, lbr, num, rbr):
         pass
 
-    def r_times1(self, lbr, num, rbr):
+    def times2(self, lbr, min, comma, rbr):
         pass
 
-    def r_times2(self, lbr, min, comma, rbr):
+    def times3(self, lbr, comma, max, rbr):
         pass
 
-    def r_times3(self, lbr, comma, max, rbr):
+    def times4(self, regex, mul):
+        e = Repeat(regex.val())
+        return e
+
+    def times5(self, regex, question):
         pass
 
-    def r_times4(self, regex, mul):
+    def times6(self, regex, question):
         pass
 
-    def r_times5(self, regex, question):
+    def set(self, lb, chars, rb):
         pass
 
-    def r_set(self, lb, chars, rb):
-        pass
+    def char(self, char):
+        return char.val()
 
-    def r_char(self, sof, regex, eof):
-        pass
+    def join(self, regex):
+        data = (ind.val() for ind in regex)
+        join = Join(*data)
+        return join
 
-    def r_done(self, sof, regex, eof):
-        pass
+    def done(self, sof, regex, eof):
+        ast = regex.val()
+        ast.test()
+        ast.hits()
 
-if __name__ == '__main__':
-    data    = input('Regex:')
-    lexer   = Lexer(RegexGrammar)
-    tokens  = lexer.feed(data)
-    xparser = RegexParser(RegexGrammar)
-    xparser.build(tokens) 
