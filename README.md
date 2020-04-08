@@ -59,7 +59,6 @@ Match with:
 Excluding sets.
 
 ~~~
- a0n adn arn asn ajn a0n aun ayn a1n a2n
 [tau@archlinux ~]$ regxhits 
 Regstr:a[^c-z0-9]n
 foobar
