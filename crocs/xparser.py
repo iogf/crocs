@@ -75,8 +75,9 @@ class RegexParser(Eacc):
         e = Repeat(regex.val(), int(min.val()))
         return e
 
-    def times3(self, lbr, comma, max, rbr):
-        pass
+    def times3(self, regex, lbr, comma, max, rbr):
+        e = Repeat(regex.val(), int(max.val()))
+        return e
 
     def times4(self, regex, mul):
         e = Repeat(regex.val())
