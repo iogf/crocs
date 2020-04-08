@@ -8,7 +8,9 @@ is then compiled into a regex's string. it is as well possible to generate rando
 for the regex that would match the regex pattern.
 
 It is also possible to insert a raw regex string and generate possible matches. It helps a lot
-when debugging regex's. The project relies on [eacc](https://github.com/iogf/eacc) to build an AST for the given regex.
+when debugging regex's. 
+
+The project relies on [eacc](https://github.com/iogf/eacc) to build an AST for the given regex.
 
 ~~~
 [tau@archlinux eacc.wiki-code]$ regxhits 
@@ -22,6 +24,23 @@ Match with:
  abababc3f abc3f ababababababababc%f abababababababcUf 
 ababababababababababcTf abababababc(f abcmf ababababababababababcDf 
 abcDf ababababc'f
+
+~~~
+
+A more complicated example.
+
+~~~
+eacc.eacc.EaccError: Unexpected struct!
+[tau@archlinux ~]$ regxhits 
+Regstr:a(b.?c)m.n?
+Regex: a(b.\?c)m.n\?
+Input: abP?cm|n?
+Group dict: {}
+Group 0: abP?cm|n?
+Groups: ('bP?c',)
+Match with:
+ abP?cm\n? abP?cmPn? abP?cmrn? abP?cm`n? abP?cmun? 
+abP?cmdn? abP?cmtn? abP?cm1n? abP?cm:n? abP?cmIn?
 ~~~
 
 The examples below clarifies better.
