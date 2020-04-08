@@ -7,6 +7,23 @@ It is possible to implement regex's using a function/class syntax, the resulting
 is then compiled into a regex's string. it is as well possible to generate random inputs 
 for the regex that would match the regex pattern.
 
+It is also possible to insert a raw regex string and generate possible matches. It helps a lot
+when debugging regex's. The project relies on [eacc](https://github.com/iogf/eacc) to build an AST for the given regex.
+
+~~~
+[tau@archlinux eacc.wiki-code]$ regxhits 
+Regstr:ab*c.f
+Regex: ab{0,}c.f
+Input: ababababababc}f
+Group dict: {}
+Group 0: abc}f
+Groups: ()
+Match with:
+ abababc3f abc3f ababababababababc%f abababababababcUf 
+ababababababababababcTf abababababc(f abcmf ababababababababababcDf 
+abcDf ababababc'f
+~~~
+
 The examples below clarifies better.
 
 ### Wildcard
