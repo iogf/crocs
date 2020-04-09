@@ -55,14 +55,24 @@ class RegexGrammar(Grammar):
     r_include = Rule(LB, T(Char), RB, type=regex)
     r_exclude = Rule(LB, Caret, T(Char), RB, type=regex)
 
-    r_cnext = Rule(LP, Question, Lesser, Equal, T(regex), RP, T(regex), type=regex)
-    r_ncnext = Rule(LP, Question, Lesser, Exclam, T(regex), RP, T(regex), type=regex)
+    r_cnext = Rule(LP, Question, Lesser, Equal, 
+    T(regex), RP, T(regex), type=regex)
+
+    r_ncnext = Rule(LP, Question, Lesser, Exclam, 
+    T(regex), RP, T(regex), type=regex)
+
+    r_cback = Rule(T(regex), LP, Question, Equal, 
+    T(regex), RP, type=regex)
+
+    r_ncback = Rule(T(regex), LP, Question, 
+    Exclam, T(regex), RP, type=regex)
 
     r_char = Rule(Char, type=regex)
     r_done = Rule(Sof, T(regex), Eof)
 
-    regex.add(r_group, r_dot, r_cnext, r_ncnext, r_times0, r_times1, r_times2, r_times3,
-    r_times4, r_times5, r_times6, r_exclude, r_include, r_char, r_done)
+    regex.add(r_group, r_dot, r_cnext, r_ncnext, r_cback, 
+    r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
+    r_times5, r_times6, r_exclude, r_include, r_char, r_done)
     root = [regex]
 
 class IncludeGrammar(Grammar):

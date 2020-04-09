@@ -70,6 +70,9 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_cnext, self.cnext)
         self.add_handle(RegexGrammar.r_ncnext, self.ncnext)
 
+        self.add_handle(RegexGrammar.r_cback, self.cback)
+        self.add_handle(RegexGrammar.r_ncback, self.ncback)
+
 
         self.add_handle(RegexGrammar.r_char, self.char)
 
@@ -111,6 +114,23 @@ class RegexParser(Eacc):
         join0 = Join(*data0)
         join1 = Join(*data1)
         e = ConsumeNext(join0, join1, neg=True)
+        return e
+
+    def cback(self, regex0, lp, question,  equal, regex1, rp):
+        print('foobar')
+        data0 = (ind.val() for ind in regex0)
+        data1 = (ind.val() for ind in regex1)
+        join0 = Join(*data0)
+        join1 = Join(*data1)
+        e = ConsumeBack(join0, join1)
+        return e
+
+    def ncback(self, regex0, lp, question, exlam, regex1, rp):
+        data0 = (ind.val() for ind in regex0)
+        data1 = (ind.val() for ind in regex1)
+        join0 = Join(*data0)
+        join1 = Join(*data1)
+        e = ConsumeBack(join0, join1, neg=True)
         return e
 
     def dot(self, dot):
