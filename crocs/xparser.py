@@ -47,10 +47,10 @@ class RegexParser(Eacc):
     def __init__(self):
         super(RegexParser, self).__init__(RegexGrammar)
         # Normal groups refs.
-        self.gref = {}
+        self.gmap = []
 
         # Named groups refs.
-        self.gnref = {}
+        self.gnmap = dict()
         self.include_set = IncludeSet()
         self.exclude_set = ExcludeSet()
 
@@ -74,6 +74,7 @@ class RegexParser(Eacc):
 
         self.add_handle(RegexGrammar.r_cback, self.cback)
         self.add_handle(RegexGrammar.r_ncback, self.ncback)
+        self.add_handle(RegexGrammar.r_gref, self.gref)
 
 
         self.add_handle(RegexGrammar.r_char, self.char)
@@ -87,16 +88,20 @@ class RegexParser(Eacc):
     def group(self, lp, regex, rp):
         data = (ind.val() for ind in regex)
         e    = Group(*data)
+        self.gmap.append(e)
         return e
-
-    # r_ngroup = Rule(LP, Question, TokVal('P'),
-    # Lesser, T(Char), Greater, T(regex), RP, type=regex)
 
     def ngroup(self, lp, question, pngroup, lesser,  name, greater, regex, rp):
         data0 = (ind.val() for ind in regex)
         data1 = (ind.val() for ind in name)
         e = NamedGroup(''.join(data1), *data0)
         return e
+
+    def gref(self, escape, num):
+        return self.gmap[int(num.val()) - 1]
+
+    def gnref(self, escape, char):
+        pass
 
     def escape(self, escape, char):
         pass

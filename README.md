@@ -71,6 +71,21 @@ Match with:
  aUn a`n aGn aUn aOn a$n a<n a[n a.n a_n
 ~~~
 
+Group references.
+
+~~~
+[tau@archlinux crocs-code]$ regxhits 
+Regstr:(a.b)cd\1fg
+Regex: (a.b)cd\1fg
+Input: akbcdakbfg
+Group dict: {}
+Group 0: akbcdakbfg
+Groups: ('akb',)
+Match with:
+ akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg 
+akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg
+~~~
+
 The examples below clarifies better.
 
 

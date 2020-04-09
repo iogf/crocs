@@ -2,7 +2,7 @@ from eacc.eacc import Rule, Grammar, Struct, T
 from eacc.lexer import LexMap, LexNode, XSpec, SeqNode, LexSeq
 from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Question, Equal, Hash,\
-LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType
+LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num
 
 class PNGroup(TokType):
     pass
@@ -16,6 +16,9 @@ class RegexTokens(XSpec):
 
     t_lparen = LexNode(r'\(', LP)
     t_rparen = LexNode(r'\)', RP)
+
+    t_gref = LexSeq(SeqNode(r'\\', Escape), 
+    SeqNode(r'[0-9]', Num))
 
     t_lbracket = LexNode(r'\[', LB)
     t_rbracket = LexNode(r'\]', RB)
@@ -40,7 +43,7 @@ class RegexTokens(XSpec):
 
     t_char = LexNode(r'.', Char)
 
-    lexmap.add(t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
+    lexmap.add(t_gref, t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
     t_rparen, t_mul, t_lbracket, t_rbracket, t_lbrace, t_rbrace, 
     t_comma, t_question, t_caret, t_hash, t_equal, t_lesser, 
     t_greater, t_exclam, t_char)
@@ -66,6 +69,8 @@ class RegexGrammar(Grammar):
     r_include = Rule(LB, T(Char), RB, type=regex)
     r_exclude = Rule(LB, Caret, T(Char), RB, type=regex)
 
+    r_gref = Rule(Escape, Num, type=regex)
+
     r_cnext = Rule(LP, Question, Lesser, Equal, 
     T(regex), RP, T(regex), type=regex)
 
@@ -81,7 +86,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=regex)
     r_done = Rule(Sof, T(regex), Eof)
 
-    regex.add(r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
+    regex.add(r_gref, r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
     r_times5, r_times6, r_exclude, r_include, r_char, r_done)
     root = [regex]
