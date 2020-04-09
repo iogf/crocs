@@ -2,7 +2,7 @@ from eacc.eacc import Rule, Grammar, Struct, T
 from eacc.lexer import LexMap, LexNode, XSpec
 from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Question, Equal, Hash,\
-LBR, RBR, Dot, Escape
+LBR, RBR, Dot, Escape, Lesser, Exclam, Caret
 
 class RegexTokens(XSpec):
     lexmap = LexMap()
@@ -21,18 +21,21 @@ class RegexTokens(XSpec):
     t_rbrace = LexNode(r'\}', RBR)
     t_comma  = LexNode(r'\,', Comma)
     t_question = LexNode(r'\?', Question)
+    t_caret = LexNode(r'\^', Caret)
 
     t_mul = LexNode(r'\*', Mul)
     # t_minus  = LexNode(r'\-', Minus)
 
     t_hash  = LexNode(r'\#', Hash)
     t_equal = LexNode(r'\=', Equal)
+    t_exclam = LexNode(r'\!', Exclam)
+    t_lesser = LexNode(r'\<', Lesser)
     t_char  = LexNode(r'.', Char)
 
     lexmap.add(t_escape, t_plus, t_dot, t_lparen, 
     t_rparen, t_mul, t_lbracket, t_rbracket,
-    t_lbrace, t_rbrace, t_comma, t_question,
-    t_char,t_hash, t_equal, t_char)
+    t_lbrace, t_rbrace, t_comma, t_question, t_caret,
+    t_hash, t_equal, t_lesser, t_exclam, t_char)
 
     root = [lexmap]
 
@@ -50,12 +53,15 @@ class RegexGrammar(Grammar):
     r_times6 = Rule(regex, Plus, type=regex)
 
     r_include = Rule(LB, T(Char), RB, type=regex)
-    r_exclude = Rule(LB, TokVal('^'), T(Char), RB, type=regex)
+    r_exclude = Rule(LB, Caret, T(Char), RB, type=regex)
+
+    r_cnext = Rule(LP, Question, Lesser, Equal, T(regex), RP, T(regex), type=regex)
+    r_ncnext = Rule(LP, Question, Lesser, Exclam, T(regex), RP, T(regex), type=regex)
 
     r_char = Rule(Char, type=regex)
     r_done = Rule(Sof, T(regex), Eof)
 
-    regex.add(r_group, r_dot, r_times0, r_times1, r_times2, r_times3,
+    regex.add(r_group, r_dot, r_cnext, r_ncnext, r_times0, r_times1, r_times2, r_times3,
     r_times4, r_times5, r_times6, r_exclude, r_include, r_char, r_done)
     root = [regex]
 

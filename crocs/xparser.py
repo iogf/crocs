@@ -1,7 +1,8 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexGrammar, IncludeGrammar, ExcludeGrammar
-from crocs.regex import X, Join, Group, Repeat, Seq, Include, Exclude
+from crocs.regex import X, Join, Group, Repeat, Seq, Include, Exclude,\
+ConsumeNext, ConsumeBack
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -66,6 +67,9 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_times6, self.times6)
         self.add_handle(RegexGrammar.r_include, self.include)
         self.add_handle(RegexGrammar.r_exclude, self.exclude)
+        self.add_handle(RegexGrammar.r_cnext, self.cnext)
+        self.add_handle(RegexGrammar.r_ncnext, self.ncnext)
+
 
         self.add_handle(RegexGrammar.r_char, self.char)
 
@@ -88,10 +92,26 @@ class RegexParser(Eacc):
         ptree = list(ptree)[-1]
         return ptree.val()
 
-    def exclude(self, lb, circumflex, chars, rb):
+    def exclude(self, lb, caret, chars, rb):
         ptree = self.exclude_set.build(chars)
         ptree = list(ptree)[-1]
         return ptree.val()
+
+    def cnext(self, lp, question, lexer, equal, regex0, rp, regex1):
+        data0 = (ind.val() for ind in regex0)
+        data1 = (ind.val() for ind in regex1)
+        join0 = Join(*data0)
+        join1 = Join(*data1)
+        e = ConsumeNext(join0, join1)
+        return e
+
+    def ncnext(self, lp, question, lexer, exlam, regex0, rp, regex1):
+        data0 = (ind.val() for ind in regex0)
+        data1 = (ind.val() for ind in regex1)
+        join0 = Join(*data0)
+        join1 = Join(*data1)
+        e = ConsumeNext(join0, join1, neg=True)
+        return e
 
     def dot(self, dot):
         x = X()

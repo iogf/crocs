@@ -8,5 +8,6 @@ if __name__ == '__main__':
     data    = input('Regstr:')
     lexer   = Lexer(RegexTokens)
     tokens  = lexer.feed(data)
+    tokens = list(tokens)
     xparser = RegexParser()
     xparser.build(tokens)
