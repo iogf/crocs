@@ -76,7 +76,8 @@ class RegexParser(Eacc):
         return list(ptree)
 
     def group(self, lp, regex, rp):
-        e = Group(regex.val())
+        data = (ind.val() for ind in regex)
+        e    = Group(*data)
         return e
 
     def escape(self, escape, char):
