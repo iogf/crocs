@@ -1,7 +1,7 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexGrammar, IncludeGrammar, ExcludeGrammar
-from crocs.regex import X, Join, Group, Repeat, Seq, Include, Exclude,\
+from crocs.regex import X, Join, Group, NamedGroup, Repeat, Seq, Include, Exclude,\
 ConsumeNext, ConsumeBack
 
 class IncludeSet(Eacc):
@@ -57,6 +57,8 @@ class RegexParser(Eacc):
         # self.add_handle(RegexGrammar.r_escape, self.escape)
 
         self.add_handle(RegexGrammar.r_group, self.group)
+        self.add_handle(RegexGrammar.r_ngroup, self.ngroup)
+
         self.add_handle(RegexGrammar.r_dot, self.dot)
         self.add_handle(RegexGrammar.r_times0, self.times0)
         self.add_handle(RegexGrammar.r_times1, self.times1)
@@ -85,6 +87,15 @@ class RegexParser(Eacc):
     def group(self, lp, regex, rp):
         data = (ind.val() for ind in regex)
         e    = Group(*data)
+        return e
+
+    # r_ngroup = Rule(LP, Question, TokVal('P'),
+    # Lesser, T(Char), Greater, T(regex), RP, type=regex)
+
+    def ngroup(self, lp, question, pngroup, lesser,  name, greater, regex, rp):
+        data0 = (ind.val() for ind in regex)
+        data1 = (ind.val() for ind in name)
+        e = NamedGroup(''.join(data1), *data0)
         return e
 
     def escape(self, escape, char):

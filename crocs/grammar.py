@@ -1,8 +1,11 @@
 from eacc.eacc import Rule, Grammar, Struct, T
-from eacc.lexer import LexMap, LexNode, XSpec
+from eacc.lexer import LexMap, LexNode, XSpec, SeqNode, LexSeq
 from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Question, Equal, Hash,\
-LBR, RBR, Dot, Escape, Lesser, Exclam, Caret
+LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType
+
+class PNGroup(TokType):
+    pass
 
 class RegexTokens(XSpec):
     lexmap = LexMap()
@@ -30,12 +33,17 @@ class RegexTokens(XSpec):
     t_equal = LexNode(r'\=', Equal)
     t_exclam = LexNode(r'\!', Exclam)
     t_lesser = LexNode(r'\<', Lesser)
-    t_char  = LexNode(r'.', Char)
+    t_greater = LexNode(r'\>', Greater)
 
-    lexmap.add(t_escape, t_plus, t_dot, t_lparen, 
-    t_rparen, t_mul, t_lbracket, t_rbracket,
-    t_lbrace, t_rbrace, t_comma, t_question, t_caret,
-    t_hash, t_equal, t_lesser, t_exclam, t_char)
+    t_pngroup = LexSeq(SeqNode(r'\(', LP), 
+    SeqNode(r'\?', Question), SeqNode(r'P', PNGroup))
+
+    t_char = LexNode(r'.', Char)
+
+    lexmap.add(t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
+    t_rparen, t_mul, t_lbracket, t_rbracket, t_lbrace, t_rbrace, 
+    t_comma, t_question, t_caret, t_hash, t_equal, t_lesser, 
+    t_greater, t_exclam, t_char)
 
     root = [lexmap]
 
@@ -43,6 +51,9 @@ class RegexGrammar(Grammar):
     regex = Struct()
 
     r_group  = Rule(LP, T(regex), RP, type=regex)
+    r_ngroup = Rule(LP, Question, PNGroup,
+    Lesser, T(regex), Greater, T(regex), RP, type=regex)
+
     r_dot    = Rule(Dot, type=regex)
     r_times0 = Rule(regex, LBR, Char, Comma, Char, RBR, type=regex)
     r_times1 = Rule(regex, LBR, Char, RBR, type=regex)
@@ -70,7 +81,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=regex)
     r_done = Rule(Sof, T(regex), Eof)
 
-    regex.add(r_group, r_dot, r_cnext, r_ncnext, r_cback, 
+    regex.add(r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
     r_times5, r_times6, r_exclude, r_include, r_char, r_done)
     root = [regex]
