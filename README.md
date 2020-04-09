@@ -220,6 +220,7 @@ i.e3ui._@pythonylsg.br m0@pythonubjdm.br ijbf_ktux@pythonhdlh.br rtza45@pythoner
 **Note:** Work with python3 only.
 
 ~~~
+pip install -r requirements.txt 
 pip install crocs
 ~~~
 
