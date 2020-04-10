@@ -9,7 +9,7 @@ class PNGroup(TokType):
 
 class RegexTokens(XSpec):
     lexmap = LexMap()
-    t_escape = LexSeq(SeqNode(r'\\', Escape), SeqNode(r'.', Char))
+    t_escape = LexSeq(SeqNode(r'\\', Escape, discard=True), SeqNode(r'.', Char))
 
     t_plus = LexNode(r'\+', Plus)
 
@@ -53,7 +53,7 @@ class RegexTokens(XSpec):
 
 class RegexGrammar(Grammar):
     regex = Struct()
-    r_escape  = Rule(Escape, Char, type=regex)
+    # r_escape  = Rule(Escape, Char, type=Char)
 
     r_group  = Rule(LP, T(regex), RP, type=regex)
     r_ngroup = Rule(LP, Question, PNGroup,
@@ -88,7 +88,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=regex)
     r_done = Rule(Sof, T(regex), Eof)
 
-    regex.add(r_gref, r_escape, r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
+    regex.add(r_gref,  r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
     r_times5, r_times6, r_exclude, r_include, r_char, r_done)
     root = [regex]

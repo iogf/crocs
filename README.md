@@ -14,6 +14,17 @@ The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex st
 generating possible matches. 
 
 ~~~
+[tau@archlinux crocs-code]$ regxhits 
+Regstr:(?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
+Regex: (?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
+Input: siz@pythonyz.br
+Group dict: {'name': 'siz', 'hostname': 'pythonyz', 'domain': 'br'}
+Group 0: siz@pythonyz.br
+Groups: ('siz', 'pythonyz', 'br')
+Match with:
+ mg@pythonyeegr.br v0vr@pythonszvcq.br pk2rm4gh3@pythonomq.br whzevst-@pythonkzdgkh.br 
+vvlx-w@pythoni.br wrngzn698mh@pythonrx.br vrisys@pythonqgpc.br u.z@pythonlkgcyut.br 
+dv-@pythonf.br taxcprguso3@pythonwe.br
 ~~~
 
 ### Wildcard
@@ -82,12 +93,12 @@ Would output.
 ~~~
 [tau@archlinux demo]$ python group.py 
 Regex: a(b.)
-Input: abH
+Input: ab#
 Group dict: {}
-Group 0: abH
-Groups: ('bH',)
+Group 0: ab#
+Groups: ('b#',)
 Match with:
- abH abH abH abH abH abH abH abH abH abH
+ abm ab" ab. abf ab| abv ab- ab7 ab( abE
 ~~~
 
 ### Concrete Example
