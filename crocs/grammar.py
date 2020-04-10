@@ -7,6 +7,9 @@ LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num
 class PNGroup(TokType):
     pass
 
+class PName(TokType):
+    pass
+
 class Pipe(TokType):
     pass
 
@@ -44,7 +47,9 @@ class RegexTokens(XSpec):
     t_greater = LexNode(r'\>', Greater)
 
     t_pngroup = LexSeq(SeqNode(r'\(', LP), 
-    SeqNode(r'\?', Question), SeqNode(r'P', PNGroup))
+    SeqNode(r'\?', Question), SeqNode(r'P', PNGroup),
+    SeqNode(r'\<', Lesser), SeqNode(r'[a-zA-Z0-9]+', PName),
+    SeqNode(r'\>', Greater))
 
     t_char = LexNode(r'.', Char)
 
@@ -59,11 +64,11 @@ class RegexGrammar(Grammar):
     regex = Struct()
     # r_escape  = Rule(Escape, Char, type=Char)
 
-    r_pipe  = Rule(regex, Pipe, regex, type=regex)
+    r_pipe  = Rule(T(regex), Pipe, T(regex), type=regex)
 
     r_group  = Rule(LP, T(regex), RP, type=regex)
     r_ngroup = Rule(LP, Question, PNGroup,
-    Lesser, T(regex), Greater, T(regex), RP, type=regex)
+    Lesser, PName, Greater, T(regex), RP, type=regex)
 
     r_dot    = Rule(Dot, type=regex)
     r_times0 = Rule(regex, LBR, Char, Comma, Char, RBR, type=regex)
