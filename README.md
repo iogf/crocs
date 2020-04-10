@@ -13,7 +13,7 @@ when debugging regex's.
 The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
 generating possible matches. 
 
-### Regex's hits
+### Regex Hits
 
 The regex below is merely parsed using [eacc](https://github.com/iogf/eacc) then an AST
 is generated. The AST is built using crocs's classes. Once it is built then the hits
@@ -33,7 +33,7 @@ vvlx-w@pythoni.br wrngzn698mh@pythonrx.br vrisys@pythonqgpc.br u.z@pythonlkgcyut
 dv-@pythonf.br taxcprguso3@pythonwe.br
 ~~~
 
-### Python to Regex
+### Python2Regex
 
 It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
 contains 'python' in the beginning too. It makes sure that the first 
