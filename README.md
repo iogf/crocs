@@ -13,10 +13,16 @@ when debugging regex's.
 The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
 generating possible matches. 
 
+### Regex's hits
+
+The regex below is merely parsed using [eacc](https://github.com/iogf/eacc) then an AST
+is generated. The AST is built using crocs's classes. Once it is built then the hits
+are generated.
+
 ~~~
 [tau@archlinux crocs-code]$ regxhits 
 Regstr:(?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
-Regex: (?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
+Compiled Regex: (?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
 Input: siz@pythonyz.br
 Group dict: {'name': 'siz', 'hostname': 'pythonyz', 'domain': 'br'}
 Group 0: siz@pythonyz.br
@@ -27,81 +33,7 @@ vvlx-w@pythoni.br wrngzn698mh@pythonrx.br vrisys@pythonqgpc.br u.z@pythonlkgcyut
 dv-@pythonf.br taxcprguso3@pythonwe.br
 ~~~
 
-### Wildcard
-
-~~~python
-from crocs.regex import Join, X
-
-e = Join('a', X(), 'b')
-e.test()
-e.hits()
-~~~
-
-The above code would give you the regex's string and also possible matches.
-
-~~~
-Regex: a.b
-Input: aob
-Group dict: {}
-Group 0: aob
-Groups: ()
-Match with:
- akb a)b aKb aSb atb a{b aTb a!b a&b a7b
-
-~~~
-
-A regex can be thought as a sequence of patterns that are joined together. Crocs offers
-Regex's operators as Python classes. You reason using these classes specification to implement
-your desired patterns of search.
-
-### Sets
-
-A simple regex sequence would look like:
-
-~~~python
-from crocs.regex import Join, Include, Seq
-
-e = Join('x', Include(Seq('0', '9')))
-e.test()
-e.hits()
-~~~
-
-That would give you the possible hits:
-
-~~~
-Regex: x[0-9]
-Input: x0
-Group dict: {}
-Group 0: x0
-Groups: ()
-Match with:
- x0 x2 x4 x9 x2 x5 x0 x5 x7 x3
-~~~
-
-### Groups
-
-~~~python
-from crocs.regex import Join, Group, X
-
-e = Join('a', Group('b', X()))
-e.test()
-e.hits()
-~~~
-
-Would output.
-
-~~~
-[tau@archlinux demo]$ python group.py 
-Regex: a(b.)
-Input: ab#
-Group dict: {}
-Group 0: ab#
-Groups: ('b#',)
-Match with:
- abm ab" ab. abf ab| abv ab- ab7 ab( abE
-~~~
-
-### Concrete Example
+### Python to Regex
 
 It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
 contains 'python' in the beginning too. It makes sure that the first 
