@@ -8,7 +8,7 @@ is then compiled into a regex's string. it is as well possible to generate rando
 for the regex that would match the regex pattern.
 
 It is also possible to insert a raw regex string and generate possible matches. It helps a lot
-when debugging regex's. 
+when debugging a complex regex. 
 
 The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
 generating possible matches. 
