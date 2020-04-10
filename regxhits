@@ -2,11 +2,20 @@
 
 from crocs.xparser import RegexParser
 from crocs.grammar import RegexTokens
-from eacc.lexer import Lexer
+from eacc.lexer import Lexer, LexError
+from eacc.eacc import EaccError
+from traceback import print_exc
 
-if __name__ == '__main__':
+def build_ast():
     data    = input('Regstr:')
     lexer   = Lexer(RegexTokens)
     tokens  = lexer.feed(data)
     xparser = RegexParser()
     xparser.build(tokens)
+
+if __name__ == '__main__':
+    while True:
+        try:
+            build_ast()
+        except (LexError, EaccError) as e:
+            print_exc()
