@@ -20,7 +20,7 @@ class RegexTokens(XSpec):
     t_plus = LexNode(r'\+', Plus)
 
     t_dot = LexNode(r'\.', Dot)
-    t_pipe = LexNode(r'\.', Pipe)
+    t_pipe = LexNode(r'\|', Pipe)
 
     t_lparen = LexNode(r'\(', LP)
     t_rparen = LexNode(r'\)', RP)
@@ -55,7 +55,7 @@ class RegexTokens(XSpec):
 
     lexmap.add(t_gref, t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
     t_rparen, t_mul, t_lbracket, t_rbracket, t_lbrace, t_rbrace, 
-    t_comma, t_question, t_caret, t_hash, t_equal, t_lesser, 
+    t_comma, t_question, t_caret, t_pipe, t_hash, t_equal, t_lesser, 
     t_greater, t_exclam, t_char)
 
     root = [lexmap]
@@ -64,7 +64,16 @@ class RegexGrammar(Grammar):
     regex = Struct()
     # r_escape  = Rule(Escape, Char, type=Char)
 
-    r_pipe  = Rule(T(regex), Pipe, T(regex), type=regex)
+    # No easy way out.
+    o_pipe0 = Rule(LP)
+    o_pipe1 = Rule(Mul)
+    o_pipe2 = Rule(Question)
+    o_pipe3 = Rule(LBR)
+    o_pipe4 = Rule(LB)
+    o_pipe5 = Rule(Char)
+
+    r_pipe  = Rule(T(regex), Pipe, T(regex), type=regex, 
+    up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5))
 
     r_group  = Rule(LP, T(regex), RP, type=regex)
     r_ngroup = Rule(LP, Question, PNGroup,
@@ -101,7 +110,7 @@ class RegexGrammar(Grammar):
 
     regex.add(r_gref,  r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
-    r_times5, r_times6, r_exclude, r_include, r_char, r_done)
+    r_times5, r_times6, r_pipe, r_exclude, r_include, r_char, r_done)
     root = [regex]
 
 class IncludeGrammar(Grammar):

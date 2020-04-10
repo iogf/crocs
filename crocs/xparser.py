@@ -87,7 +87,11 @@ class RegexParser(Eacc):
         return list(ptree)
 
     def pipe(self, regex0, pipe, regex1):
-        e = Any(regex0, regex1)
+        data0 = (ind.val() for ind in regex0)
+        data1 = (ind.val() for ind in regex1)
+        e0 = Join(*data0)
+        e1 = Join(*data1)
+        e = Any(e0, e1)
         return e
 
     def group(self, lp, regex, rp):

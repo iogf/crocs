@@ -57,7 +57,7 @@ class RegexOperator:
 
         # It has to be search in order to work with ConsumeNext.
         regc  = re.search(regex, data)
-        print('Compiled Regex:', regex)
+        print('Regex:', regex)
         print('Input:', data)
 
         print('Group dict:', 
