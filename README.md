@@ -19,17 +19,15 @@ are generated.
 The example below reads a regex to match a URL then generates possible matches.
 
 ~~~
-[tau@archlinux crocs-code]$ regxhits 
-Regstr:(http|https|ftp):[\/]{2}([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,4})([0-9]+)?\/?([a-zA-Z0-9\-\._\?\,\'\/\\\+&amp;%\$#\=~]*)
-Regex: (http|https|ftp):[/]{2,2}([a-zA-Z0-9\-\.]{1,}\.[a-zA-Z]{2,4})([0-9]{1,}){0,1}/{0,1}([a-zA-Z0-9\-\._\?,'/\\\+\&amp;%\$\#=\~]{0,})
-Input: ftp://WGA.rgr00574694/5P1f5o2q
+[tau@archlinux crocs-code]$ regxhits
+Regstr:a.b.c
+Regex: a.b.c
+Input: aQb%c
 Group dict: {}
-Group 0: ftp://WGA.rgr00574694/5P1f5o2q
-Groups: ('ftp', 'WGA.rgr', '00574694', '5P1f5o2q')
+Group 0: aQb%c
+Groups: ()
 Match with:
- http://7.CMC41624923/-0T/ln5lIh https://LVeWDT.Xl/A.VjHd4Y~P https://VYc-.f9O.Pt9$p~,UdrA 
-https://PJ5OA.PkDn.mj936177/ ftp://JdwxYJ1uz.ukBuBE2aSPg ftp://Qu1.pD34440/CLTjp,v0 ftp://HxVX.Hdd/UQ9.,9; 
-ftp://svg.Bz33vnC# ftp://7Gl8lM.LWYf/ZMLjV ftp://n0.guq59745/w
+ a0b5c aCbyc aDbnc a%b!c a!b=c aJb,c aSbkc a~b2c aJb|c a!b.c
 ~~~
 
 ### Python2Regex
