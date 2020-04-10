@@ -14,78 +14,7 @@ The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex st
 generating possible matches. 
 
 ~~~
-[tau@archlinux eacc.wiki-code]$ regxhits 
-Regstr:ab*c.f
-Regex: ab{0,}c.f
-Input: ababababababc}f
-Group dict: {}
-Group 0: abc}f
-Groups: ()
-Match with:
- abababc3f abc3f ababababababababc%f abababababababcUf 
-ababababababababababcTf abababababc(f abcmf ababababababababababcDf 
-abcDf ababababc'f
-
 ~~~
-
-A more complicated example.
-
-~~~
-[tau@archlinux ~]$ regxhits 
-Regstr:a(b.?c)m.n?
-Regex: a(b.{0,1}c)m.n{0,1}
-Input: abdcmin
-Group dict: {}
-Group 0: abdcmin
-Groups: ('bdc',)
-Match with:
- abdcm{n   abdcmcn abdcm5n abdcmHn   abdcmSn 
-
-~~~
-
-With sets.
-
-~~~
-[tau@archlinux ~]$ regxhits 
-Regstr:a[bc1-9]{1,4}ef
-Regex: a[bc1-9]{1,4}ef
-Input: a84cef
-Group dict: {}
-Group 0: a84cef
-Groups: ()
-Match with:
- ab9ef a664ef a869bef a913ef a41ef a279bef a15ef a8ef a36cef a34ef
-~~~
-
-Excluding sets.
-
-~~~
-[tau@archlinux ~]$ regxhits 
-Regstr:a[^c-z0-9]n
-Regex: a[^c-z0-9]n
-Input: aEn
-Group dict: {}
-Group 0: aEn
-Groups: ()
-Match with:
- aUn a`n aGn aUn aOn a$n a<n a[n a.n a_n
-~~~
-
-Group references.
-
-~~~
-[tau@archlinux crocs-code]$ regxhits 
-Regstr:(a.b)cd\1fg
-Regex: (a.b)cd\1fg
-Input: akbcdakbfg
-Group dict: {}
-Group 0: akbcdakbfg
-Groups: ('akb',)
-Match with:
- akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg 
-akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg
-~~~
-
 
 ### Wildcard
 

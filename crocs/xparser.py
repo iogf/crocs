@@ -54,7 +54,7 @@ class RegexParser(Eacc):
         self.include_set = IncludeSet()
         self.exclude_set = ExcludeSet()
 
-        # self.add_handle(RegexGrammar.r_escape, self.escape)
+        self.add_handle(RegexGrammar.r_escape, self.escape)
 
         self.add_handle(RegexGrammar.r_group, self.group)
         self.add_handle(RegexGrammar.r_ngroup, self.ngroup)
@@ -104,7 +104,7 @@ class RegexParser(Eacc):
         pass
 
     def escape(self, escape, char):
-        pass
+        return char.val()
 
     def include(self, lb, chars, rb):
         ptree = self.include_set.build(chars)
