@@ -86,8 +86,6 @@ Match with:
 akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg akbcdakbfg
 ~~~
 
-The examples below clarifies better.
-
 
 ### Wildcard
 

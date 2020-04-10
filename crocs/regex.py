@@ -310,6 +310,6 @@ class Join(RegexOperator):
         return ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
-    def to_regex(self):
-        return ''.join(map(str, self.args))
-
+    # def to_regex(self):
+        # return ''.join(map(str, self.args))
+    

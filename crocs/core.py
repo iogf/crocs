@@ -30,6 +30,9 @@ class RegexStr:
     def clear(self):
         pass
 
+    def to_regex(self):
+        return re.escape(self.value)
+
 class RegexOperator:
     # It may be interesting to have a base class Pattern
     # that implements common methods with Group and Include, Exclude.
@@ -50,7 +53,7 @@ class RegexOperator:
         """
 
         regex = self.to_regex()
-        data  = self.seed()
+        data = self.valid_data()
 
         # It has to be search in order to work with ConsumeNext.
         regc  = re.search(regex, data)
@@ -74,8 +77,8 @@ class RegexOperator:
             ind.clear()
 
     def seed(self):
+        regex = self.to_regex()
         data = self.valid_data()
-        self.clear()
         return data
 
     def hits(self, count=10):
