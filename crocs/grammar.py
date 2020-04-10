@@ -71,7 +71,7 @@ class RegexGrammar(Grammar):
     o_pipe3 = Rule(LBR)
     o_pipe4 = Rule(LB)
     o_pipe5 = Rule(Char)
-    o_pipe6 = Rule(Char)
+    o_pipe6 = Rule(Dot)
 
     r_pipe  = Rule(T(regex), Pipe, T(regex), type=regex, 
     up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5, o_pipe6))
