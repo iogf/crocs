@@ -17,16 +17,21 @@ is generated. The AST is built using crocs's classes. Once it is built then the 
 are generated.
 
 ~~~
-[tau@archlinux crocs-code]$ regxhits
-Regstr:a.b.c
-Regex: a.b.c
-Input: aQb%c
+[tau@archlinux crocs-code]$ regxhits 
+Regstr:( bra[a-z]il| bos.ia| germ[a-z]ny){1,4}
+Regex: (\ bra[a-z]il|\ bos.ia|\ germ[a-z]ny){1,4}
+Input:  brakil brakil brakil brakil
 Group dict: {}
-Group 0: aQb%c
-Groups: ()
+Group 0:  brakil brakil brakil brakil
+Groups: (' brakil',)
 Match with:
- a0b5c aCbyc aDbnc a%b!c a!b=c aJb,c aSbkc a~b2c aJb|c a!b.c
+  brawil  germyny germyny germyny  bos!ia bos!ia bos!ia  
+germkny germkny  boscia boscia  germzny  braril braril braril  
+brazil brazil brazil brazil  bradil bradil  bos^ia bos^ia
 ~~~
+
+The actual implementation supports most Python regex features, groups, named groups,
+sets, lookahead, lookbehind etc.
 
 ### Python2Regex
 
