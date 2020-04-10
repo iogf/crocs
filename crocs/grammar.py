@@ -40,7 +40,7 @@ class RegexTokens(XSpec):
     t_mul = LexNode(r'\*', Mul)
     # t_minus  = LexNode(r'\-', Minus)
 
-    t_hash  = LexNode(r'\#', Hash)
+    # t_hash  = LexNode(r'\#', Hash)
     t_equal = LexNode(r'\=', Equal)
     t_exclam = LexNode(r'\!', Exclam)
     t_lesser = LexNode(r'\<', Lesser)
@@ -55,7 +55,7 @@ class RegexTokens(XSpec):
 
     lexmap.add(t_gref, t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
     t_rparen, t_mul, t_lbracket, t_rbracket, t_lbrace, t_rbrace, 
-    t_comma, t_question, t_caret, t_pipe, t_hash, t_equal, t_lesser, 
+    t_comma, t_question, t_caret, t_pipe,  t_equal, t_lesser, 
     t_greater, t_exclam, t_char)
 
     root = [lexmap]

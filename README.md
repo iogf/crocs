@@ -18,16 +18,16 @@ are generated.
 
 ~~~
 [tau@archlinux crocs-code]$ regxhits 
-Regstr:(?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
-Compiled Regex: (?P<name>[a-z][a-z0-9_\.\-]{1,})@(?P<hostname>python[a-z]{1,})\.(?P<domain>br)
-Input: siz@pythonyz.br
-Group dict: {'name': 'siz', 'hostname': 'pythonyz', 'domain': 'br'}
-Group 0: siz@pythonyz.br
-Groups: ('siz', 'pythonyz', 'br')
+Regstr:(http|https|ftp):[\/]{2}([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,4})([0-9]+)?\/?([a-zA-Z0-9\-\._\?\,\'\/\\\+&amp;%\$#\=~]*)
+Regex: (http|https|ftp):[/]{2,2}([a-zA-Z0-9\-\.]{1,}\.[a-zA-Z]{2,4})([0-9]{1,}){0,1}/{0,1}([a-zA-Z0-9\-\._\?,'/\\\+\&amp;%\$\#=\~]{0,})
+Input: ftp://WGA.rgr00574694/5P1f5o2q
+Group dict: {}
+Group 0: ftp://WGA.rgr00574694/5P1f5o2q
+Groups: ('ftp', 'WGA.rgr', '00574694', '5P1f5o2q')
 Match with:
- mg@pythonyeegr.br v0vr@pythonszvcq.br pk2rm4gh3@pythonomq.br whzevst-@pythonkzdgkh.br 
-vvlx-w@pythoni.br wrngzn698mh@pythonrx.br vrisys@pythonqgpc.br u.z@pythonlkgcyut.br 
-dv-@pythonf.br taxcprguso3@pythonwe.br
+ http://7.CMC41624923/-0T/ln5lIh https://LVeWDT.Xl/A.VjHd4Y~P https://VYc-.f9O.Pt9$p~,UdrA 
+https://PJ5OA.PkDn.mj936177/ ftp://JdwxYJ1uz.ukBuBE2aSPg ftp://Qu1.pD34440/CLTjp,v0 ftp://HxVX.Hdd/UQ9.,9; 
+ftp://svg.Bz33vnC# ftp://7Gl8lM.LWYf/ZMLjV ftp://n0.guq59745/w
 ~~~
 
 ### Python2Regex
