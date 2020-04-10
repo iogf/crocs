@@ -1,7 +1,7 @@
 
 from distutils.core import setup
 setup(name="crocs",
-      version="2.1.0",
+      version="2.2.0",
       packages=["crocs", ],
       scripts = ['regxhits'],
       author="Iury O. G. Figueiredo",

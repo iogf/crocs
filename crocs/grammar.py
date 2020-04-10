@@ -7,6 +7,9 @@ LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num
 class PNGroup(TokType):
     pass
 
+class Pipe(TokType):
+    pass
+
 class RegexTokens(XSpec):
     lexmap = LexMap()
     t_escape = LexSeq(SeqNode(r'\\', Escape, discard=True), SeqNode(r'.', Char))
@@ -14,6 +17,7 @@ class RegexTokens(XSpec):
     t_plus = LexNode(r'\+', Plus)
 
     t_dot = LexNode(r'\.', Dot)
+    t_pipe = LexNode(r'\.', Pipe)
 
     t_lparen = LexNode(r'\(', LP)
     t_rparen = LexNode(r'\)', RP)
@@ -54,6 +58,8 @@ class RegexTokens(XSpec):
 class RegexGrammar(Grammar):
     regex = Struct()
     # r_escape  = Rule(Escape, Char, type=Char)
+
+    r_pipe  = Rule(regex, Pipe, regex, type=regex)
 
     r_group  = Rule(LP, T(regex), RP, type=regex)
     r_ngroup = Rule(LP, Question, PNGroup,

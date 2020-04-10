@@ -2,7 +2,7 @@ from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexGrammar, IncludeGrammar, ExcludeGrammar
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, Seq, Include, Exclude,\
-ConsumeNext, ConsumeBack
+ConsumeNext, ConsumeBack, Any
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -75,6 +75,7 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_cback, self.cback)
         self.add_handle(RegexGrammar.r_ncback, self.ncback)
         self.add_handle(RegexGrammar.r_gref, self.gref)
+        self.add_handle(RegexGrammar.r_pipe, self.pipe)
 
 
         self.add_handle(RegexGrammar.r_char, self.char)
@@ -84,6 +85,10 @@ class RegexParser(Eacc):
     def build(self, tokens):
         ptree = super(RegexParser, self).build(tokens)
         return list(ptree)
+
+    def pipe(self, regex0, pipe, regex1):
+        e = Any(regex0, regex1)
+        return e
 
     def group(self, lp, regex, rp):
         data = (ind.val() for ind in regex)
