@@ -16,6 +16,8 @@ The regex below is merely parsed using [eacc](https://github.com/iogf/eacc) then
 is generated. The AST is built using crocs's classes. Once it is built then the hits
 are generated.
 
+The example below reads a regex to match a URL then generates possible matches.
+
 ~~~
 [tau@archlinux crocs-code]$ regxhits 
 Regstr:(http|https|ftp):[\/]{2}([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,4})([0-9]+)?\/?([a-zA-Z0-9\-\._\?\,\'\/\\\+&amp;%\$#\=~]*)
