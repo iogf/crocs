@@ -141,7 +141,6 @@ class RegexParser(Eacc):
         return e
 
     def cback(self, regex0, lp, question,  equal, regex1, rp):
-        print('foobar')
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
         join0 = Join(*data0)
