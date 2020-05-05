@@ -88,6 +88,7 @@ class Group(RegexOperator):
         self.map      = ''
         Group.count   = 0
         self.compiled = False
+        super(Group, self).clear()
 
 class Repeat(RegexOperator):
     """
@@ -206,6 +207,8 @@ class ConsumeBack(RegexOperator):
 
 class Seq(RegexOperator):
     def __init__(self, start, end):
+        super(Seq, self).__init__()
+
         self.start = start
         self.end   = end
         self.seq   = [chr(ind) for ind in range(
@@ -260,6 +263,8 @@ class Exclude(Include):
 
     [^abc]
     """
+    def __init__(self, *args):
+        super(Exclude, self).__init__(*args)
 
     def invalid_data(self):
         return super(Exclude, self).valid_data()
@@ -279,7 +284,7 @@ class X(RegexOperator):
 
 
     def __init__(self):
-        pass
+        super(X, self).__init__()
 
     def invalid_data(self):
         return ''
@@ -290,9 +295,6 @@ class X(RegexOperator):
 
     def to_regex(self):
         return '.'
-
-    def clear(self):
-        pass
 
 class Join(RegexOperator):
     """

@@ -100,9 +100,9 @@ class RegexParser(Eacc):
         self.gmap.append(e)
         return e
 
-    def ngroup(self, lp, question, pngroup, lesser,  pname, greater, regex, rp):
+    def ngroup(self, lp, question, gsym, lesser,  gname, greater, regex, rp):
         data0 = (ind.val() for ind in regex)
-        e = NamedGroup(pname.val(), *data0)
+        e = NamedGroup(gname.val(), *data0)
         return e
 
     def gref(self, escape, num):
