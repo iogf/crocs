@@ -33,7 +33,7 @@ brazil brazil brazil brazil  bradil bradil  bos^ia bos^ia
 The actual implementation supports most Python regex features, groups, named groups,
 sets, lookahead, lookbehind etc.
 
-### Python2Regex
+### Basic Example
 
 It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
 contains 'python' in the beginning too. It makes sure that the first 
