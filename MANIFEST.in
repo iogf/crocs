@@ -1,7 +1,7 @@
 include README.md
 include LICENSE
+include tests.py
 recursive-include demo *
-recursive-include tests *
 
 
 
