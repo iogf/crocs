@@ -146,6 +146,13 @@ class OneOrMore(Repeat):
     def to_regex(self):
         return '%s+' % self.args[0]
 
+class OneOrZero(Repeat):
+    def __init__(self, regex):
+        super(OneOrZero, self).__init__(regex, 0, 1)
+
+    def to_regex(self):
+        return '%s?' % self.args[0]
+
 class ConsumeNext(RegexOperator):
     """
     Lookbehind assertion.

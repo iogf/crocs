@@ -2,7 +2,7 @@ from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexGrammar, IncludeGrammar, ExcludeGrammar
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, Ask, OneOrMore, \
-Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any
+OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -181,7 +181,7 @@ class RegexParser(Eacc):
         return e
 
     def times5(self, regex, question):
-        e = Repeat(regex.val(), 0, 1)
+        e = OneOrZero(regex.val())
         return e
 
     def times6(self, regex, question):
