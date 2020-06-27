@@ -320,9 +320,10 @@ class TestAny(unittest.TestCase):
         e1 = OneOrMore(e0)
         e2 = Group(e0, e1)
         e3 = Group(e2, e2)
+        e4 = Any('b', e3, 'a')
 
-        regstr = e3.mkregex()
-        self.assertEqual(regstr, r'(([0-9][0-9]+)\1)')
+        regstr = e4.mkregex()
+        self.assertEqual(regstr, r'b|(([0-9][0-9]+)\1)|a')
         yregex = xmake(regstr)
     
         # Although the serialization and the parsing
@@ -333,10 +334,31 @@ class TestAny(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
-class TestOneOrZero(unittest.TestCase):
-    def setUp(self):
-        pass
+    def test5(self):
+        e0 = Include(Seq('0', '9'))
+        e1 = X()
+        e2 = Group(e0, e1)
+        e3 = OneOrMore(e2)
+        e4 = Any(e0, e1, e2,e2, e3)
+        e5 = Group(e4, e3, e2, 'a', 'b', e3)
+        e6 = Any(e0, e1, e2, e3, e4, e5)
 
+        e7 = Join(e0, e2, e3, e4, e5, e6, 
+        'Fuinho Violento',  e6, e6)
+
+        # The regex.
+        # [0-9]([0-9].)\1+[0-9]|.|\1|\1|\1+([0-9]|.|\1|\1|\1+\1+\1ab\1+)[0-9]|.\
+        # |\1|\1+|[0-9]|.|\1|\1|\1+|\2Fuinho\ Violento[0-9]|.|\1|\1+|[0-9]|.\
+        # |\1|\1|\1+|\2[0-9]|.|\1|\1+|[0-9]|.|\1|\1|\1+|\2
+
+        regstr = e7.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+class TestOneOrZero(unittest.TestCase):
     def test0(self):
         pass
 
