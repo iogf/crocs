@@ -14,7 +14,7 @@ class Any(RegexOperator):
         return choice(lst)
 
     def to_regex(self):
-        data = map(lambda ind: str(ind), self.args)
+        data = map(lambda ind: ind.to_regex(), self.args)
         data = '|'.join(data)
         return data
 
@@ -41,7 +41,7 @@ class NamedGroup(RegexOperator):
 
     def to_regex(self):
         return '(?P<%s>%s)' % (self.name, 
-        ''.join(map(str, self.args)))
+        super(NamedGroup, self).to_regex())
 
 class Group(RegexOperator):
     """
@@ -68,7 +68,9 @@ class Group(RegexOperator):
         return self.input
 
     def compile(self):
-        self.data     = '(%s)' % ''.join(map(str, self.args))
+        self.data = '(%s)' % ''.join((ind.to_regex() 
+        for ind in self.args))
+
         self.compiled = True
         Group.count   = Group.count + 1
         self.map      = '\%s' % Group.count
@@ -82,7 +84,7 @@ class Group(RegexOperator):
         if not self.compiled:
             return self.compile()
         return self.map
-
+    
     def clear(self):
         self.data     = ''
         self.map      = ''
@@ -131,7 +133,7 @@ class Repeat(RegexOperator):
         return data 
 
     def to_regex(self):
-        return '%s{%s,%s}' % (self.args[0], 
+        return '%s{%s,%s}' % (self.args[0].to_regex(), 
         self.min, self.max)
 
 class Ask(Repeat):
@@ -139,21 +141,21 @@ class Ask(Repeat):
         super(Ask, self).__init__(regex)
 
     def to_regex(self):
-        return '%s*' % self.args[0]
+        return '%s*' % self.args[0].to_regex()
 
 class OneOrMore(Repeat):
     def __init__(self, regex):
         super(OneOrMore, self).__init__(regex, 1)
 
     def to_regex(self):
-        return '%s+' % self.args[0]
+        return '%s+' % self.args[0].to_regex()
 
 class OneOrZero(Repeat):
     def __init__(self, regex):
         super(OneOrZero, self).__init__(regex, 0, 1)
 
     def to_regex(self):
-        return '%s?' % self.args[0]
+        return '%s?' % self.args[0].to_regex()
 
 class ConsumeNext(RegexOperator):
     """
@@ -189,7 +191,7 @@ class ConsumeNext(RegexOperator):
 
     def to_regex(self):
         fmt = '(?<=%s)%s' if not self.neg else '(?<!%s)%s'
-        return fmt % (self.args[0], self.args[1])
+        return fmt % (self.args[0].to_regex(), self.args[1].to_regex())
 
 class ConsumeBack(RegexOperator):
     """
@@ -226,7 +228,7 @@ class ConsumeBack(RegexOperator):
 
     def to_regex(self):
         fmt = '%s(?=%s)' if not self.neg else '%s(?!%s)'
-        return fmt % (self.args[0], self.args[1])
+        return fmt % (self.args[0].to_regex(), self.args[1].to_regex())
 
 class Seq(RegexOperator):
     def __init__(self, start, end):
@@ -278,7 +280,7 @@ class Include(RegexOperator):
         return char
 
     def to_regex(self):
-        return '[%s]' % ''.join(map(str, self.args))
+        return '[%s]' % super(Include, self).to_regex()
 
 class Exclude(Include):
     """
@@ -296,7 +298,7 @@ class Exclude(Include):
         return super(Exclude, self).invalid_data()
 
     def to_regex(self):
-        return '[^%s]' % ''.join(map(str, self.args))
+        return '[^%s]' % super(Include, self).to_regex()
 
 class X(RegexOperator):
     """
@@ -335,6 +337,4 @@ class Join(RegexOperator):
         return ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
-    # def to_regex(self):
-        # return ''.join(map(str, self.args))
     

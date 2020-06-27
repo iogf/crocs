@@ -33,6 +33,8 @@ class RegexStr:
     def to_regex(self):
         return re.escape(self.value)
 
+    __str__ = to_regex
+
 class RegexOperator:
     # It may be interesting to have a base class Pattern
     # that implements common methods with Group and Include, Exclude.
@@ -52,7 +54,7 @@ class RegexOperator:
         """
         """
 
-        regex = self.to_regex()
+        regex = self.mkregex()
         data = self.valid_data()
 
         # It has to be search in order to work with ConsumeNext.
@@ -77,7 +79,7 @@ class RegexOperator:
             ind.clear()
 
     def seed(self):
-        regex = self.to_regex()
+        regex = self.mkregex()
         data = self.valid_data()
         return data
 
@@ -86,10 +88,20 @@ class RegexOperator:
         print('Match with:\n', ' '.join(data))
 
     def to_regex(self):
+        """ 
+        Shouldn't be used. Use mkregex 
+        """
+
         lm     = lambda ind: ind.to_regex()
         regstr =  ''.join(map(lm, self.args))
+        # self.clear()
+        return regstr
+
+    def mkregex(self):
+        regstr = self.to_regex()
         self.clear()
         return regstr
 
     def __str__(self):
-        return self.to_regex()
+        return self.mkregex()
+

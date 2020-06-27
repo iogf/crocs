@@ -83,6 +83,9 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_done, self.done)
 
     def build(self, tokens):
+        self.gmap.clear()
+        self.gnmap.clear()
+
         ptree = super(RegexParser, self).build(tokens)
         return list(ptree)
 
@@ -194,8 +197,8 @@ class RegexParser(Eacc):
     def done(self, sof, regex, eof):
         data = (ind.val() for ind in regex)
         join = Join(*data)
-        join.test()
-        join.hits()
+        # join.test()
+        # join.hits()
         return join
 
 xlexer  = Lexer(RegexTokens)

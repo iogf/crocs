@@ -1,7 +1,7 @@
 import unittest
 from crocs.regex import Include, Exclude, Any, OneOrZero, \
 OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
-NamedGroup
+NamedGroup, Ask
 from crocs.xparser import xmake
 from eacc.lexer import Lexer, LexError
 
@@ -9,22 +9,23 @@ class TestInclude(unittest.TestCase):
     def test0(self):
         e = Include('a', 'b', 'c')
 
-        regstr = e.to_regex()
+        regstr = e.mkregex()
         self.assertEqual(regstr, '[abc]')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
         e0 = Include('x', 'y')
         e1 = Include('m', 'n')
 
         e2 = Any(e0, e1)
-        regstr = e2.to_regex()
+        regstr = e2.mkregex()
+
         self.assertEqual(regstr, '[xy]|[mn]')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
         e0 = Include('x', 'y')
@@ -32,11 +33,11 @@ class TestInclude(unittest.TestCase):
 
         e2 = Any(e0, e1)
         e3 = OneOrMore(e2)
-        regstr = e3.to_regex()
+        regstr = e3.mkregex()
         self.assertEqual(regstr, '([xy]|[mn])+')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
         e0 = Include('x', 'y')
@@ -45,11 +46,11 @@ class TestInclude(unittest.TestCase):
 
         e3 = Any(e0, e1, e2)
         e4 = OneOrZero(e3)
-        regstr = e4.to_regex()
+        regstr = e4.mkregex()
         self.assertEqual(regstr, '([xy]|[mn]|[a0-9b])?')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
         e0 = Include('%', '#')
@@ -58,33 +59,33 @@ class TestInclude(unittest.TestCase):
 
         e3 = Any(e0, e1, e2)
         e4 = Repeat(e3, 3, 8)
-        regstr = e4.to_regex()
+        regstr = e4.mkregex()
         self.assertEqual(regstr, '([%\\#]|[ca-d0-5d]|[a0-9b]){3,8}')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
         e0 = Include('a', 'b')
         e1 = Include('[a-b]')
         e2 = Group(Any(e0, e1))
 
-        regstr = e2.to_regex()
+        regstr = e2.mkregex()
         self.assertEqual(regstr, '([ab]|[\[a\-b\]])')
 
         yregex = xmake('([ab]|[\[a\-b\]])')
-        self.assertEqual(yregex.to_regex(), '([ab]|[\[a-b\]])')
+        self.assertEqual(yregex.mkregex(), '([ab]|[\[a-b\]])')
 
     def test6(self):
         e0 = Include('a', 'b')
         e1 = NamedGroup('alpha', Any(e0, 'bar'))
         e2 = Any(e0, e1)
 
-        regstr = e2.to_regex()
+        regstr = e2.mkregex()
         self.assertEqual(regstr, '[ab]|(?P<alpha>[ab]|bar)')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test7(self):
         e0 = Include(Seq('a', 'z'))
@@ -93,15 +94,48 @@ class TestInclude(unittest.TestCase):
         e3 = Group(e1, e0)
         e4 = Group(Any(e2, e3))
 
-        regstr = e4.to_regex()
+        regstr = e4.mkregex()
         self.assertEqual(regstr, '(([a-z][0-9])|([0-9][a-z]))')
 
         yregex = xmake(regstr)
-        self.assertEqual(yregex.to_regex(), regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test8(self):
+        e0 = Include(Seq('a', 'z'))
+        e1 = Group('0', e0, '9')
+        e2 = Ask(e1)
+        e3 = Group(e2, 'm', e1)
+        e4 = Repeat(e3, 2, 4)
+
+        regstr = e4.mkregex()
+        self.assertEqual(regstr, '((0[a-z]9)*m\\1){2,4}')
+
+        yregex = xmake(regstr)
+
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestExclude(unittest.TestCase):
     def test0(self):
-        pass
+        e = Exclude(Seq('a', 'z'))
+
+        regstr = e.mkregex()
+
+        self.assertEqual(regstr, '[^a-z]')
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = Include(Seq('a', 'z'))
+        e1 = Exclude(Seq('1', '9'))
+
+        e2 = Group(e0, e1)
+        e3 = Join(e0, e1, e2, e2, e2)
+
+        regstr = e3.mkregex()
+
+        self.assertEqual(regstr, '[a-z][^1-9]([a-z][^1-9])\\1\\1')
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestAny(unittest.TestCase):
     def setUp(self):

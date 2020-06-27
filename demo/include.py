@@ -1,7 +1,8 @@
-from crocs.regex import Join, Include
+from crocs.regex import Join, Include,Any
 
-e = Join('a', Include('bc123'))
-e.test()
-e.hits()
+e = Any(Include('a', 'b', 'c'), '1')
+
+regstr = e.mkregex()
+print(regstr)
 
 
