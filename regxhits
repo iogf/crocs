@@ -1,21 +1,19 @@
 #! /usr/bin/env python
 
-from crocs.xparser import RegexParser
-from crocs.grammar import RegexTokens
-from eacc.lexer import Lexer, LexError
+from crocs.xparser import xmake
+from eacc.lexer import LexError
 from eacc.eacc import EaccError
 from traceback import print_exc
 
-def build_ast():
-    data    = input('>>> ')
-    lexer   = Lexer(RegexTokens)
-    tokens  = lexer.feed(data)
-    xparser = RegexParser()
-    xparser.build(tokens)
+def regexbuilder():
+    regstr  = input('>>> ')
+    regtree = xmake(regstr)
+    regtree.test()
+    regtree.hits()
 
 if __name__ == '__main__':
     while True:
         try:
-            build_ast()
+            regexbuilder()
         except (LexError, EaccError) as e:
             print_exc()

@@ -1,18 +1,105 @@
 import unittest
 from crocs.regex import Include, Exclude, Any, OneOrZero, \
-OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq
+OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
+NamedGroup
+from crocs.xparser import xmake
+from eacc.lexer import Lexer, LexError
 
 class TestInclude(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e = Include('a', 'b', 'c')
+
+        regstr = e.to_regex()
+        self.assertEqual(regstr, '[abc]')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
+
+    def test1(self):
+        e0 = Include('x', 'y')
+        e1 = Include('m', 'n')
+
+        e2 = Any(e0, e1)
+        regstr = e2.to_regex()
+        self.assertEqual(regstr, '[xy]|[mn]')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
+
+    def test2(self):
+        e0 = Include('x', 'y')
+        e1 = Include('m', 'n')
+
+        e2 = Any(e0, e1)
+        e3 = OneOrMore(e2)
+        regstr = e3.to_regex()
+        self.assertEqual(regstr, '([xy]|[mn])+')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
+
+    def test3(self):
+        e0 = Include('x', 'y')
+        e1 = Include('m', 'n')
+        e2 = Include('a', Seq('0', '9'), 'b')
+
+        e3 = Any(e0, e1, e2)
+        e4 = OneOrZero(e3)
+        regstr = e4.to_regex()
+        self.assertEqual(regstr, '([xy]|[mn]|[a0-9b])?')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
+
+    def test4(self):
+        e0 = Include('%', '#')
+        e1 = Include('c', Seq('a', 'd'), Seq('0', '5'), 'd')
+        e2 = Include('a', Seq('0', '9'), 'b')
+
+        e3 = Any(e0, e1, e2)
+        e4 = Repeat(e3, 3, 8)
+        regstr = e4.to_regex()
+        self.assertEqual(regstr, '([%\\#]|[ca-d0-5d]|[a0-9b]){3,8}')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
+
+    def test5(self):
+        e0 = Include('a', 'b')
+        e1 = Include('[a-b]')
+        e2 = Group(Any(e0, e1))
+
+        regstr = e2.to_regex()
+        self.assertEqual(regstr, '([ab]|[\[a\-b\]])')
+
+        yregex = xmake('([ab]|[\[a\-b\]])')
+        self.assertEqual(yregex.to_regex(), '([ab]|[\[a-b\]])')
+
+    def test6(self):
+        e0 = Include('a', 'b')
+        e1 = NamedGroup('alpha', Any(e0, 'bar'))
+        e2 = Any(e0, e1)
+
+        regstr = e2.to_regex()
+        self.assertEqual(regstr, '[ab]|(?P<alpha>[ab]|bar)')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
+
+    def test7(self):
+        e0 = Include(Seq('a', 'z'))
+        e1 = Include(Seq('0', '9'))
+        e2 = Group(e0, e1)
+        e3 = Group(e1, e0)
+        e4 = Group(Any(e2, e3))
+
+        regstr = e4.to_regex()
+        self.assertEqual(regstr, '(([a-z][0-9])|([0-9][a-z]))')
+
+        yregex = xmake(regstr)
+        self.assertEqual(yregex.to_regex(), regstr)
 
 class TestExclude(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
         pass
 

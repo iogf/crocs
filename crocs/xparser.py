@@ -1,6 +1,6 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
-from crocs.grammar import RegexGrammar, IncludeGrammar, ExcludeGrammar
+from crocs.grammar import RegexTokens, RegexGrammar, IncludeGrammar, ExcludeGrammar
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, Ask, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any
 
@@ -198,3 +198,11 @@ class RegexParser(Eacc):
         join.hits()
         return join
 
+xlexer  = Lexer(RegexTokens)
+xparser = RegexParser()
+
+def xmake(regstr):
+    tokens  = xlexer.feed(regstr)
+    tseq = xparser.build(tokens)
+    tseq = list(tseq)
+    return tseq[-1].val()

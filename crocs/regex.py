@@ -103,6 +103,8 @@ class Repeat(RegexOperator):
 
         if isinstance(regex, str) and len(regex) > 1:
             self.args[0] = Group(regex)
+        elif isinstance(regex, Any):
+            self.args[0] = Group(regex)
 
     def invalid_data(self):
         lim = self.max if self.max else self.MAX
