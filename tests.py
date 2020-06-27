@@ -221,15 +221,12 @@ class TestExclude(unittest.TestCase):
         e4 = Any(e2, e3)
 
         regstr = e4.mkregex()
-        self.assertEqual(regstr, r'([^a-z][^a-z]?)|(([^a-z][^a-z]?)\1\1)')
+        self.assertEqual(regstr, r'([^a-z][^a-z]?)|(\1\1\1)')
 
         yregex = xmake(regstr)
-        print('yRegex:', yregex)
 
-        # yregex.test()
-        # yregex.hits()
-
-        print('yRegex:', yregex.mkregex())
+        yregex.test()
+        yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestAny(unittest.TestCase):

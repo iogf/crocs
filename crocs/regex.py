@@ -14,7 +14,7 @@ class Any(RegexOperator):
         return choice(lst)
 
     def to_regex(self):
-        data = map(lambda ind: ind.mkregex(), self.args)
+        data = map(lambda ind: ind.to_regex(), self.args)
         data = '|'.join(data)
         return data
 
