@@ -228,7 +228,7 @@ class TestExclude(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
-    def test4(self):
+    def test5(self):
         e0 = Exclude(Seq('a', 'z'))
         e1 = X()
 
@@ -256,11 +256,82 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestAny(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = Exclude(Seq('0', '9'))
+        e1 = Include(Seq('a', 'b'))
+        e2 = Any(e0, e1)
+        e3 = Join(e2, e2)
+
+        regstr = e3.mkregex()
+
+        self.assertEqual(regstr, r'[^0-9]|[a-b][^0-9]|[a-b]')
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = Exclude(Seq('0', '9'))
+        e1 = OneOrZero(e0)
+        e2 = Any('a', e0, e1, 'b')
+        e3 = Join(e2, e2)
+
+        regstr = e3.mkregex()
+
+        self.assertEqual(regstr, r'a|[^0-9]|[^0-9]?|ba|[^0-9]|[^0-9]?|b')
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        e0 = Include(Seq('0', '9'))
+        e1 = OneOrMore(e0)
+        e2 = Group(e0, e1)
+        e3 = Any(e0, e1, e2)
+
+        regstr = e3.mkregex()
+
+        self.assertEqual(regstr, r'[0-9]|[0-9]+|([0-9][0-9]+)')
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test3(self):
+        e0 = Include(Seq('0', '9'))
+        e1 = OneOrMore(e0)
+        e2 = Group(e0, e1)
+        e3 = Any(e0, e1, e2)
+        e4 = Any(e3, e2, e1, e0)
+
+        regstr = e4.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        e0 = Include(Seq('0', '9'))
+        e1 = OneOrMore(e0)
+        e2 = Group(e0, e1)
+        e3 = Group(e2, e2)
+
+        regstr = e3.mkregex()
+        self.assertEqual(regstr, r'(([0-9][0-9]+)\1)')
+        yregex = xmake(regstr)
+    
+        # Although the serialization and the parsing
+        # of it by eacc it results to equal structures
+        # the regex engine doesn't allow such a ref.
+        with self.assertRaises(re.error):
+            yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestOneOrZero(unittest.TestCase):
     def setUp(self):

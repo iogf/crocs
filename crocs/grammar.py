@@ -68,9 +68,10 @@ class RegexGrammar(Grammar):
     o_pipe4 = Rule(LB)
     o_pipe5 = Rule(Char)
     o_pipe6 = Rule(Dot)
+    o_pipe7 = Rule(Plus)
 
     r_pipe  = Rule(T(RegExpr), Pipe, T(RegExpr), type=RegExpr, 
-    up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5, o_pipe6))
+    up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5, o_pipe6, o_pipe7))
 
     r_group  = Rule(LP, T(RegExpr), RP, type=RegExpr)
     r_ngroup = Rule(LP, Question, GroupSymbol,
