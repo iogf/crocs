@@ -224,9 +224,35 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(regstr, r'([^a-z][^a-z]?)|(\1\1\1)')
 
         yregex = xmake(regstr)
-
         yregex.test()
         yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        e0 = Exclude(Seq('a', 'z'))
+        e1 = X()
+
+        e2 = Group(e0, e1)
+        e3 = Group(e1, e2, e2, e2, e0, e1)
+        e4 = Any(e2, e3, e2, e3, e0, e1, e2, e3, e2)
+        e5 = Repeat(e4, 1, 4)
+
+        regstr = e5.mkregex()
+        yregex = xmake(regstr)
+
+        # It has to fail because Repeat add a group around
+        # Any otherwise:
+        #     e = Repeat(Any('a', 'b'))
+        # Would serialize to 'a|b{0,}' which is not
+        # what is often intended nor logically in the context.
+        with self.assertRaises(re.error):
+            yregex.test()
+
+        # Even failing above it should work too.
+        yregex.hits()
+
+        # Eacc should be capable of reading back the 
+        # serialized string.
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestAny(unittest.TestCase):
