@@ -132,6 +132,20 @@ class Repeat(RegexOperator):
         return '%s{%s,%s}' % (self.args[0], 
         self.min, self.max)
 
+class Ask(Repeat):
+    def __init__(self, regex):
+        super(Ask, self).__init__(regex)
+
+    def to_regex(self):
+        return '%s*' % self.args[0]
+
+class OneOrMore(Repeat):
+    def __init__(self, regex):
+        super(OneOrMore, self).__init__(regex, 1)
+
+    def to_regex(self):
+        return '%s+' % self.args[0]
+
 class ConsumeNext(RegexOperator):
     """
     Lookbehind assertion.

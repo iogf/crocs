@@ -7,7 +7,7 @@ from eacc.eacc import EaccError
 from traceback import print_exc
 
 def build_ast():
-    data    = input('Regstr:')
+    data    = input('>>> ')
     lexer   = Lexer(RegexTokens)
     tokens  = lexer.feed(data)
     xparser = RegexParser()
