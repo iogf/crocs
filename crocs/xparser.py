@@ -197,8 +197,6 @@ class RegexParser(Eacc):
     def done(self, sof, regex, eof):
         data = (ind.val() for ind in regex)
         join = Join(*data)
-        # join.test()
-        # join.hits()
         return join
 
 xlexer  = Lexer(RegexTokens)
@@ -208,4 +206,8 @@ def xmake(regstr):
     tokens  = xlexer.feed(regstr)
     tseq = xparser.build(tokens)
     tseq = list(tseq)
+    # regtree = tseq[-1].val()
+    # regtree.test()
+    # regtree.hits()
+
     return tseq[-1].val()

@@ -4,6 +4,22 @@ import re
 
 printable = ascii_letters + punctuation + digits
 
+class BasicRegex:
+    def invalid_data(self):
+        pass
+
+    def valid_data(self):
+        pass
+
+    def clear(self):
+        pass
+
+    def to_regex(self):
+        pass
+
+    def mkregex(self):
+        pass
+    
 class RegexStr:
     def __init__(self, value):
         self.value = value
@@ -32,6 +48,10 @@ class RegexStr:
 
     def to_regex(self):
         return re.escape(self.value)
+
+    def mkregex(self):
+        regstr = self.to_regex()
+        return regstr
 
     __str__ = to_regex
 

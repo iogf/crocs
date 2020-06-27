@@ -4,6 +4,7 @@ OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
 NamedGroup, Ask
 from crocs.xparser import xmake
 from eacc.lexer import Lexer, LexError
+import re
 
 class TestInclude(unittest.TestCase):
     def test0(self):
@@ -13,6 +14,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '[abc]')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
@@ -25,6 +29,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '[xy]|[mn]')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
@@ -37,6 +44,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '([xy]|[mn])+')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
@@ -50,6 +60,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '([xy]|[mn]|[a0-9b])?')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
@@ -63,6 +76,8 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '([%\\#]|[ca-d0-5d]|[a0-9b]){3,8}')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
@@ -74,6 +89,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '([ab]|[\[a\-b\]])')
 
         yregex = xmake('([ab]|[\[a\-b\]])')
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), '([ab]|[\[a-b\]])')
 
     def test6(self):
@@ -85,6 +103,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '[ab]|(?P<alpha>[ab]|bar)')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test7(self):
@@ -98,6 +119,9 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(regstr, '(([a-z][0-9])|([0-9][a-z]))')
 
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test8(self):
@@ -108,9 +132,19 @@ class TestInclude(unittest.TestCase):
         e4 = Repeat(e3, 2, 4)
 
         regstr = e4.mkregex()
-        self.assertEqual(regstr, '((0[a-z]9)*m\\1){2,4}')
 
+        # The resulting structure should be serialized
+        # to an invalid regex.
+        with self.assertRaises(re.error):
+            e4.test()
+
+        self.assertEqual(regstr, r'((0[a-z]9)*m\1){2,4}')
         yregex = xmake(regstr)
+
+        with self.assertRaises(re.error):
+            yregex.test()
+
+        yregex.hits()
 
         self.assertEqual(yregex.mkregex(), regstr)
 
@@ -133,8 +167,69 @@ class TestExclude(unittest.TestCase):
 
         regstr = e3.mkregex()
 
-        self.assertEqual(regstr, '[a-z][^1-9]([a-z][^1-9])\\1\\1')
+        self.assertEqual(regstr, r'[a-z][^1-9]([a-z][^1-9])\1\1')
         yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        e0 = Exclude(Seq('a', 'z'))
+        e1 = Ask(e0)
+
+        e2 = Group(e0, e1)
+        e3 = Group(e2, e2, e2)
+        e4 = Group(e3, e3, e3)
+
+        regstr = e4.mkregex()
+
+        self.assertEqual(regstr, r'((([^a-z][^a-z]*)\1\1)\2\2)')
+        yregex = xmake(regstr)
+
+        with self.assertRaises(re.error):
+            yregex.test()
+
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test3(self):
+        e0 = Exclude(Seq('a', 'z'))
+        e1 = OneOrMore(e0)
+
+        e2 = Group(e0, e1)
+        e3 = Group(e2, e2, e2)
+        e4 = Group(e3, e3, e3)
+
+        regstr = e4.mkregex()
+
+        self.assertEqual(regstr, r'((([^a-z][^a-z]+)\1\1)\2\2)')
+        yregex = xmake(regstr)
+
+        with self.assertRaises(re.error):
+            yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        e0 = Exclude(Seq('a', 'z'))
+        e1 = OneOrZero(e0)
+
+        e2 = Group(e0, e1)
+        e3 = Group(e2, e2, e2)
+        e4 = Any(e2, e3)
+
+        regstr = e4.mkregex()
+        self.assertEqual(regstr, r'([^a-z][^a-z]?)|(([^a-z][^a-z]?)\1\1)')
+
+        yregex = xmake(regstr)
+        print('yRegex:', yregex)
+
+        # yregex.test()
+        # yregex.hits()
+
+        print('yRegex:', yregex.mkregex())
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestAny(unittest.TestCase):
