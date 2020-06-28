@@ -360,7 +360,40 @@ class TestAny(unittest.TestCase):
 
 class TestOneOrZero(unittest.TestCase):
     def test0(self):
-        pass
+        e0 = Include(Seq('0', '9'))
+        e1 = Any(e0, 'ahh', X())
+        e2 = OneOrZero(e1)
+        e3 = Group(e1, 'ee', X(), 'uu')
+
+        regstr = e3.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = Exclude(Seq('a', 'b'))
+        e1 = OneOrZero(e0)
+        e2 = Group(e1, 'ee', X(), 'uu')
+
+        regstr = e2.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        e1 = OneOrZero('fooo')
+        e2 = Group(e1, 'ee', X(), 'uu')
+        e3 = Join(e2, 'foobar', e2, 'bar', e2)
+
+        regstr = e2.mkregex()
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestOneOrMore(unittest.TestCase):
     def setUp(self):
