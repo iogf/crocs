@@ -570,11 +570,45 @@ class TestRepeat(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestZeroOrMore(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        e1 = Any(e0, 'm', 'n', Group('oooo'), Group(e0, X(), '12oooo', X()))
+        e2 = Repeat(e1)
+        e3 = Join(e0, e1, e2)
+        e4 = Join(e0, X(), 'ooo', X(), e1, e2, e3)
+        e5 = Any(e0, e1, e2, e3, e4)
+        e6 = Any(e0, e1, e2, e3, e4, e5, 'hahah', 'hoohoho', X())
+        e7 = ZeroOrMore(e6)
+        e8 = Join(e7, e6, e5, e4, e3, e2, e1, e0)
+
+        regstr = e8.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = NamedGroup('a999', ZeroOrMore('ooo'), Repeat(Any('a', X(), 'b')))
+        e1 = Any(e0, 'm', 'n', ZeroOrMore(Any('a', 'b')), 
+        Group('oooo'), Group(e0, X(), '12oooo', X()))
+
+        e2 = Repeat(e1)
+        e3 = Join(e0, e1, e2, ZeroOrMore('ooo'), X(), ZeroOrMore('heheh'))
+        e4 = Join(e0, X(), 'ooo', X(), e1, e2, e3)
+        e5 = Any(e0, e1, e2, ZeroOrMore(X()), e2, e3, e4)
+        e6 = Any(e0, e1, e2, e3, e4, e5, 'hahah', 'hoohoho', X())
+        e7 = ZeroOrMore(e6)
+        e8 = Join(e7, e6, e5, e4, e3, e2, e1, e0)
+        e9 = NamedGroup('fooooooo', e8, 'foooo')
+        e10 = ZeroOrMore(e9)
+
+        regstr = e10.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestConsumeNext(unittest.TestCase):
     def setUp(self):
