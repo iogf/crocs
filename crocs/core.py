@@ -80,7 +80,7 @@ class RegexOperator:
         # It has to be search in order to work with ConsumeNext.
         regc  = re.search(regex, data)
 
-        # assert regc is not None
+        assert regc is not None, 'Failed to generate valid matches!'
         print('Regex:', regex)
         print('Input:', data)
 

@@ -493,29 +493,16 @@ class TestGroup(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        expr0 = Group(X(), 'a', 'b', Include('abc'))
-        expr1 = Group(expr0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
-        expr2 = Group(expr1, 'mm', Any(expr0, expr1, 'fooo'), 'uuuuu')
-        expr3 = Group(expr2, 'uu', Repeat('hehe', 2))
-        expr4 = Any(expr0, expr1, expr2, expr3)
+        expr0 = Group('a')
+        expr1 = Group('c', Group(expr0, 'd'))
+        expr2 = Group(expr1, 'e')
+        expr3 = Join(expr0, expr1, expr2)
 
-        expr5 = Group('fooooo', expr4, expr3, expr0, 'hheheh')
-        expr6 = Join(expr4, expr0, expr1, expr2, expr3, 
-        expr4, expr5, 'ooo', expr5)
-
-        expr7 = Join(expr0, expr1, expr5, expr4, 
-        expr5, 'ooo', expr5)
-
-        expr8 = OneOrMore(expr7)
-        expr9 = Join(expr0, expr1, expr2, expr3, expr4, 
-        expr5, expr6, expr7, expr8)
-
-        regstr = expr9.mkregex()
-
+        regstr = expr3.mkregex()
         yregex = xmake(regstr)
-        print('yregex', yregex)
-        yregex.test()
         yregex.hits()
+
+        yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestNamedGroup(unittest.TestCase):
