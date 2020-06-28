@@ -30,7 +30,6 @@ import re
 
 class TestInclude(unittest.TestCase):
     def test0(self):
-        print('Test: ', self.id)
         e = Include('a', 'b', 'c')
 
         regstr = e.mkregex()
@@ -500,12 +499,12 @@ class TestGroup(unittest.TestCase):
         expr3 = Group(expr2, 'uu', Repeat('hehe', 2))
         expr4 = Any(expr0, expr1, expr2, expr3)
 
-        expr5 = NamedGroup('fooooo', expr4, expr3, expr0, 'hheheh')
+        expr5 = Group('fooooo', expr4, expr3, expr0, 'hheheh')
         expr6 = Join(expr4, expr0, expr1, expr2, expr3, 
         expr4, expr5, 'ooo', expr5)
 
         expr7 = Join(expr0, expr1, expr5, expr4, 
-        expr5, 'ooo', expr5, X(), X())
+        expr5, 'ooo', expr5)
 
         expr8 = OneOrMore(expr7)
         expr9 = Join(expr0, expr1, expr2, expr3, expr4, 
@@ -514,6 +513,7 @@ class TestGroup(unittest.TestCase):
         regstr = expr9.mkregex()
 
         yregex = xmake(regstr)
+        print('yregex', yregex)
         yregex.test()
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)

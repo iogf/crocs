@@ -47,7 +47,7 @@ class RegexTokens(XSpec):
 
     t_comment = LexSeq(SeqTok(r'\(', LP), 
     SeqTok(r'\?', Question), SeqTok(r'\#', Hash), 
-    SeqTok(r'(\)|[^)])+', Comment), SeqTok(r'\)', RP))
+    SeqTok(r'(\\\)|[^)])+', Comment), SeqTok(r'\)', RP))
 
     t_pngroup = LexSeq(SeqTok(r'\(', LP), 
     SeqTok(r'\?', Question), SeqTok(r'P', GroupSymbol),

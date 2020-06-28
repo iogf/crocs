@@ -199,6 +199,7 @@ class RegexParser(Eacc):
         return char.val()
 
     def comment(self, lp, question, hash, comment, rp):
+        print('Foo', lp, question, hash, comment, rp)
         return RegexComment(comment.val())
 
     def done(self, sof, regex, eof):
