@@ -388,6 +388,49 @@ class TestNamedGroup(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
         
+    def test1(self):
+        e0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
+        e1 = Any(e0, 'abc', X(), 'edf')
+        e2 = Join(e0, e1, X(), 'foobar')
+        
+        regstr = e2.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        # Check if it works for nested named groups.
+        e0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
+        e1 = NamedGroup('beta', 'Lets be overmen.')
+        e2 = NamedGroup('gamma', OneOrZero(e1), 'rs', OneOrMore('rs'))
+        e3 = NamedGroup('delta', e0, e1, e2, 'hoho')
+        e4 = Join(e0, e1, e0, e1, e2, e3)
+        
+        regstr = e4.mkregex()
+
+        # The regex.
+        # (?P<alpha>X(ab)+B)(?P<beta>Lets\ be\ overmen\.)(?P=alpha)(?P=beta)\
+        # (?P<gamma>(?P=beta)?rs(rs)+)(?P<delta>(?P=alpha)(?P=beta)(?P=gamma)hoho)
+        # Check if eacc can build it back.
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test3(self):
+        e0 = NamedGroup('foobar', Repeat(Any('a', X(), 'b')))
+        e1 = Any(e0, 'm', 'n', Group(e0, '12', X()))
+
+        regstr = e1.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
 class TestRepeat(unittest.TestCase):
     def setUp(self):
         pass

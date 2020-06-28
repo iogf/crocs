@@ -78,10 +78,7 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_ngref, self.ngref)
 
         self.add_handle(RegexGrammar.r_pipe, self.pipe)
-
-
         self.add_handle(RegexGrammar.r_char, self.char)
-
         self.add_handle(RegexGrammar.r_done, self.done)
 
     def build(self, tokens):
