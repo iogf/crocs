@@ -108,7 +108,7 @@ class Repeat(RegexOperator):
     """
     """
 
-    MAX = 10
+    MAX = 7
 
     def __init__(self, regex, min=0, max=''):
         super(Repeat, self).__init__(regex)

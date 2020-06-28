@@ -611,11 +611,41 @@ class TestZeroOrMore(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestConsumeNext(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = ConsumeNext(Group(X(), OneOrZero('alpha')), 
+        Group(X(), 'bar', X()))
+        e1 = Any(e0, X(), '123')
+        regstr = e1.mkregex()
+        yregex = xmake(regstr)
+
+        with self.assertRaises(re.error):
+            yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = ConsumeNext(Group(X(), 'bar', X()), Group(X(), OneOrZero('alpha')))
+        e1 = Any(e0, X(), '123')
+        e2 = ConsumeNext(Group(X(), '579', X()), e1)
+        regstr = e2.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        e0 = ConsumeNext(Group(X(), 'bar', X()), Group(X(), OneOrZero('alpha')))
+        e1 = Any(e0, X(), '123')
+        e2 = ConsumeNext(Group(X(), '579', X()), e1)
+        e3 = ConsumeBack(e2, Group(ZeroOrMore(e2), 'aaaaa', 'bbbb', X()))
+        e3 = Join(e3, 'aaaa', X(), OneOrZero('aaaa'))
+        regstr = e3.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestConsumeBack(unittest.TestCase):
     def setUp(self):

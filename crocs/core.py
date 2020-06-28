@@ -103,7 +103,7 @@ class RegexOperator:
         data = self.valid_data()
         return data
 
-    def hits(self, count=10):
+    def hits(self, count=7):
         data = (self.seed() for ind in range(count))
         print('Match with:\n', ' '.join(data))
 
