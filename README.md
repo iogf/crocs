@@ -51,7 +51,8 @@ Group dict: {}
 Group 0:  germany germany germany germany
 Groups: (' germany',)
 Match with:
-  germjny germjny germjny  bos!ia  germmny germmny germmny germmny  germnny  bosnia  germkny  bos4ia bos4ia
+  germjny germjny germjny  bos!ia  germmny germmny 
+germmny germmny  germnny  bosnia  germkny  bos4ia bos4ia
 ~~~
 
 The actual implementation supports most Python regex features, groups, named groups,
