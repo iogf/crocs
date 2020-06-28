@@ -344,7 +344,7 @@ class TestAny(unittest.TestCase):
         e6 = Any(e0, e1, e2, e3, e4, e5)
 
         e7 = Join(e0, e2, e3, e4, e5, e6, 
-        'Fuinho Violento',  e6, e6)
+        'somestring',  e6, e6)
 
         # The regex.
         # [0-9]([0-9].)\1+[0-9]|.|\1|\1|\1+([0-9]|.|\1|\1|\1+\1+\1ab\1+)[0-9]|.\

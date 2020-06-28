@@ -18,31 +18,6 @@ class Any(RegexOperator):
         data = '|'.join(data)
         return data
 
-class NamedGroup(RegexOperator):
-    """
-    Named groups.
-
-    (?P<name>...)
-    """
-
-    def __init__(self, name, *args):
-        super(NamedGroup, self).__init__(*args)
-        self.name  = name
-
-    def invalid_data(self):
-        data = map(lambda ind: ind.invalid_data(), self.args)
-        data = ''.join(data)
-        return data
-
-    def valid_data(self):
-        data = map(lambda ind: ind.valid_data(), self.args)
-        data = ''.join(data)
-        return data
-
-    def to_regex(self):
-        return '(?P<%s>%s)' % (self.name, 
-        super(NamedGroup, self).to_regex())
-
 class Group(RegexOperator):
     """
     A normal group.
@@ -91,6 +66,29 @@ class Group(RegexOperator):
         Group.count   = 0
         self.compiled = False
         super(Group, self).clear()
+
+class NamedGroup(Group):
+    """
+    Named groups.
+
+    (?P<name>...)
+    """
+
+    def __init__(self, name, *args):
+        super(NamedGroup, self).__init__(*args)
+        self.name  = name
+
+    def compile(self):
+        self.data = r'(?P<%s>%s)' % (self.name, 
+        super(Group, self).to_regex())
+
+        self.compiled = True
+        self.map      = r'(?P=%s)' % self.name
+
+        self.input    = map(lambda ind: ind.valid_data(), self.args)
+        self.input    = ''.join(self.input)
+
+        return self.data
 
 class Repeat(RegexOperator):
     """
