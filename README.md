@@ -1,33 +1,57 @@
 # crocs
-
+ 
 Write regex using pure python class/function syntax and test it better.
 
-The idea behind crocs is simplifying the construction and debugging of regex's. 
-It is possible to implement regex's using a function/class syntax, the resulting structure 
-is then compiled into a regex's string. it is as well possible to generate random inputs 
-for the regex that would match the regex pattern.
+The crocs package offers a mean to implement regex using Python classes, it is basically a
+pythonic way of implementing regex patterns.
+
+There are python classes for regex operators, these classes are grouped together to form 
+your desired pattern then it is serialized to a raw regex to be used with a regex engine.
+
+The pythonic structure of a given regex pattern contains methods to test and generate possible
+matches for the regex.
+
+The project comes with a handy script regxhits that is used to read a raw regex string then
+generate possible matches. It is very useful to debug debug and improve regex patterns.
+
+The main benefits of using python to write regex it consists of the readability and 
+better understanding of how your regex is working since each one of the regex pieces can be
+tested separately from a python interpreter instance.
+
+~~~python
+>>> from crocs.regex import Join, ConsumeNext, X
+>>> 
+>>> e = ConsumeNext(Join('a', X(), 'b'), 'def')
+>>> e.test()
+Regex: (?<=a.b)def
+Input: azbdef
+Group dict: {}
+Group 0: def
+Groups: ()
+>>> e.hits()
+Match with:
+ a[bdef apbdef awbdef aFbdef a:bdef a_bdef a_bdef
+>>> 
+
+~~~
 
 The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
 generating possible matches. 
 
-### Regex Hits
-
-The regex below is merely parsed using [eacc](https://github.com/iogf/eacc) then an AST
-is generated. The AST is built using crocs's classes. Once it is built then the hits
-are generated.
+The regexhits script helps to debug raw regex strings. It is capable of reading a given
+raw regex string then generating a python structure for the regex that is used to generate the possible
+matches for the regex.
 
 ~~~
-[tau@archlinux crocs-code]$ regxhits 
-Regstr:( bra[a-z]il| bos.ia| germ[a-z]ny){1,4}
+[tau@archlinux ~]$ regxhits 
+>>> (\ bra[a-z]il|\ bos.ia|\ germ[a-z]ny){1,4}
 Regex: (\ bra[a-z]il|\ bos.ia|\ germ[a-z]ny){1,4}
-Input:  brakil brakil brakil brakil
+Input:  germany germany germany germany
 Group dict: {}
-Group 0:  brakil brakil brakil brakil
-Groups: (' brakil',)
+Group 0:  germany germany germany germany
+Groups: (' germany',)
 Match with:
-  brawil  germyny germyny germyny  bos!ia bos!ia bos!ia  
-germkny germkny  boscia boscia  germzny  braril braril braril  
-brazil brazil brazil brazil  bradil bradil  bos^ia bos^ia
+  germjny germjny germjny  bos!ia  germmny germmny germmny germmny  germnny  bosnia  germkny  bos4ia bos4ia
 ~~~
 
 The actual implementation supports most Python regex features, groups, named groups,
