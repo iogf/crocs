@@ -1,7 +1,7 @@
 from eacc.eacc import Rule, Grammar, T
 from eacc.lexer import LexTok, XSpec, SeqTok, LexSeq
 from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
-Comma, Sof, Eof, Char,  LB, RB, Pipe, Question, Equal, Hash,\
+Comma, Sof, Eof, Char,  LB, RB, Pipe, Question, Equal, Hash,Comment, \
 LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num
 
 class RegExpr(TokType):
@@ -45,6 +45,10 @@ class RegexTokens(XSpec):
     t_lesser = LexTok(r'\<', Lesser)
     t_greater = LexTok(r'\>', Greater)
 
+    t_comment = LexSeq(SeqTok(r'\(', LP), 
+    SeqTok(r'\?', Question), SeqTok(r'\#', Hash), 
+    SeqTok(r'(\)|[^)])+', Comment), SeqTok(r'\)', RP))
+
     t_pngroup = LexSeq(SeqTok(r'\(', LP), 
     SeqTok(r'\?', Question), SeqTok(r'P', GroupSymbol),
     SeqTok(r'\<', Lesser), SeqTok(r'[a-zA-Z0-9]+', GroupName),
@@ -57,10 +61,10 @@ class RegexTokens(XSpec):
 
     t_char = LexTok(r'.', Char)
 
-    root = [t_gref, t_ngref, t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
-    t_rparen, t_mul, t_lbracket, t_rbracket, t_lbrace, t_rbrace, 
-    t_comma, t_question, t_caret, t_pipe,  t_equal, t_lesser, 
-    t_greater, t_exclam, t_char]
+    root = [t_gref, t_ngref, t_comment, t_escape, t_pngroup, 
+    t_plus, t_dot, t_lparen, t_rparen, t_mul, t_lbracket, t_rbracket, 
+    t_lbrace, t_rbrace, t_comma, t_question, t_caret, t_pipe,  
+    t_equal, t_lesser, t_greater, t_exclam, t_char]
 
 class RegexGrammar(Grammar):
     # r_escape  = Rule(Escape, Char, type=Char)
@@ -95,6 +99,7 @@ class RegexGrammar(Grammar):
     r_exclude = Rule(LB, Caret, T(Char), RB, type=RegExpr)
 
     r_gref = Rule(Escape, Num, type=RegExpr)
+    r_comment = Rule(LP, Question, Hash, Comment, RP, type=RegExpr)
 
     r_ngref = Rule(LP, Question, GroupSymbol,
     Equal, GroupName, RP, type=RegExpr)
@@ -114,7 +119,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=RegExpr)
     r_done = Rule(Sof, T(RegExpr), Eof)
 
-    root = [r_gref, r_ngref,  r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
+    root = [r_gref, r_ngref,  r_comment, r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
     r_times5, r_times6, r_pipe, r_exclude, r_include, r_char, r_done]
 

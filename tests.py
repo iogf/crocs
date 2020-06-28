@@ -16,6 +16,8 @@ When a regex AST is built it is serialized, possible matches are generated
 and matched against its serialized regex string. It makes sure that
 the serialized regex string is valid.
 
+Some generated hits for patterns may be too long and slow down the tests considerably.
+
 """
 
 import unittest
@@ -255,7 +257,9 @@ class TestExclude(unittest.TestCase):
 
         expr2 = Group(expr0, expr1)
         expr3 = Group(expr1, expr2, expr2, expr2, expr0, expr1)
-        expr4 = Any(expr2, expr3, expr2, expr3, expr0, expr1, expr2, expr3, expr2)
+        expr4 = Any(expr2, expr3, expr2, expr3,     
+        expr0, expr1, expr2, expr3, expr2)
+
         expr5 = Repeat(expr4, 1, 4)
 
         regstr = expr5.mkregex()
@@ -724,27 +728,62 @@ class TestConsumeBack(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
-class TestSeq(unittest.TestCase):
-    def setUp(self):
-        pass
-
+class TestRegexComment(unittest.TestCase):
     def test0(self):
-        pass
+        regstr = 'abc(?#aiosdu).+(ab)(?#asiodu\)asd)'
+        yregex = xmake(regstr)
 
-class TestDot(unittest.TestCase):
-    def setUp(self):
-        pass
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
-    def test0(self):
-        pass
+    def test1(self):
+        regstr = '[abc]*(?#aiosdu).+([ab]*)(?#asiodu\)[asd])'
+        yregex = xmake(regstr)
 
-class TestJoin(unittest.TestCase):
-    def setUp(self):
-        pass
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
-    def test0(self):
-        pass
+    def test2(self):
+        regstr = '[a-z]*(?#aiosdu).+([0-9]*)(?#hehehe\)[abcde])'
+        yregex = xmake(regstr)
 
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test3(self):
+        regstr = '[a-z]*(?#aiosdu)(abc)+([0-9]+)(123)(?#....aaa\)[abcde])'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        regstr = '[a-z]*(?#aiosdu)((ab)*)?([0-9]+)(123)(?#....aaa\)[abcde])\1aa'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        regstr = '[a-z]*(?#aiosdu)((ab)*)?([0-9]+)\1sdius\2(123)(?#....aaa\)[abcde])\1aa'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        regstr = 'a(?#aiosdu)*b'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 if __name__ == '__main__':
     unittest.main()

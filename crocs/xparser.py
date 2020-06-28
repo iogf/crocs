@@ -2,7 +2,7 @@ from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexTokens, RegexGrammar, IncludeGrammar, ExcludeGrammar
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
-OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink
+OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -55,6 +55,7 @@ class RegexParser(Eacc):
         self.exclude_set = ExcludeSet()
 
         # self.add_handle(RegexGrammar.r_escape, self.escape)
+        self.add_handle(RegexGrammar.r_comment, self.comment)
 
         self.add_handle(RegexGrammar.r_group, self.group)
         self.add_handle(RegexGrammar.r_ngroup, self.ngroup)
@@ -197,15 +198,18 @@ class RegexParser(Eacc):
     def char(self, char):
         return char.val()
 
+    def comment(self, lp, question, hash, comment, rp):
+        return RegexComment(comment.val())
+
     def done(self, sof, regex, eof):
         data = (ind.val() for ind in regex)
         join = Join(*data)
         return join
 
-xlexer  = Lexer(RegexTokens)
-xparser = RegexParser()
-
 def xmake(regstr):
+    xlexer  = Lexer(RegexTokens)
+    xparser = RegexParser()
+
     tokens  = xlexer.feed(regstr)
     tseq = xparser.build(tokens)
     tseq = list(tseq)

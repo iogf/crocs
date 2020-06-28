@@ -349,4 +349,16 @@ class Join(RegexOperator):
         return ''.join(map(lambda ind: \
         ind.valid_data(), self.args))
 
-    
+class RegexComment(RegexOperator):
+    def __init__(self, comment):
+        super(RegexComment, self).__init__()
+        self.comment = comment
+
+    def invalid_data(self):
+        return ''
+
+    def valid_data(self):
+        return ''
+
+    def to_regex(self):
+        return r'(?#%s)' % self.comment
