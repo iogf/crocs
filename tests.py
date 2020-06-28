@@ -396,11 +396,45 @@ class TestOneOrZero(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestOneOrMore(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = Exclude(Seq('a', 'z'))
+        e1 = Any(e0, e0, 'fooo', X(), 'ooo', e0)
+        e2 = OneOrMore(e1)
+        e3 = Group(e1, 'ee', X(), 'uu', e2, 'oo', e1)
+
+        regstr = e3.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = Include(Seq('a', 'b'))
+        e1 = OneOrMore(e0)
+        e2 = Group(e0, '111', X(), X(), '222')
+
+        regstr = e2.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        e1 = OneOrMore('fooo')
+        e2 = Group(e1, '0000000', e1, e1, X(), 'uu', e1)
+        e3 = Join(e1, e2, e2, 'alpha', e2, 'bar', e2)
+
+        # The regex.
+        # (fooo)+(\1+0000000\1+\1+.uu\1+)\2alpha\2bar\2
+
+        regstr = e3.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestGroup(unittest.TestCase):
     def setUp(self):
