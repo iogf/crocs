@@ -377,12 +377,17 @@ class TestGroup(unittest.TestCase):
         pass
 
 class TestNamedGroup(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = NamedGroup('beta', 'X', X(), 'B')
+        e1 = Join('um', e0, 'dois', e0, 'tres', e0)
+        
+        regstr = e1.mkregex()
+        yregex = xmake(regstr)
 
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+        
 class TestRepeat(unittest.TestCase):
     def setUp(self):
         pass

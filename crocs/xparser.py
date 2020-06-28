@@ -2,7 +2,7 @@ from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexTokens, RegexGrammar, IncludeGrammar, ExcludeGrammar
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, Ask, OneOrMore, \
-OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any
+OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -50,7 +50,7 @@ class RegexParser(Eacc):
         self.gmap = []
 
         # Named groups refs.
-        self.gnmap = dict()
+        self.ngmap = dict()
         self.include_set = IncludeSet()
         self.exclude_set = ExcludeSet()
 
@@ -75,6 +75,8 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_cback, self.cback)
         self.add_handle(RegexGrammar.r_ncback, self.ncback)
         self.add_handle(RegexGrammar.r_gref, self.gref)
+        self.add_handle(RegexGrammar.r_ngref, self.ngref)
+
         self.add_handle(RegexGrammar.r_pipe, self.pipe)
 
 
@@ -84,7 +86,7 @@ class RegexParser(Eacc):
 
     def build(self, tokens):
         self.gmap.clear()
-        self.gnmap.clear()
+        self.ngmap.clear()
 
         ptree = super(RegexParser, self).build(tokens)
         return list(ptree)
@@ -106,13 +108,17 @@ class RegexParser(Eacc):
     def ngroup(self, lp, question, gsym, lesser,  gname, greater, regex, rp):
         data0 = (ind.val() for ind in regex)
         e = NamedGroup(gname.val(), *data0)
+
+        # Remember the named group.
+        self.ngmap[gname.val()] = e
         return e
 
     def gref(self, escape, num):
         return self.gmap[int(num.val()) - 1]
 
-    def gnref(self, escape, char):
-        pass
+    def ngref(self, lp, question, gsym, equal, gname, rp):
+        e = NGLink(gname.val())
+        return self.ngmap.get(gname.val(), e)
 
     def escape(self, escape, char):
         return char.val()

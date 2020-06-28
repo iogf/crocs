@@ -90,6 +90,20 @@ class NamedGroup(Group):
 
         return self.data
 
+class NGLink(RegexOperator):
+    def __init__(self, name):
+        super(NGLink, self).__init__()
+        self.name  = name
+
+    def to_regex(self):
+        return '(?P=%s)' % self.name
+
+    def invalid_data(self):
+        return ''
+
+    def valid_data(self):
+        return ''
+
 class Repeat(RegexOperator):
     """
     """

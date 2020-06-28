@@ -1,6 +1,6 @@
 from eacc.eacc import Rule, Grammar, T
 from eacc.lexer import LexTok, XSpec, SeqTok, LexSeq
-from eacc.token import TokType, TokVal, Plus, Minus, LP, RP, Mul, \
+from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Pipe, Question, Equal, Hash,\
 LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num
 
@@ -50,9 +50,14 @@ class RegexTokens(XSpec):
     SeqTok(r'\<', Lesser), SeqTok(r'[a-zA-Z0-9]+', GroupName),
     SeqTok(r'\>', Greater))
 
+    t_ngref = LexSeq(SeqTok(r'\(', LP), 
+    SeqTok(r'\?', Question), SeqTok(r'P', GroupSymbol),
+    SeqTok(r'\=', Equal), SeqTok(r'[a-zA-Z0-9]+', GroupName),
+    SeqTok(r'\)', RP))
+
     t_char = LexTok(r'.', Char)
 
-    root = [t_gref, t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
+    root = [t_gref, t_ngref, t_escape, t_pngroup, t_plus, t_dot, t_lparen, 
     t_rparen, t_mul, t_lbracket, t_rbracket, t_lbrace, t_rbrace, 
     t_comma, t_question, t_caret, t_pipe,  t_equal, t_lesser, 
     t_greater, t_exclam, t_char]
@@ -91,6 +96,9 @@ class RegexGrammar(Grammar):
 
     r_gref = Rule(Escape, Num, type=RegExpr)
 
+    r_ngref = Rule(LP, Question, GroupSymbol,
+    Equal, GroupName, RP, type=RegExpr)
+
     r_cnext = Rule(LP, Question, Lesser, Equal, 
     T(RegExpr), RP, T(RegExpr), type=RegExpr)
 
@@ -106,7 +114,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=RegExpr)
     r_done = Rule(Sof, T(RegExpr), Eof)
 
-    root = [r_gref,  r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
+    root = [r_gref, r_ngref,  r_ngroup, r_group, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
     r_times5, r_times6, r_pipe, r_exclude, r_include, r_char, r_done]
 
