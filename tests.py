@@ -770,7 +770,9 @@ class TestRegexComment(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
-        regstr = '[a-z]*(?#aiosdu)((ab)*)?([0-9]+)\1sdius\2(123)(?#....aaa\)[abcde])\1aa'
+        regstr = r'''[a-z]*(?#aiosdu)((ab)*)?([0-9]+)\\
+        1sdius\2(123)(?#....aaa\)[abcde])\1aa'''
+
         yregex = xmake(regstr)
 
         yregex.test()
