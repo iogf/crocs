@@ -1,3 +1,23 @@
+"""
+The approach consists of building regex patterns using the python classes
+then serializing to a raw regex string. 
+
+The resulting regex string is parsed by Eacc and a similar structure is built
+using the same previous classes it is serialized to a raw regex then checked against the 
+initial regex string.
+
+There are tests that build the pythonic structure from a raw string
+then it is serialized back and tested against the initial regex string.
+
+This approach should be enough to make sure both crocs regex classes and
+regex grammar is working. 
+
+When an regex AST is built it is serialized and tested against its
+own regex representation and hits are generated. It makes sure that the
+pythonic regex is valid it means it works when serialized to a string
+and used with match/search functions.
+"""
+
 import unittest
 from crocs.regex import Include, Exclude, Any, OneOrZero, \
 OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
@@ -8,6 +28,7 @@ import re
 
 class TestInclude(unittest.TestCase):
     def test0(self):
+        print('Test: ', self.id)
         e = Include('a', 'b', 'c')
 
         regstr = e.mkregex()
@@ -20,11 +41,11 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = Include('x', 'y')
-        e1 = Include('m', 'n')
+        expr0 = Include('x', 'y')
+        expr1 = Include('m', 'n')
 
-        e2 = Any(e0, e1)
-        regstr = e2.mkregex()
+        expr2 = Any(expr0, expr1)
+        regstr = expr2.mkregex()
 
         self.assertEqual(regstr, '[xy]|[mn]')
 
@@ -35,12 +56,12 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e0 = Include('x', 'y')
-        e1 = Include('m', 'n')
+        expr0 = Include('x', 'y')
+        expr1 = Include('m', 'n')
 
-        e2 = Any(e0, e1)
-        e3 = OneOrMore(e2)
-        regstr = e3.mkregex()
+        expr2 = Any(expr0, expr1)
+        expr3 = OneOrMore(expr2)
+        regstr = expr3.mkregex()
         self.assertEqual(regstr, '([xy]|[mn])+')
 
         yregex = xmake(regstr)
@@ -50,13 +71,13 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
-        e0 = Include('x', 'y')
-        e1 = Include('m', 'n')
-        e2 = Include('a', Seq('0', '9'), 'b')
+        expr0 = Include('x', 'y')
+        expr1 = Include('m', 'n')
+        expr2 = Include('a', Seq('0', '9'), 'b')
 
-        e3 = Any(e0, e1, e2)
-        e4 = OneOrZero(e3)
-        regstr = e4.mkregex()
+        expr3 = Any(expr0, expr1, expr2)
+        expr4 = OneOrZero(expr3)
+        regstr = expr4.mkregex()
         self.assertEqual(regstr, '([xy]|[mn]|[a0-9b])?')
 
         yregex = xmake(regstr)
@@ -66,13 +87,13 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
-        e0 = Include('%', '#')
-        e1 = Include('c', Seq('a', 'd'), Seq('0', '5'), 'd')
-        e2 = Include('a', Seq('0', '9'), 'b')
+        expr0 = Include('%', '#')
+        expr1 = Include('c', Seq('a', 'd'), Seq('0', '5'), 'd')
+        expr2 = Include('a', Seq('0', '9'), 'b')
 
-        e3 = Any(e0, e1, e2)
-        e4 = Repeat(e3, 3, 8)
-        regstr = e4.mkregex()
+        expr3 = Any(expr0, expr1, expr2)
+        expr4 = Repeat(expr3, 3, 8)
+        regstr = expr4.mkregex()
         self.assertEqual(regstr, '([%\\#]|[ca-d0-5d]|[a0-9b]){3,8}')
 
         yregex = xmake(regstr)
@@ -81,11 +102,11 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
-        e0 = Include('a', 'b')
-        e1 = Include('[a-b]')
-        e2 = Group(Any(e0, e1))
+        expr0 = Include('a', 'b')
+        expr1 = Include('[a-b]')
+        expr2 = Group(Any(expr0, expr1))
 
-        regstr = e2.mkregex()
+        regstr = expr2.mkregex()
         self.assertEqual(regstr, '([ab]|[\[a\-b\]])')
 
         yregex = xmake('([ab]|[\[a\-b\]])')
@@ -95,11 +116,11 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), '([ab]|[\[a-b\]])')
 
     def test6(self):
-        e0 = Include('a', 'b')
-        e1 = NamedGroup('alpha', Any(e0, 'bar'))
-        e2 = Any(e0, e1)
+        expr0 = Include('a', 'b')
+        expr1 = NamedGroup('alpha', Any(expr0, 'bar'))
+        expr2 = Any(expr0, expr1)
 
-        regstr = e2.mkregex()
+        regstr = expr2.mkregex()
         self.assertEqual(regstr, '[ab]|(?P<alpha>[ab]|bar)')
 
         yregex = xmake(regstr)
@@ -109,13 +130,13 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test7(self):
-        e0 = Include(Seq('a', 'z'))
-        e1 = Include(Seq('0', '9'))
-        e2 = Group(e0, e1)
-        e3 = Group(e1, e0)
-        e4 = Group(Any(e2, e3))
+        expr0 = Include(Seq('a', 'z'))
+        expr1 = Include(Seq('0', '9'))
+        expr2 = Group(expr0, expr1)
+        expr3 = Group(expr1, expr0)
+        expr4 = Group(Any(expr2, expr3))
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
         self.assertEqual(regstr, '(([a-z][0-9])|([0-9][a-z]))')
 
         yregex = xmake(regstr)
@@ -125,18 +146,18 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test8(self):
-        e0 = Include(Seq('a', 'z'))
-        e1 = Group('0', e0, '9')
-        e2 = ZeroOrMore(e1)
-        e3 = Group(e2, 'm', e1)
-        e4 = Repeat(e3, 2, 4)
+        expr0 = Include(Seq('a', 'z'))
+        expr1 = Group('0', expr0, '9')
+        expr2 = ZeroOrMore(expr1)
+        expr3 = Group(expr2, 'm', expr1)
+        expr4 = Repeat(expr3, 2, 4)
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
 
         # The resulting structure should be serialized
         # to an invalid regex.
         with self.assertRaises(re.error):
-            e4.test()
+            expr4.test()
 
         self.assertEqual(regstr, r'((0[a-z]9)*m\1){2,4}')
         yregex = xmake(regstr)
@@ -159,13 +180,13 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = Include(Seq('a', 'z'))
-        e1 = Exclude(Seq('1', '9'))
+        expr0 = Include(Seq('a', 'z'))
+        expr1 = Exclude(Seq('1', '9'))
 
-        e2 = Group(e0, e1)
-        e3 = Join(e0, e1, e2, e2, e2)
+        expr2 = Group(expr0, expr1)
+        expr3 = Join(expr0, expr1, expr2, expr2, expr2)
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         self.assertEqual(regstr, r'[a-z][^1-9]([a-z][^1-9])\1\1')
         yregex = xmake(regstr)
@@ -175,14 +196,14 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e0 = Exclude(Seq('a', 'z'))
-        e1 = ZeroOrMore(e0)
+        expr0 = Exclude(Seq('a', 'z'))
+        expr1 = ZeroOrMore(expr0)
 
-        e2 = Group(e0, e1)
-        e3 = Group(e2, e2, e2)
-        e4 = Group(e3, e3, e3)
+        expr2 = Group(expr0, expr1)
+        expr3 = Group(expr2, expr2, expr2)
+        expr4 = Group(expr3, expr3, expr3)
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
 
         self.assertEqual(regstr, r'((([^a-z][^a-z]*)\1\1)\2\2)')
         yregex = xmake(regstr)
@@ -194,14 +215,14 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
-        e0 = Exclude(Seq('a', 'z'))
-        e1 = OneOrMore(e0)
+        expr0 = Exclude(Seq('a', 'z'))
+        expr1 = OneOrMore(expr0)
 
-        e2 = Group(e0, e1)
-        e3 = Group(e2, e2, e2)
-        e4 = Group(e3, e3, e3)
+        expr2 = Group(expr0, expr1)
+        expr3 = Group(expr2, expr2, expr2)
+        expr4 = Group(expr3, expr3, expr3)
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
 
         self.assertEqual(regstr, r'((([^a-z][^a-z]+)\1\1)\2\2)')
         yregex = xmake(regstr)
@@ -213,14 +234,14 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
-        e0 = Exclude(Seq('a', 'z'))
-        e1 = OneOrZero(e0)
+        expr0 = Exclude(Seq('a', 'z'))
+        expr1 = OneOrZero(expr0)
 
-        e2 = Group(e0, e1)
-        e3 = Group(e2, e2, e2)
-        e4 = Any(e2, e3)
+        expr2 = Group(expr0, expr1)
+        expr3 = Group(expr2, expr2, expr2)
+        expr4 = Any(expr2, expr3)
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
         self.assertEqual(regstr, r'([^a-z][^a-z]?)|(\1\1\1)')
 
         yregex = xmake(regstr)
@@ -229,15 +250,15 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
-        e0 = Exclude(Seq('a', 'z'))
-        e1 = X()
+        expr0 = Exclude(Seq('a', 'z'))
+        expr1 = X()
 
-        e2 = Group(e0, e1)
-        e3 = Group(e1, e2, e2, e2, e0, e1)
-        e4 = Any(e2, e3, e2, e3, e0, e1, e2, e3, e2)
-        e5 = Repeat(e4, 1, 4)
+        expr2 = Group(expr0, expr1)
+        expr3 = Group(expr1, expr2, expr2, expr2, expr0, expr1)
+        expr4 = Any(expr2, expr3, expr2, expr3, expr0, expr1, expr2, expr3, expr2)
+        expr5 = Repeat(expr4, 1, 4)
 
-        regstr = e5.mkregex()
+        regstr = expr5.mkregex()
         yregex = xmake(regstr)
 
         # It has to fail because Repeat add a group around
@@ -257,12 +278,12 @@ class TestExclude(unittest.TestCase):
 
 class TestAny(unittest.TestCase):
     def test0(self):
-        e0 = Exclude(Seq('0', '9'))
-        e1 = Include(Seq('a', 'b'))
-        e2 = Any(e0, e1)
-        e3 = Join(e2, e2)
+        expr0 = Exclude(Seq('0', '9'))
+        expr1 = Include(Seq('a', 'b'))
+        expr2 = Any(expr0, expr1)
+        expr3 = Join(expr2, expr2)
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         self.assertEqual(regstr, r'[^0-9]|[a-b][^0-9]|[a-b]')
 
@@ -272,12 +293,12 @@ class TestAny(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = Exclude(Seq('0', '9'))
-        e1 = OneOrZero(e0)
-        e2 = Any('a', e0, e1, 'b')
-        e3 = Join(e2, e2)
+        expr0 = Exclude(Seq('0', '9'))
+        expr1 = OneOrZero(expr0)
+        expr2 = Any('a', expr0, expr1, 'b')
+        expr3 = Join(expr2, expr2)
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         self.assertEqual(regstr, r'a|[^0-9]|[^0-9]?|ba|[^0-9]|[^0-9]?|b')
 
@@ -287,12 +308,12 @@ class TestAny(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e0 = Include(Seq('0', '9'))
-        e1 = OneOrMore(e0)
-        e2 = Group(e0, e1)
-        e3 = Any(e0, e1, e2)
+        expr0 = Include(Seq('0', '9'))
+        expr1 = OneOrMore(expr0)
+        expr2 = Group(expr0, expr1)
+        expr3 = Any(expr0, expr1, expr2)
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         self.assertEqual(regstr, r'[0-9]|[0-9]+|([0-9][0-9]+)')
 
@@ -302,13 +323,13 @@ class TestAny(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
-        e0 = Include(Seq('0', '9'))
-        e1 = OneOrMore(e0)
-        e2 = Group(e0, e1)
-        e3 = Any(e0, e1, e2)
-        e4 = Any(e3, e2, e1, e0)
+        expr0 = Include(Seq('0', '9'))
+        expr1 = OneOrMore(expr0)
+        expr2 = Group(expr0, expr1)
+        expr3 = Any(expr0, expr1, expr2)
+        expr4 = Any(expr3, expr2, expr1, expr0)
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -316,13 +337,13 @@ class TestAny(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
-        e0 = Include(Seq('0', '9'))
-        e1 = OneOrMore(e0)
-        e2 = Group(e0, e1)
-        e3 = Group(e2, e2)
-        e4 = Any('b', e3, 'a')
+        expr0 = Include(Seq('0', '9'))
+        expr1 = OneOrMore(expr0)
+        expr2 = Group(expr0, expr1)
+        expr3 = Group(expr2, expr2)
+        expr4 = Any('b', expr3, 'a')
 
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
         self.assertEqual(regstr, r'b|(([0-9][0-9]+)\1)|a')
         yregex = xmake(regstr)
     
@@ -335,23 +356,23 @@ class TestAny(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
-        e0 = Include(Seq('0', '9'))
-        e1 = X()
-        e2 = Group(e0, e1)
-        e3 = OneOrMore(e2)
-        e4 = Any(e0, e1, e2,e2, e3)
-        e5 = Group(e4, e3, e2, 'a', 'b', e3)
-        e6 = Any(e0, e1, e2, e3, e4, e5)
+        expr0 = Include(Seq('0', '9'))
+        expr1 = X()
+        expr2 = Group(expr0, expr1)
+        expr3 = OneOrMore(expr2)
+        expr4 = Any(expr0, expr1, expr2,expr2, expr3)
+        expr5 = Group(expr4, expr3, expr2, 'a', 'b', expr3)
+        expr6 = Any(expr0, expr1, expr2, expr3, expr4, expr5)
 
-        e7 = Join(e0, e2, e3, e4, e5, e6, 
-        'somestring',  e6, e6)
+        expr7 = Join(expr0, expr2, expr3, expr4, expr5, expr6, 
+        'somestring',  expr6, expr6)
 
         # The regex.
         # [0-9]([0-9].)\1+[0-9]|.|\1|\1|\1+([0-9]|.|\1|\1|\1+\1+\1ab\1+)[0-9]|.\
         # |\1|\1+|[0-9]|.|\1|\1|\1+|\2Fuinho\ Violento[0-9]|.|\1|\1+|[0-9]|.\
         # |\1|\1|\1+|\2[0-9]|.|\1|\1+|[0-9]|.|\1|\1|\1+|\2
 
-        regstr = e7.mkregex()
+        regstr = expr7.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -360,12 +381,12 @@ class TestAny(unittest.TestCase):
 
 class TestOneOrZero(unittest.TestCase):
     def test0(self):
-        e0 = Include(Seq('0', '9'))
-        e1 = Any(e0, 'ahh', X())
-        e2 = OneOrZero(e1)
-        e3 = Group(e1, 'ee', X(), 'uu')
+        expr0 = Include(Seq('0', '9'))
+        expr1 = Any(expr0, 'ahh', X())
+        expr2 = OneOrZero(expr1)
+        expr3 = Group(expr1, 'ee', X(), 'uu')
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -373,11 +394,11 @@ class TestOneOrZero(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = Exclude(Seq('a', 'b'))
-        e1 = OneOrZero(e0)
-        e2 = Group(e1, 'ee', X(), 'uu')
+        expr0 = Exclude(Seq('a', 'b'))
+        expr1 = OneOrZero(expr0)
+        expr2 = Group(expr1, 'ee', X(), 'uu')
 
-        regstr = e2.mkregex()
+        regstr = expr2.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -385,11 +406,11 @@ class TestOneOrZero(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e1 = OneOrZero('fooo')
-        e2 = Group(e1, 'ee', X(), 'uu')
-        e3 = Join(e2, 'foobar', e2, 'bar', e2)
+        expr1 = OneOrZero('fooo')
+        expr2 = Group(expr1, 'ee', X(), 'uu')
+        expr3 = Join(expr2, 'foobar', expr2, 'bar', expr2)
 
-        regstr = e2.mkregex()
+        regstr = expr2.mkregex()
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
@@ -397,12 +418,12 @@ class TestOneOrZero(unittest.TestCase):
 
 class TestOneOrMore(unittest.TestCase):
     def test0(self):
-        e0 = Exclude(Seq('a', 'z'))
-        e1 = Any(e0, e0, 'fooo', X(), 'ooo', e0)
-        e2 = OneOrMore(e1)
-        e3 = Group(e1, 'ee', X(), 'uu', e2, 'oo', e1)
+        expr0 = Exclude(Seq('a', 'z'))
+        expr1 = Any(expr0, expr0, 'fooo', X(), 'ooo', expr0)
+        expr2 = OneOrMore(expr1)
+        expr3 = Group(expr1, 'ee', X(), 'uu', expr2, 'oo', expr1)
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -410,11 +431,11 @@ class TestOneOrMore(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = Include(Seq('a', 'b'))
-        e1 = OneOrMore(e0)
-        e2 = Group(e0, '111', X(), X(), '222')
+        expr0 = Include(Seq('a', 'b'))
+        expr1 = OneOrMore(expr0)
+        expr2 = Group(expr0, '111', X(), X(), '222')
 
-        regstr = e2.mkregex()
+        regstr = expr2.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -422,14 +443,14 @@ class TestOneOrMore(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e1 = OneOrMore('fooo')
-        e2 = Group(e1, '0000000', e1, e1, X(), 'uu', e1)
-        e3 = Join(e1, e2, e2, 'alpha', e2, 'bar', e2)
+        expr1 = OneOrMore('fooo')
+        expr2 = Group(expr1, '0000000', expr1, expr1, X(), 'uu', expr1)
+        expr3 = Join(expr1, expr2, expr2, 'alpha', expr2, 'bar', expr2)
 
         # The regex.
         # (fooo)+(\1+0000000\1+\1+.uu\1+)\2alpha\2bar\2
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -438,14 +459,14 @@ class TestOneOrMore(unittest.TestCase):
 
 class TestGroup(unittest.TestCase):
     def test0(self):
-        e0 = Group(X(), 'a', 'b')
-        e1 = Group(e0, 'oo')
-        e2 = Group(e1, 'mm')
-        e3 = Group(e2, 'uu')
-        e4 = Any(e0, e1, e2, e3)
-        e5 = Join(e4, e0, e1, e2, e3, e4)
+        expr0 = Group(X(), 'a', 'b')
+        expr1 = Group(expr0, 'oo')
+        expr2 = Group(expr1, 'mm')
+        expr3 = Group(expr2, 'uu')
+        expr4 = Any(expr0, expr1, expr2, expr3)
+        expr5 = Join(expr4, expr0, expr1, expr2, expr3, expr4)
 
-        regstr = e5.mkregex()
+        regstr = expr5.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -453,14 +474,15 @@ class TestGroup(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = Group(X(), 'a', 'b', Include('abc'))
-        e1 = Group(e0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
-        e2 = Group(e1, 'mm', Any(e0, e1, 'fooo'), 'uuuuu')
-        e3 = Group(e2, 'uu', Repeat('hehe', 2))
-        e4 = Any(e0, e1, e2, e3)
-        e5 = Join(e4, e0, e1, e2, e3, e4)
+        expr0 = Group(X(), 'a', 'b', Include('abc'))
+        expr1 = Group(expr0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
+        expr2 = Group(expr1, 'mm', Any(expr0, expr1, 'fooo'), 'uuuuu')
 
-        regstr = e5.mkregex()
+        expr3 = Group(expr2, 'uu', Repeat('hehe', 2))
+        expr4 = Any(expr0, expr1, expr2, expr3)
+        expr5 = Join(expr4, expr0, expr1, expr2, expr3, expr4)
+
+        regstr = expr5.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -468,17 +490,24 @@ class TestGroup(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e0 = Group(X(), 'a', 'b', Include('abc'))
-        e1 = Group(e0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
-        e2 = Group(e1, 'mm', Any(e0, e1, 'fooo'), 'uuuuu')
-        e3 = Group(e2, 'uu', Repeat('hehe', 2))
-        e4 = Any(e0, e1, e2, e3)
-        e5 = NamedGroup('fooooo', e4, e3, e0, 'hheheh')
-        e6 = Join(e4, e0, e1, e2, e3, e4, e5, 'ooo', e5)
-        e7 = Join(e0, e1, e5, e4, e5, 'ooo', e5, X(), X())
-        e8 = OneOrMore(e7)
-        e9 = Join(e0, e1, e2, e3, e4, e5, e6, e7, e8)
-        regstr = e9.mkregex()
+        expr0 = Group(X(), 'a', 'b', Include('abc'))
+        expr1 = Group(expr0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
+        expr2 = Group(expr1, 'mm', Any(expr0, expr1, 'fooo'), 'uuuuu')
+        expr3 = Group(expr2, 'uu', Repeat('hehe', 2))
+        expr4 = Any(expr0, expr1, expr2, expr3)
+
+        expr5 = NamedGroup('fooooo', expr4, expr3, expr0, 'hheheh')
+        expr6 = Join(expr4, expr0, expr1, expr2, expr3, 
+        expr4, expr5, 'ooo', expr5)
+
+        expr7 = Join(expr0, expr1, expr5, expr4, 
+        expr5, 'ooo', expr5, X(), X())
+
+        expr8 = OneOrMore(expr7)
+        expr9 = Join(expr0, expr1, expr2, expr3, expr4, 
+        expr5, expr6, expr7, expr8)
+
+        regstr = expr9.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -487,10 +516,10 @@ class TestGroup(unittest.TestCase):
 
 class TestNamedGroup(unittest.TestCase):
     def test0(self):
-        e0 = NamedGroup('beta', 'X', X(), 'B')
-        e1 = Join('um', e0, 'dois', e0, 'tres', e0)
+        expr0 = NamedGroup('beta', 'X', X(), 'B')
+        expr1 = Join('um', expr0, 'dois', expr0, 'tres', expr0)
         
-        regstr = e1.mkregex()
+        regstr = expr1.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -498,11 +527,11 @@ class TestNamedGroup(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
         
     def test1(self):
-        e0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
-        e1 = Any(e0, 'abc', X(), 'edf')
-        e2 = Join(e0, e1, X(), 'foobar')
+        expr0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
+        expr1 = Any(expr0, 'abc', X(), 'edf')
+        expr2 = Join(expr0, expr1, X(), 'foobar')
         
-        regstr = e2.mkregex()
+        regstr = expr2.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -511,13 +540,14 @@ class TestNamedGroup(unittest.TestCase):
 
     def test2(self):
         # Check if it works for nested named groups.
-        e0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
-        e1 = NamedGroup('beta', 'Lets be overmen.')
-        e2 = NamedGroup('gamma', OneOrZero(e1), 'rs', OneOrMore('rs'))
-        e3 = NamedGroup('delta', e0, e1, e2, 'hoho')
-        e4 = Join(e0, e1, e0, e1, e2, e3)
+        expr0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
+        expr1 = NamedGroup('beta', 'Lets be overmen.')
+        expr2 = NamedGroup('gamma', OneOrZero(expr1), 'rs', OneOrMore('rs'))
+
+        expr3 = NamedGroup('delta', expr0, expr1, expr2, 'hoho')
+        expr4 = Join(expr0, expr1, expr0, expr1, expr2, expr3)
         
-        regstr = e4.mkregex()
+        regstr = expr4.mkregex()
 
         # The regex.
         # (?P<alpha>X(ab)+B)(?P<beta>Lets\ be\ overmen\.)(?P=alpha)(?P=beta)\
@@ -530,10 +560,10 @@ class TestNamedGroup(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
-        e0 = NamedGroup('foobar', Repeat(Any('a', X(), 'b')))
-        e1 = Any(e0, 'm', 'n', Group(e0, '12', X()))
+        expr0 = NamedGroup('foobar', Repeat(Any('a', X(), 'b')))
+        expr1 = Any(expr0, 'm', 'n', Group(expr0, '12', X()))
 
-        regstr = e1.mkregex()
+        regstr = expr1.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -542,46 +572,51 @@ class TestNamedGroup(unittest.TestCase):
 
 class TestRepeat(unittest.TestCase):
     def test0(self):
-        e0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
-        e1 = Any(e0, 'm', 'n', Group('oooo'), Group(e0, X(), '12oooo', X()))
-        e2 = Repeat(e1)
-        e3 = Join(e0, e1, e2)
+        expr0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
+        expr2 = Repeat(expr1)
+        expr3 = Join(expr0, expr1, expr2)
 
-        regstr = e3.mkregex()
+        regstr = expr3.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
-        yregex.hits()
+        # yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
-        e1 = Any(e0, 'm', 'n', Group('oooo'), Group(e0, X(), '12oooo', X()))
-        e2 = Repeat(e1)
-        e3 = Join(e0, e1, e2)
-        e4 = Join(e0, X(), 'ooo', X(), e1, e2, e3)
-        e5 = Any(e0, e1, e2, e3, e4)
+        expr0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
+        expr2 = Repeat(expr1)
+        expr3 = Join(expr0, expr1, expr2)
 
-        regstr = e5.mkregex()
+        expr4 = Join(expr0, X(), 'ooo', X(), expr1, expr2, expr3)
+        expr5 = Any(expr0, expr1, expr2, expr3, expr4)
+
+        regstr = expr5.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
-        yregex.hits()
+        # yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestZeroOrMore(unittest.TestCase):
     def test0(self):
-        e0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
-        e1 = Any(e0, 'm', 'n', Group('oooo'), Group(e0, X(), '12oooo', X()))
-        e2 = Repeat(e1)
-        e3 = Join(e0, e1, e2)
-        e4 = Join(e0, X(), 'ooo', X(), e1, e2, e3)
-        e5 = Any(e0, e1, e2, e3, e4)
-        e6 = Any(e0, e1, e2, e3, e4, e5, 'hahah', 'hoohoho', X())
-        e7 = ZeroOrMore(e6)
-        e8 = Join(e7, e6, e5, e4, e3, e2, e1, e0)
+        expr0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
+        expr2 = Repeat(expr1)
 
-        regstr = e8.mkregex()
+        expr3 = Join(expr0, expr1, expr2)
+        expr4 = Join(expr0, X(), 'ooo', X(), expr1, expr2, expr3)
+        expr5 = Any(expr0, expr1, expr2, expr3, expr4)
+        expr6 = Any(expr0, expr1, expr2, expr3, 
+        expr4, expr5, 'hahah', 'hoohoho', X())
+
+        expr7 = ZeroOrMore(expr6)
+        expr8 = Join(expr7, expr6, expr5, expr4, 
+        expr3, expr2, expr1, expr0)
+
+        regstr = expr8.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -589,21 +624,27 @@ class TestZeroOrMore(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = NamedGroup('a999', ZeroOrMore('ooo'), Repeat(Any('a', X(), 'b')))
-        e1 = Any(e0, 'm', 'n', ZeroOrMore(Any('a', 'b')), 
-        Group('oooo'), Group(e0, X(), '12oooo', X()))
+        expr0 = NamedGroup('a999', ZeroOrMore('ooo'), Repeat(Any('a', X(), 'b')))
+        expr1 = Any(expr0, 'm', 'n', ZeroOrMore(Any('a', 'b')), 
+        Group('oooo'), Group(expr0, X(), '12oooo', X()))
 
-        e2 = Repeat(e1)
-        e3 = Join(e0, e1, e2, ZeroOrMore('ooo'), X(), ZeroOrMore('heheh'))
-        e4 = Join(e0, X(), 'ooo', X(), e1, e2, e3)
-        e5 = Any(e0, e1, e2, ZeroOrMore(X()), e2, e3, e4)
-        e6 = Any(e0, e1, e2, e3, e4, e5, 'hahah', 'hoohoho', X())
-        e7 = ZeroOrMore(e6)
-        e8 = Join(e7, e6, e5, e4, e3, e2, e1, e0)
-        e9 = NamedGroup('fooooooo', e8, 'foooo')
-        e10 = ZeroOrMore(e9)
+        expr2 = Repeat(expr1)
+        expr3 = Join(expr0, expr1, expr2, ZeroOrMore('ooo'), X(), ZeroOrMore('heheh'))
+        expr4 = Join(expr0, X(), 'ooo', X(), expr1, expr2, expr3)
 
-        regstr = e10.mkregex()
+        expr5 = Any(expr0, expr1, expr2, ZeroOrMore(X()), expr2, expr3, expr4)
+        expr6 = Any(expr0, expr1, expr2, expr3, 
+        expr4, expr5, 'hahah', 'hoohoho', X())
+
+        expr7 = ZeroOrMore(expr6)
+
+        expr8 = Join(expr7, expr6, expr5, 
+        expr4, expr3, expr2, expr1, expr0)
+
+        expr9 = NamedGroup('fooooooo', expr8, 'foooo')
+        expr10 = ZeroOrMore(expr9)
+
+        regstr = expr10.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -612,10 +653,10 @@ class TestZeroOrMore(unittest.TestCase):
 
 class TestConsumeNext(unittest.TestCase):
     def test0(self):
-        e0 = ConsumeNext(Group(X(), OneOrZero('alpha')), 
+        expr0 = ConsumeNext(Group(X(), OneOrZero('alpha')), 
         Group(X(), 'bar', X()))
-        e1 = Any(e0, X(), '123')
-        regstr = e1.mkregex()
+        expr1 = Any(expr0, X(), '123')
+        regstr = expr1.mkregex()
         yregex = xmake(regstr)
 
         with self.assertRaises(re.error):
@@ -624,10 +665,12 @@ class TestConsumeNext(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test1(self):
-        e0 = ConsumeNext(Group(X(), 'bar', X()), Group(X(), OneOrZero('alpha')))
-        e1 = Any(e0, X(), '123')
-        e2 = ConsumeNext(Group(X(), '579', X()), e1)
-        regstr = e2.mkregex()
+        expr0 = ConsumeNext(Group(X(), 'bar', X()), 
+        Group(X(), OneOrZero('alpha')))
+
+        expr1 = Any(expr0, X(), '123')
+        expr2 = ConsumeNext(Group(X(), '579', X()), expr1)
+        regstr = expr2.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -635,12 +678,16 @@ class TestConsumeNext(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        e0 = ConsumeNext(Group(X(), 'bar', X()), Group(X(), OneOrZero('alpha')))
-        e1 = Any(e0, X(), '123')
-        e2 = ConsumeNext(Group(X(), '579', X()), e1)
-        e3 = ConsumeBack(e2, Group(ZeroOrMore(e2), 'aaaaa', 'bbbb', X()))
-        e3 = Join(e3, 'aaaa', X(), OneOrZero('aaaa'))
-        regstr = e3.mkregex()
+        expr0 = ConsumeNext(Group(X(), 'bar', X()), 
+        Group(X(), OneOrZero('alpha')))
+        expr1 = Any(expr0, X(), '123')
+        expr2 = ConsumeNext(Group(X(), '579', X()), expr1)
+
+        expr3 = ConsumeBack(expr2, 
+        Group(ZeroOrMore(expr2), 'aaaaa', 'bbbb', X()))
+
+        expr3 = Join(expr3, 'aaaa', X(), OneOrZero('aaaa'))
+        regstr = expr3.mkregex()
         yregex = xmake(regstr)
 
         yregex.test()
@@ -648,11 +695,34 @@ class TestConsumeNext(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestConsumeBack(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        expr0 = ConsumeBack(Group(X(), '1010101', X()), 
+        Group(X(), OneOrMore('010101')))
+
+        expr1 = Join(expr0, 'aaaa', X(), OneOrMore('1010101'))
+        expr2 = Any(expr0, expr1, X(), Group(expr1, X(), 'a'))
+
+        regstr = expr2.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        expr0 = ConsumeBack(Group(OneOrMore(X()), 
+        'aaa', X()), Group('aaa', X(), 'bbb'))
+
+        expr1 = Any(expr0, 'aaaa', X(), OneOrMore('foobar'), X())
+        expr2 = Any(expr1, expr1, X(), Group(expr1, X(), 'a'))
+        expr3 = NamedGroup('xx', expr0, expr1, X(), X())
+        expr4 = Join(expr0, expr1, expr2, expr3)
+        regstr = expr4.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestSeq(unittest.TestCase):
     def setUp(self):
