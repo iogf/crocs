@@ -437,11 +437,53 @@ class TestOneOrMore(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestGroup(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = Group(X(), 'a', 'b')
+        e1 = Group(e0, 'oo')
+        e2 = Group(e1, 'mm')
+        e3 = Group(e2, 'uu')
+        e4 = Any(e0, e1, e2, e3)
+        e5 = Join(e4, e0, e1, e2, e3, e4)
+
+        regstr = e5.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = Group(X(), 'a', 'b', Include('abc'))
+        e1 = Group(e0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
+        e2 = Group(e1, 'mm', Any(e0, e1, 'fooo'), 'uuuuu')
+        e3 = Group(e2, 'uu', Repeat('hehe', 2))
+        e4 = Any(e0, e1, e2, e3)
+        e5 = Join(e4, e0, e1, e2, e3, e4)
+
+        regstr = e5.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        e0 = Group(X(), 'a', 'b', Include('abc'))
+        e1 = Group(e0, 'uuu', 'uuu', Exclude(Seq('a', 'z')))
+        e2 = Group(e1, 'mm', Any(e0, e1, 'fooo'), 'uuuuu')
+        e3 = Group(e2, 'uu', Repeat('hehe', 2))
+        e4 = Any(e0, e1, e2, e3)
+        e5 = NamedGroup('fooooo', e4, e3, e0, 'hheheh')
+        e6 = Join(e4, e0, e1, e2, e3, e4, e5, 'ooo', e5)
+        e7 = Join(e0, e1, e5, e4, e5, 'ooo', e5, X(), X())
+        e8 = OneOrMore(e7)
+        e9 = Join(e0, e1, e2, e3, e4, e5, e6, e7, e8)
+        regstr = e9.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestNamedGroup(unittest.TestCase):
     def test0(self):
