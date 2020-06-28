@@ -148,9 +148,9 @@ class Repeat(RegexOperator):
         return '%s{%s,%s}' % (self.args[0].to_regex(), 
         self.min, self.max)
 
-class Ask(Repeat):
+class ZeroOrMore(Repeat):
     def __init__(self, regex):
-        super(Ask, self).__init__(regex)
+        super(ZeroOrMore, self).__init__(regex)
 
     def to_regex(self):
         return '%s*' % self.args[0].to_regex()

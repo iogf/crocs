@@ -1,7 +1,7 @@
 import unittest
 from crocs.regex import Include, Exclude, Any, OneOrZero, \
 OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
-NamedGroup, Ask
+NamedGroup, ZeroOrMore
 from crocs.xparser import xmake
 from eacc.lexer import Lexer, LexError
 import re
@@ -127,7 +127,7 @@ class TestInclude(unittest.TestCase):
     def test8(self):
         e0 = Include(Seq('a', 'z'))
         e1 = Group('0', e0, '9')
-        e2 = Ask(e1)
+        e2 = ZeroOrMore(e1)
         e3 = Group(e2, 'm', e1)
         e4 = Repeat(e3, 2, 4)
 
@@ -176,7 +176,7 @@ class TestExclude(unittest.TestCase):
 
     def test2(self):
         e0 = Exclude(Seq('a', 'z'))
-        e1 = Ask(e0)
+        e1 = ZeroOrMore(e0)
 
         e2 = Group(e0, e1)
         e3 = Group(e2, e2, e2)
@@ -541,13 +541,35 @@ class TestNamedGroup(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
 class TestRepeat(unittest.TestCase):
-    def setUp(self):
-        pass
-
     def test0(self):
-        pass
+        e0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        e1 = Any(e0, 'm', 'n', Group('oooo'), Group(e0, X(), '12oooo', X()))
+        e2 = Repeat(e1)
+        e3 = Join(e0, e1, e2)
 
-class TestAsk(unittest.TestCase):
+        regstr = e3.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        e0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        e1 = Any(e0, 'm', 'n', Group('oooo'), Group(e0, X(), '12oooo', X()))
+        e2 = Repeat(e1)
+        e3 = Join(e0, e1, e2)
+        e4 = Join(e0, X(), 'ooo', X(), e1, e2, e3)
+        e5 = Any(e0, e1, e2, e3, e4)
+
+        regstr = e5.mkregex()
+        yregex = xmake(regstr)
+
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+class TestZeroOrMore(unittest.TestCase):
     def setUp(self):
         pass
 
