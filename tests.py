@@ -12,10 +12,10 @@ then it is serialized back and tested against the initial regex string.
 This approach should be enough to make sure both crocs regex classes and
 regex grammar are working. 
 
-When a regex AST is built it is serialized and tested against its
-own regex representation and hits are generated. It makes sure that the
-pythonic regex structure is valid it means it works when serialized to a string
-and used with match/search functions.
+When a regex AST is built it is serialized, possible matches are generated
+and matched against its serialized regex string. It makes sure that
+the serialized regex string is valid.
+
 """
 
 import unittest
