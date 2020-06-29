@@ -40,7 +40,7 @@ class TestInclude(unittest.TestCase):
         yregex.hits()
 
         self.assertEqual(yregex.mkregex(), regstr)
-
+    
     def test1(self):
         expr0 = Include('x', 'y')
         expr1 = Include('m', 'n')
@@ -158,9 +158,55 @@ class TestInclude(unittest.TestCase):
         expr4.test()
 
         yregex = xmake(regstr)
-
         yregex.test()
+        yregex.hits()
 
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test9(self):
+        regstr = r'[a-z]+[0-9a-z]?(abc)\1'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test10(self):
+        regstr = r'([a-z]+[0-9a-z])?(abc)\1\2'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test11(self):
+        regstr = r'(([a-z]+[0-9a-z])(abc)\2)\2emm\3'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test12(self):
+        regstr = r'(([0-9a-zeeeee]*)(((abc))*)*\2)(\2)+emm\3'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test13(self):
+        regstr = r'(([0-9a-zeeeee]*)((([abc]))?)?\2?)(\2?)+emm\3'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test14(self):
+        regstr = r'(([0-9eeeeea-z]+))(2)'
+        yregex = xmake(regstr)
+        yregex.test()
         yregex.hits()
 
         self.assertEqual(yregex.mkregex(), regstr)

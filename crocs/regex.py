@@ -26,6 +26,7 @@ class Group(RegexOperator):
     """
 
     count = 0
+    grefs  = dict()
 
     def __init__(self, *args):
         self.compiled = False
@@ -47,6 +48,7 @@ class Group(RegexOperator):
         Group.count   = Group.count + 1
 
         self.map      = '\%s' % Group.count
+        self.grefs[Group.count] = self
 
         self.data = '(%s)' % ''.join((ind.to_regex() 
         for ind in self.args))
@@ -69,25 +71,30 @@ class Group(RegexOperator):
         super(Group, self).clear()
 
 class GLink(RegexOperator):
-    def __init__(self, group):
+    def __init__(self, index):
         super(GLink, self).__init__()
-        self.group = group
+        self.index = index
 
     def to_regex(self):
-        # return r'\%s' %s self.index
-        return self.group.to_regex()
+        return r'\%s' % self.index
 
     def mkregex(self):
-        return self.group.mkregex()
+        return self.to_regex()
 
     def invalid_data(self):
-        return self.group.invalid_data()
+        group = Group.grefs.get(self.index, '')
+        return group.invalid_data()
 
     def valid_data(self):
-        return self.group.input
+        group = Group.grefs.get(self.index, '')
+        return group.valid_data()
 
     def hasop(self, instance):
         return False
+
+class NGLink(GLink):
+    def to_regex(self):
+        return r'(?P=%s)' % self.index
 
 class NamedGroup(Group):
     """
@@ -101,6 +108,8 @@ class NamedGroup(Group):
         self.name  = name
 
     def compile(self):
+        self.grefs[self.name] = self
+
         self.data = r'(?P<%s>%s)' % (self.name, 
         super(Group, self).to_regex())
 
@@ -111,11 +120,6 @@ class NamedGroup(Group):
         self.input    = ''.join(self.input)
 
         return self.data
-
-class NGLink(GLink):
-    def __init__(self, group):
-        super(NGLink, self).__init__(group)
-        self.group  = group
 
 class Repeat(RegexOperator):
     """

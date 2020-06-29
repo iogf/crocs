@@ -46,11 +46,6 @@ class ExcludeSet(Eacc):
 class RegexParser(Eacc):
     def __init__(self):
         super(RegexParser, self).__init__(RegexGrammar)
-        # Normal groups refs.
-        self.gmap = []
-
-        # Named groups refs.
-        self.ngmap = dict()
         self.include_set = IncludeSet()
         self.exclude_set = ExcludeSet()
 
@@ -83,9 +78,6 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_done, self.done)
 
     def build(self, tokens):
-        self.gmap.clear()
-        self.ngmap.clear()
-
         ptree = super(RegexParser, self).build(tokens)
         return list(ptree)
 
@@ -100,41 +92,19 @@ class RegexParser(Eacc):
     def group(self, lp, regex, rp):
         data  = (ind.val() for ind in regex)
         group = Group(*data)
-        self.gmap.append(group)
-
-        for ind in range(len(self.gmap) - 1, 1, -1):
-            if self.gmap[ind].hasop(self.gmap[ind-1]):
-                self.adjust_groupindex(ind - 1, ind)
         return group
-
-    def adjust_groupindex(self, index0, index1):
-        value = self.gmap[index0]
-        self.gmap[index0] = self.gmap[index1]
-        self.gmap[index1] = value
 
     def ngroup(self, lp, question, gsym, lesser,  gname, greater, regex, rp):
         data0 = (ind.val() for ind in regex)
         e = NamedGroup(gname.val(), *data0)
-
-        # Remember the named group.
-        self.ngmap[gname.val()] = e
         return e
 
     def gref(self, escape, num):
-        gindex = int(num.val()) 
-        nlen   = len(self.gmap)
-        gref   = gindex-nlen - 1
-
-        if gindex > nlen:
-            if gref < nlen and gref > 0:
-                return GLink(self.gmap[gindex-nlen - 1])
-            else:
-                return GLink(self.gmap[-1])
-        return GLink(self.gmap[gindex - 1])
+        link = GLink(int(num.val()))
+        return link
 
     def ngref(self, lp, question, gsym, equal, gname, rp):
-        group = self.ngmap[gname.val()]
-        link = NGLink(group)
+        link = NGLink(gname.val())
         return link
 
     def escape(self, escape, char):
