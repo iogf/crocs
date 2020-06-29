@@ -82,11 +82,11 @@ class GLink(RegexOperator):
         return self.to_regex()
 
     def invalid_data(self):
-        group = Group.grefs.get(self.index, '')
+        group = Group.grefs[elf.index]
         return group.invalid_data()
 
     def valid_data(self):
-        group = Group.grefs.get(self.index, '')
+        group = Group.grefs[self.index]
         return group.valid_data()
 
     def hasop(self, instance):

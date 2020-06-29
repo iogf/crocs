@@ -78,16 +78,16 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_done, self.done)
 
     def build(self, tokens):
-        ptree = super(RegexParser, self).build(tokens)
-        return list(ptree)
+        tree = super(RegexParser, self).build(tokens)
+        return list(tree)
 
     def pipe(self, regex0, pipe, regex1):
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
-        e0 = Join(*data0)
-        e1 = Join(*data1)
-        e = Any(e0, e1)
-        return e
+        join0 = Join(*data0)
+        join1 = Join(*data1)
+        join2 = Any(join0, join1)
+        return join2
 
     def group(self, lp, regex, rp):
         data  = (ind.val() for ind in regex)
@@ -95,9 +95,9 @@ class RegexParser(Eacc):
         return group
 
     def ngroup(self, lp, question, gsym, lesser,  gname, greater, regex, rp):
-        data0 = (ind.val() for ind in regex)
-        e = NamedGroup(gname.val(), *data0)
-        return e
+        data = (ind.val() for ind in regex)
+        group = NamedGroup(gname.val(), *data)
+        return group
 
     def gref(self, escape, num):
         link = GLink(int(num.val()))
