@@ -25,7 +25,7 @@ class Group(RegexOperator):
     (abc).
     """
 
-    count = 0
+    count = 1
 
     def __init__(self, *args):
         self.compiled = False
@@ -43,12 +43,12 @@ class Group(RegexOperator):
         return self.input
 
     def compile(self):
+        self.compiled = True
+        self.map      = '\%s' % Group.count
+
         self.data = '(%s)' % ''.join((ind.to_regex() 
         for ind in self.args))
-
-        self.compiled = True
         Group.count   = Group.count + 1
-        self.map      = '\%s' % Group.count
 
         self.input    = map(lambda ind: ind.valid_data(), self.args)
         self.input    = ''.join(self.input)
@@ -63,9 +63,30 @@ class Group(RegexOperator):
     def clear(self):
         self.data     = ''
         self.map      = ''
-        Group.count   = 0
+        Group.count   = 1
         self.compiled = False
         super(Group, self).clear()
+
+class GLink(RegexOperator):
+    def __init__(self, group):
+        super(GLink, self).__init__()
+        self.group = group
+
+    def to_regex(self):
+        # return r'\%s' %s self.index
+        return self.group.to_regex()
+
+    def mkregex(self):
+        return self.group.mkregex()
+
+    def invalid_data(self):
+        return self.group.invalid_data()
+
+    def valid_data(self):
+        return self.group.input
+
+    def hasop(self, instance):
+        return False
 
 class NamedGroup(Group):
     """
@@ -103,6 +124,9 @@ class NGLink(RegexOperator):
 
     def valid_data(self):
         return ''
+
+    def hasop(self, instance):
+        return False
 
 class Repeat(RegexOperator):
     """

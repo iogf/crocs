@@ -19,6 +19,9 @@ class BasicRegex:
 
     def mkregex(self):
         pass
+
+    def hasop(self, instance):
+        pass
     
 class RegexStr:
     def __init__(self, value):
@@ -52,6 +55,9 @@ class RegexStr:
     def mkregex(self):
         regstr = self.to_regex()
         return regstr
+
+    def hasop(self, instance):
+        return False
 
     __str__ = to_regex
 
@@ -127,3 +133,11 @@ class RegexOperator:
     def __str__(self):
         return self.mkregex()
 
+    def hasop(self, instance):
+        if instance in self.args:
+            return True
+
+        for ind in self.args:
+            if ind.hasop(instance):
+                return True
+        return False

@@ -2,7 +2,7 @@ from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexTokens, RegexGrammar, IncludeGrammar, ExcludeGrammar
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
-OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment
+OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -98,10 +98,19 @@ class RegexParser(Eacc):
         return e
 
     def group(self, lp, regex, rp):
-        data = (ind.val() for ind in regex)
-        e    = Group(*data)
-        self.gmap.append(e)
-        return e
+        data  = (ind.val() for ind in regex)
+        group = Group(*data)
+        self.gmap.append(group)
+
+        for ind in range(len(self.gmap) - 1, 1, -1):
+            if self.gmap[ind].hasop(self.gmap[ind-1]):
+                self.adjust_groupindex(ind - 1, ind)
+        return group
+
+    def adjust_groupindex(self, index0, index1):
+        value = self.gmap[index0]
+        self.gmap[index0] = self.gmap[index1]
+        self.gmap[index1] = value
 
     def ngroup(self, lp, question, gsym, lesser,  gname, greater, regex, rp):
         data0 = (ind.val() for ind in regex)
@@ -112,7 +121,7 @@ class RegexParser(Eacc):
         return e
 
     def gref(self, escape, num):
-        return self.gmap[int(num.val()) - 1]
+        return GLink(self.gmap[int(num.val()) - 1])
 
     def ngref(self, lp, question, gsym, equal, gname, rp):
         e = NGLink(gname.val())

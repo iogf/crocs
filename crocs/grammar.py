@@ -82,7 +82,7 @@ class RegexGrammar(Grammar):
     r_pipe  = Rule(T(RegExpr), Pipe, T(RegExpr), type=RegExpr, 
     up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5, o_pipe6, o_pipe7))
 
-    r_group  = Rule(LP, T(RegExpr), RP, type=RegExpr)
+    r_group  = Rule(LP, T(RegExpr, type=RegExpr), RP, type=RegExpr)
     r_ngroup = Rule(LP, Question, GroupSymbol,
     Lesser, GroupName, Greater, T(RegExpr), RP, type=RegExpr)
 
