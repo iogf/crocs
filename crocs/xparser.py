@@ -124,8 +124,9 @@ class RegexParser(Eacc):
         return GLink(self.gmap[int(num.val()) - 1])
 
     def ngref(self, lp, question, gsym, equal, gname, rp):
-        e = NGLink(gname.val())
-        return self.ngmap.get(gname.val(), e)
+        group = self.ngmap[gname.val()]
+        link = NGLink(group)
+        return link
 
     def escape(self, escape, char):
         return char.val()

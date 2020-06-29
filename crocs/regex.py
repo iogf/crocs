@@ -111,22 +111,10 @@ class NamedGroup(Group):
 
         return self.data
 
-class NGLink(RegexOperator):
-    def __init__(self, name):
-        super(NGLink, self).__init__()
-        self.name  = name
-
-    def to_regex(self):
-        return '(?P=%s)' % self.name
-
-    def invalid_data(self):
-        return ''
-
-    def valid_data(self):
-        return ''
-
-    def hasop(self, instance):
-        return False
+class NGLink(GLink):
+    def __init__(self, group):
+        super(NGLink, self).__init__(group)
+        self.group  = group
 
 class Repeat(RegexOperator):
     """
@@ -134,14 +122,14 @@ class Repeat(RegexOperator):
 
     MAX = 7
 
-    def __init__(self, regex, min=0, max=''):
+    def __init__(self, regex, min=0, max='', wrap=False):
         super(Repeat, self).__init__(regex)
         self.min = min
         self.max = max
 
         if isinstance(regex, str) and len(regex) > 1:
             self.args[0] = Group(regex)
-        elif isinstance(regex, Any):
+        elif isinstance(regex, Any) and wrap:
             self.args[0] = Group(regex)
 
     def invalid_data(self):
@@ -173,22 +161,22 @@ class Repeat(RegexOperator):
         self.min, self.max)
 
 class ZeroOrMore(Repeat):
-    def __init__(self, regex):
-        super(ZeroOrMore, self).__init__(regex)
+    def __init__(self, regex, wrap=False):
+        super(ZeroOrMore, self).__init__(regex, wrap=wrap)
 
     def to_regex(self):
         return '%s*' % self.args[0].to_regex()
 
 class OneOrMore(Repeat):
-    def __init__(self, regex):
-        super(OneOrMore, self).__init__(regex, 1)
+    def __init__(self, regex, wrap=False):
+        super(OneOrMore, self).__init__(regex, 1, wrap=wrap)
 
     def to_regex(self):
         return '%s+' % self.args[0].to_regex()
 
 class OneOrZero(Repeat):
-    def __init__(self, regex):
-        super(OneOrZero, self).__init__(regex, 0, 1)
+    def __init__(self, regex, wrap=False):
+        super(OneOrZero, self).__init__(regex, 0, 1, wrap=wrap)
 
     def to_regex(self):
         return '%s?' % self.args[0].to_regex()
