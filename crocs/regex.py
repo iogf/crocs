@@ -25,7 +25,7 @@ class Group(RegexOperator):
     (abc).
     """
 
-    count = 1
+    count = 0
 
     def __init__(self, *args):
         self.compiled = False
@@ -44,11 +44,12 @@ class Group(RegexOperator):
 
     def compile(self):
         self.compiled = True
+        Group.count   = Group.count + 1
+
         self.map      = '\%s' % Group.count
 
         self.data = '(%s)' % ''.join((ind.to_regex() 
         for ind in self.args))
-        Group.count   = Group.count + 1
 
         self.input    = map(lambda ind: ind.valid_data(), self.args)
         self.input    = ''.join(self.input)
@@ -63,7 +64,7 @@ class Group(RegexOperator):
     def clear(self):
         self.data     = ''
         self.map      = ''
-        Group.count   = 1
+        Group.count   = 0
         self.compiled = False
         super(Group, self).clear()
 
@@ -162,7 +163,7 @@ class Repeat(RegexOperator):
 
 class ZeroOrMore(Repeat):
     def __init__(self, regex, wrap=False):
-        super(ZeroOrMore, self).__init__(regex, wrap=wrap)
+        super(ZeroOrMore, self).__init__(regex, 1, wrap=wrap)
 
     def to_regex(self):
         return '%s*' % self.args[0].to_regex()
