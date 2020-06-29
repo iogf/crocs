@@ -218,11 +218,12 @@ class TestExclude(unittest.TestCase):
         expr4 = Group(expr3, expr3, expr3)
 
         regstr = expr4.mkregex()
-
+        # **
+        print(regstr)
         # self.assertEqual(regstr, r'((([^a-z][^a-z]+)\1\1)\1\1)')
-        yregex = xmake(regstr)
-        yregex.test()
-        self.assertEqual(yregex.mkregex(), regstr)
+        # yregex = xmake(regstr)
+        # yregex.test()
+        # self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
         expr0 = Exclude(Seq('a', 'z'))
