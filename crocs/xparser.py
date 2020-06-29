@@ -121,7 +121,10 @@ class RegexParser(Eacc):
         return e
 
     def gref(self, escape, num):
-        return GLink(self.gmap[int(num.val()) - 1])
+        gindex = int(num.val()) 
+        if gindex > len(self.gmap):
+            return GLink(self.gmap[-1])
+        return GLink(self.gmap[gindex - 1])
 
     def ngref(self, lp, question, gsym, equal, gname, rp):
         group = self.ngmap[gname.val()]

@@ -155,16 +155,11 @@ class TestInclude(unittest.TestCase):
 
         regstr = expr4.mkregex()
 
-        # The resulting structure should be serialized
-        # to an invalid regex.
-        with self.assertRaises(re.error):
-            expr4.test()
+        expr4.test()
 
-        # self.assertEqual(regstr, r'((0[a-z]9)*m\1){2,4}')
         yregex = xmake(regstr)
 
-        with self.assertRaises(re.error):
-            yregex.test()
+        yregex.test()
 
         yregex.hits()
 
@@ -209,8 +204,7 @@ class TestExclude(unittest.TestCase):
         # self.assertEqual(regstr, r'((([^a-z][^a-z]*)\1\1)\1\1)')
         yregex = xmake(regstr)
 
-        with self.assertRaises(re.error):
-            yregex.test()
+        yregex.test()
 
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
@@ -227,8 +221,7 @@ class TestExclude(unittest.TestCase):
 
         # self.assertEqual(regstr, r'((([^a-z][^a-z]+)\1\1)\1\1)')
         yregex = xmake(regstr)
-        with self.assertRaises(re.error):
-            yregex.test()
+        yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
@@ -318,11 +311,7 @@ class TestAny(unittest.TestCase):
         # self.assertEqual(regstr, r'b|(([0-9][0-9]+)\1)|a')
         yregex = xmake(regstr)
     
-        # Although the serialization and the parsing
-        # of it by eacc it results to equal structures
-        # the regex engine doesn't allow such a ref.
-        with self.assertRaises(re.error):
-            yregex.test()
+        yregex.test()
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
@@ -481,16 +470,7 @@ class TestGroup(unittest.TestCase):
         regstr = expr2.mkregex()
         yregex = xmake(regstr)
 
-        # It can generate possible matches but
-        # regex engine doesnt allow refering to
-        # open groups.
-        # Regex: ((abc)(\1efg))
-        # Match with:
-        # abcabcefg abcabcefg abcabcefg abcabcefg 
-        # abcabcefg abcabcefg abcabcefg
-        # expr2.hits()
-        with self.assertRaises(re.error):
-            yregex.test()
+        yregex.test()
 
         # Eacc should be capable of reading back the 
         # serialized string.
