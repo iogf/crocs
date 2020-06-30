@@ -7,7 +7,6 @@ pythonic way of implementing regex patterns.
 
 There are python classes for regex operators, these classes are grouped together to form 
 your desired pattern then it is serialized to a raw regex to be used with a regex engine.
-
 The pythonic structure of a given regex pattern contains methods to test and generate possible
 matches for the regex.
 
