@@ -1,15 +1,15 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
-from crocs.grammar import RegexTokens, RegexGrammar, IncludeGrammar, ExcludeGrammar
+from crocs.grammar import RegexTokens, RegexGrammar, HClassGrammar, HClassTokens
 from crocs.regex import X, Join, Group, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink
 
 class IncludeSet(Eacc):
     def __init__(self):
-        super(IncludeSet, self).__init__(IncludeGrammar)
-        self.add_handle(IncludeGrammar.r_seq, self.seq)
-        self.add_handle(IncludeGrammar.r_done, self.done)
-        self.add_handle(IncludeGrammar.r_char, self.char)
+        super(IncludeSet, self).__init__(HClassGrammar)
+        self.add_handle(HClassGrammar.r_seq, self.seq)
+        self.add_handle(HClassGrammar.r_done, self.done)
+        self.add_handle(HClassGrammar.r_char, self.char)
 
     def seq(self, start, minus, end):
         seq = Seq(start.val(), end.val())
@@ -25,11 +25,11 @@ class IncludeSet(Eacc):
 
 class ExcludeSet(Eacc):
     def __init__(self):
-        super(ExcludeSet, self).__init__(ExcludeGrammar)
+        super(ExcludeSet, self).__init__(HClassGrammar)
 
-        self.add_handle(ExcludeGrammar.r_seq, self.seq)
-        self.add_handle(ExcludeGrammar.r_char, self.char)
-        self.add_handle(ExcludeGrammar.r_done, self.done)
+        self.add_handle(HClassGrammar.r_seq, self.seq)
+        self.add_handle(HClassGrammar.r_char, self.char)
+        self.add_handle(HClassGrammar.r_done, self.done)
 
     def seq(self, start, minus, end):
         seq = Seq(start.val(), end.val())
@@ -46,6 +46,7 @@ class ExcludeSet(Eacc):
 class RegexParser(Eacc):
     def __init__(self):
         super(RegexParser, self).__init__(RegexGrammar)
+        self.hclass_lexer = Lexer(HClassTokens)
         self.include_set = IncludeSet()
         self.exclude_set = ExcludeSet()
 
@@ -110,15 +111,18 @@ class RegexParser(Eacc):
     def escape(self, escape, char):
         return char.val()
 
-    def include(self, lb, chars, rb):
-        ptree = self.include_set.build(chars)
-        ptree = list(ptree)[-1]
-        return ptree.val()
+    def include(self, lb, string, rb):
+        tokens = self.hclass_lexer.feed(string.val())
+        tree = self.include_set.build(tokens)
+        tree = list(tree)[-1]
+        return tree.val()
 
-    def exclude(self, lb, caret, chars, rb):
-        ptree = self.exclude_set.build(chars)
-        ptree = list(ptree)[-1]
-        return ptree.val()
+    def exclude(self, lb, caret, string, rb):
+        tokens = self.hclass_lexer.feed(string.val())
+
+        tree = self.exclude_set.build(tokens)
+        tree = list(tree)[-1]
+        return tree.val()
 
     def cnext(self, lp, question, lexer, equal, regex0, rp, regex1):
         data0 = (ind.val() for ind in regex0)

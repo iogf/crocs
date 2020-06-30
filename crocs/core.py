@@ -50,6 +50,12 @@ class RegexStr:
         pass
 
     def to_regex(self):
+        """
+        This method uses re.escape to escape possible regex operators.
+
+        The regex operators are escaped even inside character sets thus
+        the resulting yregex from xmake may differ from the regex passed.
+        """
         return re.escape(self.value)
 
     def mkregex(self):

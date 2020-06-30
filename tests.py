@@ -18,6 +18,24 @@ the serialized regex string is valid.
 
 Some generated hits for patterns may be too long and slow down the tests considerably.
 
+The special regex operators are escaped when testing the regex parser mechanisms. It is
+necessary because crocs classes that map to regex operators are escaping regex operators
+in strings. 
+
+    regstr = r'[abc*]'
+    yregex = xmake(regstr)
+    
+    # Evaluate to False.
+    yregex.to_regex() != regstr 
+
+    # Evaluate to True.
+    yregex.to_regex() == r'[abc\*]'
+    
+The reason consists of it not existing escape class in crocs classes to map regex escape. 
+It automatically escapes all strings that contain regex operators.
+
+It is necessary to escape yourself raw regex strings even inside character sets to make
+sure them are in fact equal to the resulting pythonic yregex that comes from xmake.
 """
 
 import unittest
@@ -95,7 +113,7 @@ class TestInclude(unittest.TestCase):
         expr3 = Any(expr0, expr1, expr2)
         expr4 = Repeat(expr3, 3, 8, wrap=True)
         regstr = expr4.mkregex()
-        self.assertEqual(regstr, '([%\\#]|[ca-d0-5d]|[a0-9b]){3,8}')
+        self.assertEqual(regstr, r'([%\#]|[ca-d0-5d]|[a0-9b]){3,8}')
 
         yregex = xmake(regstr)
         yregex.test()
@@ -104,17 +122,16 @@ class TestInclude(unittest.TestCase):
 
     def test5(self):
         expr0 = Include('a', 'b')
-        expr1 = Include('[a-b]')
+        expr1 = Include(Seq('a', 'z'))
         expr2 = Group(Any(expr0, expr1))
 
         regstr = expr2.mkregex()
-        self.assertEqual(regstr, '([ab]|[\[a\-b\]])')
 
-        yregex = xmake('([ab]|[\[a\-b\]])')
+        yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
 
-        self.assertEqual(yregex.mkregex(), '([ab]|[\[a-b\]])')
+        self.assertEqual(yregex.mkregex(), regstr)
 
     def test6(self):
         expr0 = Include('a', 'b')
@@ -220,15 +237,23 @@ class TestInclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test15(self):
-        regstr = r'(([0-9]x)?([a-z]y))?mnc([a-z\&\\%])+'
+        regstr = r'(([0-9]x)?([a-z]y))?mnc([a-z\&%])+'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
 
         self.assertEqual(yregex.mkregex(), regstr)
 
-    def test15(self):
+    def test16(self):
         regstr = r'([a-z\&\*\$])+'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test17(self):
+        regstr = r'[a-z\*]'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
@@ -309,19 +334,19 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
-        regstr = r'[^0-9]+([^abcd]?x([^\[\]])?\2)'
+        regstr = r'[^0-9]+([^abcd]?x([^eeee])?\2)'
         yregex = xmake(regstr)
 
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test6(self):
-        regstr = r'[^0-9]+([^abcd]?x([^\[\]])?\2)'
+        regstr = r'[^0-9]+([^abcd]?x([^ee])+\2)'
         yregex = xmake(regstr)
 
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test7(self):
-        regstr = r'[^0-9]+([^abcd]?x([^\[\]])\2)'
+        regstr = r'[^0-9]+([^abcd]?x([^\*\*])\2)'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
@@ -329,12 +354,37 @@ class TestExclude(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test8(self):
-        regstr = r'((([^0-9]+([^abcd]?x([^\[\]])\5aa\5.\5))))'
+        regstr = r'[abc\*]+'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
 
         self.assertEqual(yregex.mkregex(), regstr)
+
+    def test9(self):
+        regstr = r'[\[abc\*]'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test10(self):
+        regstr = r'[\]abc\*]'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test11(self):
+        regstr = r'([\]abc\*])+\**[^\*\&\&\[\]]+'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
 
 class TestAny(unittest.TestCase):
     def test0(self):

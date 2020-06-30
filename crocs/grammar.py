@@ -2,7 +2,7 @@ from eacc.eacc import Rule, Grammar, T
 from eacc.lexer import LexTok, XSpec, SeqTok, LexSeq
 from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Pipe, Question, Equal, Hash,Comment, \
-LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num
+LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num, String
 
 class RegExpr(TokType):
     pass
@@ -27,8 +27,14 @@ class RegexTokens(XSpec):
     t_gref = LexSeq(SeqTok(r'\\', Escape), 
     SeqTok(r'[0-9]', Num))
 
-    t_lbracket = LexTok(r'\[', LB)
-    t_rbracket = LexTok(r'\]', RB)
+    # t_lbracket = LexTok(r'\[', LB)
+    # t_rbracket = LexTok(r'\]', RB)
+
+    t_include = LexSeq(SeqTok(r'\[', LB), 
+    SeqTok(r'(\\\[|[^\[])+', String), SeqTok(r'\]', RB))
+
+    t_exclude = LexSeq(SeqTok(r'\[', LB), SeqTok(r'\^', Caret),
+    SeqTok(r'(\\\[|[^\[])+', String), SeqTok(r'\]', RB))
 
     t_lbrace = LexTok(r'\{', LBR)
     t_rbrace = LexTok(r'\}', RBR)
@@ -62,7 +68,7 @@ class RegexTokens(XSpec):
     t_char = LexTok(r'.', Char)
 
     root = [t_gref, t_ngref, t_comment, t_escape, t_pngroup, 
-    t_plus, t_dot, t_lparen, t_rparen, t_mul, t_lbracket, t_rbracket, 
+    t_plus, t_dot, t_lparen, t_rparen, t_mul, t_exclude, t_include,  
     t_lbrace, t_rbrace, t_comma, t_question, t_caret, t_pipe,  
     t_equal, t_lesser, t_greater, t_exclam, t_char]
 
@@ -95,8 +101,8 @@ class RegexGrammar(Grammar):
     r_times5 = Rule(RegExpr, Question, type=RegExpr)
     r_times6 = Rule(RegExpr, Plus, type=RegExpr)
 
-    r_include = Rule(LB, T(Char), RB, type=RegExpr)
-    r_exclude = Rule(LB, Caret, T(Char), RB, type=RegExpr)
+    r_include = Rule(LB, String, RB, type=RegExpr)
+    r_exclude = Rule(LB, Caret, String, RB, type=RegExpr)
 
     r_gref = Rule(Escape, Num, type=RegExpr)
     r_comment = Rule(LP, Question, Hash, Comment, RP, type=RegExpr)
@@ -123,16 +129,20 @@ class RegexGrammar(Grammar):
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, 
     r_times5, r_times6, r_pipe, r_exclude, r_include, r_char, r_done]
 
-class IncludeGrammar(Grammar):
-    r_seq  = Rule(Char, TokVal('-'), Char, type=RegExpr)
+class HClassTokens(XSpec):
+    """
+    Character class/set tokens.
+    """
+    t_escape = LexSeq(SeqTok(r'\\', Escape, discard=True), SeqTok(r'.', Char))
+    t_minus  = LexTok(r'\-', Minus)
+    t_char = LexTok(r'.', Char)
+
+    root = [t_escape, t_minus, t_char]
+
+class HClassGrammar(Grammar):
+    r_seq  = Rule(Char, Minus, Char, type=RegExpr)
     r_char = Rule(Char, type=RegExpr)
     r_done = Rule(Sof, T(RegExpr), Eof)
 
     root = [r_seq, r_char, r_done]
 
-class ExcludeGrammar(Grammar):
-    r_seq  = Rule(Char, TokVal('-'), Char, type=RegExpr)
-    r_char = Rule(Char, type=RegExpr)
-    r_done = Rule(Sof, T(RegExpr), Eof)
-
-    root = [r_seq, r_char, r_done]
