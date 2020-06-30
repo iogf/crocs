@@ -170,7 +170,7 @@ class Repeat(RegexOperator):
 
 class ZeroOrMore(Repeat):
     def __init__(self, regex, wrap=False, greedy=False):
-        super(ZeroOrMore, self).__init__(regex, 1, wrap=wrap, greedy=greedy)
+        super(ZeroOrMore, self).__init__(regex, 0, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
         return '%s*%s' % (self.args[0].to_regex(), 
