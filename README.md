@@ -50,7 +50,7 @@ It solves the problem of catching mails whose domain ends with 'br'  and the hos
 contains 'python' in the beginning too. It makes sure that the first 
 letter in the mail name is in the set a-z as well.
 
-**Note:** The code below is a yregex it is a regex implemented using python classes.
+**Note:** The code below is a yregex it is a regex implemented using python classes :D
 
 ~~~python
 from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
@@ -127,6 +127,6 @@ Documentation
 
 [Wiki](https://github.com/iogf/crocs/wiki)
 
-**Note:** There is a reasonable test coverage in ![tests](tests.py) if you feel
+**Note:** There is a reasonable test coverage in [tests](tests.py) if you feel
 likely having a good idea to improve accuracy, please let me know!
 
