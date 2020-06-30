@@ -11,7 +11,7 @@ your desired pattern then it is serialized to a raw regex to be used with a rege
 The pythonic structure of a given regex pattern contains methods to test and generate possible
 matches for the regex.
 
-The project comes with a handy script regxhits that is used to read a raw regex string then
+The project comes with a handy script yregex that is used to read a raw regex string then
 generate possible matches. It is very useful to debug debug and improve regex patterns.
 
 The main benefits of using python to write regex it consists of the readability and 
