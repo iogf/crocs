@@ -21,8 +21,7 @@ The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex st
 generating possible matches. 
 
 The yregex script helps to debug raw regex strings. It is capable of reading a given
-raw regex string then generating a python structure for the regex that is used to generate the possible
-matches for the regex.
+raw regex string then generating possible matches. 
 
 What if you had to debug the regex below to keep your job? :P
 
@@ -50,6 +49,8 @@ sets, lookahead, lookbehind etc.
 It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
 contains 'python' in the beginning too. It makes sure that the first 
 letter in the mail name is in the set a-z as well.
+
+**Note:** The code below is a yregex it is a regex implemented using python classes.
 
 ~~~python
 from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
