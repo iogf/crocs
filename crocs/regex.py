@@ -163,8 +163,15 @@ class Repeat(RegexOperator):
         return data 
 
     def to_regex(self):
-        return '%s{%s,%s}%s' % (self.args[0].to_regex(), 
-        self.min, self.max, '?' if self.greedy else '')
+        sym   = '?' if self.greedy else ''
+        regex = self.args[0].to_regex()
+
+        # The main reason to have these constraints it consits of having
+        # an identical serializaion of the yregex structure when it is parsed
+        # by eacc thus it makes easier testing.
+        if self.min != self.max:
+            return '%s{%s,%s}%s' % (regex, self.min, self.max, sym)
+        return '%s{%s}%s' % (regex, self.min, sym)
 
 class ZeroOrMore(Repeat):
     def __init__(self, regex, wrap=False, greedy=False):

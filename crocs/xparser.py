@@ -191,7 +191,8 @@ class RegexParser(Eacc):
 
     def times7(self, regex, plus, question):
         """
-        Greedy operators should behave alike in the context.
+        Greedy operators should behave alike non greedy in the context.
+        Although the serialization has to be different.
         """
         repeat = OneOrMore(regex.val(), greedy=True)
         return repeat

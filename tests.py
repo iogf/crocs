@@ -712,9 +712,78 @@ class TestRepeat(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        # yregex.hits()
+        yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
-    pass
+
+    def test2(self):
+        regstr = 'a{1,2}'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test3(self):
+        regstr = '\*{1,2}?c*'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test4(self):
+        regstr = '\*{1,8}?\&+?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test5(self):
+        regstr = '(\*cd){1,8}?\&+?\1+?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test6(self):
+        regstr = '((\*cd){1,8}?\&)+?(\1ecd)+?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test7(self):
+        regstr = '((\*cd{1,}){1,8}?\&)+?(\1ecd){4}?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test8(self):
+        regstr = '(((\*cd{1,}){1,8}?\&)+?){3}?(\1ecd){4}?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test9(self):
+        regstr = 'a{1,3}c{3}?e{2,}?c+?e{0,4}?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test10(self):
+        regstr = '(a{1,3}c{3}?e{2,}?c+?e{0,4}?)\1{1,2}?'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test11(self):
+        regstr = '((a{1,3}c{3}?e{2,}?c+?e{0,4}?)\1{1,2}?){0,3}'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestZeroOrMore(unittest.TestCase):
     def test0(self):
