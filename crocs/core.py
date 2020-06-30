@@ -84,19 +84,27 @@ class RegexOperator:
 
     def test(self):
         """
+        Serialize the yregex that correponds to the nested 
+        classes to a raw regex string. 
+
+        Note: In case crocs can't find a valid input
+
         """
 
-        regex = self.mkregex()
-        data = self.valid_data()
+        regex = self.to_regex()
+        data  = self.valid_data()
+        self.clear()
 
         # It has to be search in order to work with ConsumeNext.
-        regc  = re.search(regex, data)
-
+        regc = re.search(regex, data)
         assert regc is not None, 'Failed to generate valid matches!'
-        print('Regex:', regex)
+
         print('Input:', data)
 
+        print('Regex:', regex)
+        print('Input:', data)
         print('Group dict:', 
+
         regc.groupdict() if hasattr(
         regc, 'groupdict') else None)
 
@@ -119,6 +127,7 @@ class RegexOperator:
 
         if regc:
             return data
+        return ''
 
     def hits(self, count=7):
         data = (self.seed() for ind in range(count))

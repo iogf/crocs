@@ -53,7 +53,7 @@ class Group(RegexOperator):
         self.data = '(%s)' % ''.join((ind.to_regex() 
         for ind in self.args))
 
-        self.input    = map(lambda ind: ind.valid_data(), self.args)
+        self.input    = (ind.valid_data() for ind in self.args)
         self.input    = ''.join(self.input)
 
         return self.data
@@ -139,9 +139,9 @@ class Repeat(RegexOperator):
             self.args[0] = Group(regex)
 
     def invalid_data(self):
-        lim = self.max if self.max else self.MAX
+        lim = self.MAX if self.max == '' else self.max
+
         count = randint(self.min, lim)
-        
         # Get all chars that wouldnt match the underlying
         # patterns.
         data = self.args[0].invalid_data() 
@@ -153,7 +153,7 @@ class Repeat(RegexOperator):
         return ''.join((choice(data) for ind in range(count)))
 
     def valid_data(self):
-        lim = self.max if self.max else self.MAX
+        lim = self.MAX if self.max == '' else self.max
         count = randint(self.min, lim)
 
         data = (self.args[0].valid_data() 
@@ -166,12 +166,7 @@ class Repeat(RegexOperator):
         sym   = '?' if self.greedy else ''
         regex = self.args[0].to_regex()
 
-        # The main reason to have these constraints it consits of having
-        # an identical serializaion of the yregex structure when it is parsed
-        # by eacc thus it makes easier testing.
-        if self.min != self.max:
-            return '%s{%s,%s}%s' % (regex, self.min, self.max, sym)
-        return '%s{%s}%s' % (regex, self.min, sym)
+        return '%s{%s,%s}%s' % (regex, self.min, self.max, sym)
 
 class ZeroOrMore(Repeat):
     def __init__(self, regex, wrap=False, greedy=False):
