@@ -114,8 +114,11 @@ class RegexOperator:
 
     def seed(self):
         regex = self.mkregex()
-        data = self.valid_data()
-        return data
+        data  = self.valid_data()
+        regc  = re.search(regex, data)
+
+        if regc:
+            return data
 
     def hits(self, count=7):
         data = (self.seed() for ind in range(count))

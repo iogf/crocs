@@ -23,20 +23,13 @@ class IncludeSet(Eacc):
         include = Include(*data)
         return include
 
-class ExcludeSet(Eacc):
+class ExcludeSet(IncludeSet):
     def __init__(self):
-        super(ExcludeSet, self).__init__(HClassGrammar)
+        super(IncludeSet, self).__init__(HClassGrammar)
 
         self.add_handle(HClassGrammar.r_seq, self.seq)
         self.add_handle(HClassGrammar.r_char, self.char)
         self.add_handle(HClassGrammar.r_done, self.done)
-
-    def seq(self, start, minus, end):
-        seq = Seq(start.val(), end.val())
-        return seq
-
-    def char(self, char):
-        return char.val()
 
     def done(self, sof, regex, eof):
         data = (ind.val() for ind in regex)

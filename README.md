@@ -18,41 +18,29 @@ The main benefits of using python to write regex it consists of the readability 
 better understanding of how your regex is working since each one of the regex pieces can be
 tested separately from a python interpreter instance.
 
-~~~python
->>> from crocs.regex import Join, ConsumeNext, X
->>> 
->>> e = ConsumeNext(Join('a', X(), 'b'), 'def')
->>> e.test()
-Regex: (?<=a.b)def
-Input: azbdef
-Group dict: {}
-Group 0: def
-Groups: ()
->>> e.hits()
-Match with:
- a[bdef apbdef awbdef aFbdef a:bdef a_bdef a_bdef
->>> 
-
-~~~
-
 The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
 generating possible matches. 
 
-The regexhits script helps to debug raw regex strings. It is capable of reading a given
+The yregex script helps to debug raw regex strings. It is capable of reading a given
 raw regex string then generating a python structure for the regex that is used to generate the possible
 matches for the regex.
 
+What if you had to debug the regex below to keep your job? :P
+
 ~~~
-[tau@archlinux ~]$ regxhits 
->>> (\ bra[a-z]il|\ bos.ia|\ germ[a-z]ny){1,4}
-Regex: (\ bra[a-z]il|\ bos.ia|\ germ[a-z]ny){1,4}
-Input:  germany germany germany germany
+[tau@archlinux ~]$ yregex 
+>>> \*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
+Regex: \*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
+Input: **a7ca7c$c#a7ca7ca7ca7c**
 Group dict: {}
-Group 0:  germany germany germany germany
-Groups: (' germany',)
+Group 0: **a7ca7c$c#a7ca7ca7ca7c**
+Groups: ('a7ca7c', 'a7ca7c', 'a7c', '$c#a7ca7ca7ca7c', '$c#')
 Match with:
-  germjny germjny germjny  bos!ia  germmny germmny 
-germmny germmny  germnny  bosnia  germkny  bos4ia bos4ia
+ *a4ca4c$g#a4ca4ca4ca4c*** **a6ca6ca6ca6c$c#a6ca6ca6ca6ca6ca6ca6ca6ca6ca6ca6ca6c** 
+***a3ca3ca3c$p#a3ca3ca3ca3ca3ca3c** ***a4ca4c$h#a4ca4ca4ca4c*** 
+***a2ca2ca2c$w#a2ca2ca2ca2ca2ca2ca2ca2ca2c* ***a3ca3ca3c$a#a3ca3ca3ca3ca3ca3c*** 
+**a6ca6ca6ca6c$f#a6ca6ca6ca6c*
+>>> 
 ~~~
 
 The actual implementation supports most Python regex features, groups, named groups,
