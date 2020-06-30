@@ -127,3 +127,6 @@ Documentation
 
 [Wiki](https://github.com/iogf/crocs/wiki)
 
+**Note:** There is a reasonable test coverage in ![tests](tests.py) if you feel
+likely having a good idea to improve accuracy, please let me know!
+
