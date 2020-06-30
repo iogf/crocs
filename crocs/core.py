@@ -103,8 +103,8 @@ class RegexOperator:
 
         print('Regex:', regex)
         print('Input:', data)
-        print('Group dict:', 
 
+        print('Group dict:', 
         regc.groupdict() if hasattr(
         regc, 'groupdict') else None)
 

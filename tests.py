@@ -968,5 +968,34 @@ class TestRegexComment(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
+class TestNonCapture(unittest.TestCase):
+    def test0(self):
+        regstr = r'(?:ee)'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        regstr = '((?:.+)cc(ee.*))+'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        regstr = '((?:.+)cc(ee.*))+\1+c\2+e'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        regstr = '((?:fooobar.+)cc(ee.*))+\1+c\2+e'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
 if __name__ == '__main__':
     unittest.main()

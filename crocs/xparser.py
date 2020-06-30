@@ -1,7 +1,7 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexTokens, RegexGrammar, HClassGrammar, HClassTokens
-from crocs.regex import X, Join, Group, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
+from crocs.regex import X, Join, Group, NonCapture, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink
 
 class IncludeSet(Eacc):
@@ -47,6 +47,8 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_comment, self.comment)
 
         self.add_handle(RegexGrammar.r_group, self.group)
+        self.add_handle(RegexGrammar.r_ncapture, self.ncapture)
+
         self.add_handle(RegexGrammar.r_ngroup, self.ngroup)
 
         self.add_handle(RegexGrammar.r_dot, self.dot)
@@ -100,6 +102,11 @@ class RegexParser(Eacc):
         data = (ind.val() for ind in regex)
         group = NamedGroup(gname.val(), *data)
         return group
+
+    def ncapture(self, lp, question, colon, regex, rp):
+        data = (ind.val() for ind in regex)
+        ncapture = NonCapture(*data)
+        return ncapture
 
     def gref(self, escape, num):
         link = GLink(int(num.val()))

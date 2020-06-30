@@ -18,6 +18,24 @@ class Any(RegexOperator):
         data = '|'.join(data)
         return data
 
+class NonCapture(RegexOperator):
+    def __init__(self, *args):
+        super(NonCapture, self).__init__(*args)
+
+    def invalid_data(self):
+        data = map(lambda ind: ind.invalid_data(), self.args)
+        return ''.join(data)
+
+    def valid_data(self):
+        data = map(lambda ind: ind.valid_data(), self.args)
+        return ''.join(data)
+
+    def to_regex(self):
+        data = ''.join((ind.to_regex() 
+        for ind in self.args))
+
+        return '(?:%s)' % data
+
 class Group(RegexOperator):
     """
     A normal group.
