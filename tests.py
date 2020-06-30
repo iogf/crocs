@@ -228,14 +228,6 @@ class TestInclude(unittest.TestCase):
 
         self.assertEqual(yregex.mkregex(), regstr)
 
-    def test14(self):
-        regstr = r'(((((([0-9]))\5))))\3\1\2'
-        yregex = xmake(regstr)
-        yregex.test()
-        yregex.hits()
-
-        self.assertEqual(yregex.mkregex(), regstr)
-
     def test15(self):
         regstr = r'(([0-9]x)?([a-z]y))?mnc([a-z\&%])+'
         yregex = xmake(regstr)
@@ -254,6 +246,14 @@ class TestInclude(unittest.TestCase):
 
     def test17(self):
         regstr = r'[a-z\*]'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test18(self):
+        regstr = r'(((((([0-9]))\5))))\3\1\2'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
@@ -514,6 +514,13 @@ class TestOneOrZero(unittest.TestCase):
         expr3 = Join(expr2, 'foobar', expr2, 'bar', expr2)
 
         regstr = expr2.mkregex()
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test3(self):
+        regstr = r'a?b?c?\*?\&?[c-z\*\(\)\[\]]?c?(a?e?)\1?c'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
