@@ -127,10 +127,11 @@ class Repeat(RegexOperator):
 
     MAX = 7
 
-    def __init__(self, regex, min=0, max='', wrap=False):
+    def __init__(self, regex, min=0, max='', wrap=False, greedy=False):
         super(Repeat, self).__init__(regex)
         self.min = min
         self.max = max
+        self.greedy = greedy
 
         if isinstance(regex, str) and len(regex) > 1:
             self.args[0] = Group(regex)
@@ -162,29 +163,32 @@ class Repeat(RegexOperator):
         return data 
 
     def to_regex(self):
-        return '%s{%s,%s}' % (self.args[0].to_regex(), 
-        self.min, self.max)
+        return '%s{%s,%s}%s' % (self.args[0].to_regex(), 
+        self.min, self.max, '?' if self.greedy else '')
 
 class ZeroOrMore(Repeat):
-    def __init__(self, regex, wrap=False):
-        super(ZeroOrMore, self).__init__(regex, 1, wrap=wrap)
+    def __init__(self, regex, wrap=False, greedy=False):
+        super(ZeroOrMore, self).__init__(regex, 1, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
-        return '%s*' % self.args[0].to_regex()
+        return '%s*%s' % (self.args[0].to_regex(), 
+        '?' if self.greedy else '')
 
 class OneOrMore(Repeat):
-    def __init__(self, regex, wrap=False):
-        super(OneOrMore, self).__init__(regex, 1, wrap=wrap)
+    def __init__(self, regex, wrap=False, greedy=False):
+        super(OneOrMore, self).__init__(regex, 1, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
-        return '%s+' % self.args[0].to_regex()
+        return '%s+%s' % (self.args[0].to_regex(), 
+        '?' if self.greedy else '')
 
 class OneOrZero(Repeat):
-    def __init__(self, regex, wrap=False):
-        super(OneOrZero, self).__init__(regex, 0, 1, wrap=wrap)
+    def __init__(self, regex, wrap=False, greedy=False):
+        super(OneOrZero, self).__init__(regex, 0, 1, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
-        return '%s?' % self.args[0].to_regex()
+        return '%s?%s' % (self.args[0].to_regex(), 
+        '?' if self.greedy else '')
 
 class ConsumeNext(RegexOperator):
     """

@@ -57,6 +57,14 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_times4, self.times4)
         self.add_handle(RegexGrammar.r_times5, self.times5)
         self.add_handle(RegexGrammar.r_times6, self.times6)
+        self.add_handle(RegexGrammar.r_times7, self.times7)
+        self.add_handle(RegexGrammar.r_times8, self.times8)
+        self.add_handle(RegexGrammar.r_times9, self.times9)
+        self.add_handle(RegexGrammar.r_times10, self.times10)
+        self.add_handle(RegexGrammar.r_times11, self.times11)
+        self.add_handle(RegexGrammar.r_times12, self.times12)
+        self.add_handle(RegexGrammar.r_times13, self.times13)
+
         self.add_handle(RegexGrammar.r_include, self.include)
         self.add_handle(RegexGrammar.r_exclude, self.exclude)
         self.add_handle(RegexGrammar.r_cnext, self.cnext)
@@ -181,11 +189,47 @@ class RegexParser(Eacc):
         e = OneOrMore(regex.val())
         return e
 
+    def times7(self, regex, plus, question):
+        """
+        Greedy operators should behave alike in the context.
+        """
+        repeat = OneOrMore(regex.val(), greedy=True)
+        return repeat
+
+    def times8(self, regex, ask, question):
+        """
+        """
+        repeat = ZeroOrMore(regex.val(), greedy=True)
+        return repeat
+
+    def times9(self, regex, question0, question1):
+        """
+        """
+        repeat = OneOrZero(regex.val(), greedy=True)
+        return repeat
+
+    def times10(self, regex, lbr, min, comma, max, rbr, question):
+        repeat = Repeat(regex.val(), int(min.val()), int(max.val()), greedy=True)
+        return repeat
+
+    def times11(self, regex, lbr, min, comma, rbr, question):
+        repeat = Repeat(regex.val(), int(min.val()), greedy=True)
+        return repeat
+
+    def times12(self, regex, lbr, comma, max, rbr, question):
+        repeat = Repeat(regex.val(), max=int(max.val()), greedy=True)
+        return repeat
+
+    def times13(self, regex, lbr, num, rbr, question):
+        repeat = Repeat(regex.val(), min=int(num.val()), 
+        max=int(num.val()), greedy=True)
+
+        return repeat
+
     def char(self, char):
         return char.val()
 
     def comment(self, lp, question, hash, comment, rp):
-        print('Foo', lp, question, hash, comment, rp)
         return RegexComment(comment.val())
 
     def done(self, sof, regex, eof):
