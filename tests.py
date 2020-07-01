@@ -935,7 +935,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test2(self):
-        regstr = 'abc.+(?=eee)e'
+        regstr = r'abc.+(?=eee)e'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -943,7 +943,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test3(self):
-        regstr = '(ac?c).+(?=e{1,3})e'
+        regstr = r'(ac?c).+(?=e{1,3})e'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -951,7 +951,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test4(self):
-        regstr = '(ac{1,3}c)(aa)+(?=e{1,3})e'
+        regstr = r'(ac{1,3}c)(aa)+(?=e{1,3})e'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -959,7 +959,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test5(self):
-        regstr = '(\*a\&{1,5}c)(aa)+(?=e{1,3}c+)'
+        regstr = r'(\*a\&{1,5}c)(aa)+(?=e{1,3}c+)'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -967,7 +967,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test6(self):
-        regstr = '(\*a\&{1,5}c)\1+(a.+a)+(?=e{1,3}c+)'
+        regstr = r'(\*a\&{1,5}c)\1+(a.+a)+(?=e{1,3}c+)'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -975,7 +975,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test7(self):
-        regstr = '(\*a\&{1,5}c)\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})'
+        regstr = r'(\*a\&{1,5}c)\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -991,7 +991,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test9(self):
-        regstr = '(\*a\&{1,5})+\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})+'
+        regstr = r'(\*a\&{1,5})+\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})+'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -999,7 +999,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test10(self):
-        regstr = '(\*a\&{1,5})+\1+(a.+a)+(?!e{1,3}c+(ab+)\3{1,3})+'
+        regstr = r'(\*a\&{1,5})+\1+(a.+a)+(?!e{1,3}c+(ab+)\3{1,3})+'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -1007,7 +1007,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test11(self):
-        regstr = 'abc(?!cde)'
+        regstr = r'abc(?!cde)'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -1015,7 +1015,7 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test11(self):
-        regstr = 'abc(?!c(d+e)\1{1,3}0)'
+        regstr = r'abc(?!c(d+e)\1{1,3}0)'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -1023,10 +1023,11 @@ class TestConsumeBack(unittest.TestCase):
         self.assertEqual(yregex.mkregex(), regstr)
 
     def test12(self):
-        regstr = 'abc(?!c(d+e))'
+        regstr = r'abc(?=cde)cc'
         yregex = xmake(regstr)
 
-        yregex.test()
+        with self.assertRaises(AssertionError):
+            yregex.test()
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
