@@ -17,20 +17,19 @@ class GroupName(TokType):
 class WordSymbol(TokType):
     pass
 
+class NotWordSymbol(TokType):
+    pass
+
 class RegexTokens(XSpec):
     t_escape = LexSeq(SeqTok(r'\\', Escape, discard=True), SeqTok(r'.', Char))
-    t_word = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'w', WordSymbol))
-
-    t_plus = LexTok(r'\+', Plus)
-
-    t_dot = LexTok(r'\.', Dot)
-    t_pipe = LexTok(r'\|', Pipe)
-
+    t_word   = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'w', WordSymbol))
+    t_nword  = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'W', NotWordSymbol))
+    t_plus   = LexTok(r'\+', Plus)
+    t_dot    = LexTok(r'\.', Dot)
+    t_pipe   = LexTok(r'\|', Pipe)
     t_lparen = LexTok(r'\(', LP)
     t_rparen = LexTok(r'\)', RP)
-
-    t_gref = LexSeq(SeqTok(r'\\', Escape), 
-    SeqTok(r'[0-9]', Num))
+    t_gref   = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'[0-9]', Num))
 
     # t_lbracket = LexTok(r'\[', LB)
     # t_rbracket = LexTok(r'\]', RB)
@@ -41,20 +40,19 @@ class RegexTokens(XSpec):
     t_exclude = LexSeq(SeqTok(r'\[', LB), SeqTok(r'\^', Caret),
     SeqTok(r'(\\\[|[^\[])+', String), SeqTok(r'\]', RB))
 
-    t_lbrace = LexTok(r'\{', LBR)
-    t_rbrace = LexTok(r'\}', RBR)
-    t_comma  = LexTok(r'\,', Comma)
+    t_lbrace   = LexTok(r'\{', LBR)
+    t_rbrace   = LexTok(r'\}', RBR)
+    t_comma    = LexTok(r'\,', Comma)
     t_question = LexTok(r'\?', Question)
-    t_caret = LexTok(r'\^', Caret)
-    t_colon = LexTok(r'\:', Colon)
+    t_caret    = LexTok(r'\^', Caret)
+    t_colon    = LexTok(r'\:', Colon)
+    t_mul      = LexTok(r'\*', Mul)
 
-    t_mul = LexTok(r'\*', Mul)
     # t_minus  = LexTok(r'\-', Minus)
-
     # t_hash  = LexTok(r'\#', Hash)
-    t_equal = LexTok(r'\=', Equal)
-    t_exclam = LexTok(r'\!', Exclam)
-    t_lesser = LexTok(r'\<', Lesser)
+    t_equal   = LexTok(r'\=', Equal)
+    t_exclam  = LexTok(r'\!', Exclam)
+    t_lesser  = LexTok(r'\<', Lesser)
     t_greater = LexTok(r'\>', Greater)
 
     t_comment = LexSeq(SeqTok(r'\(', LP), 
@@ -73,7 +71,7 @@ class RegexTokens(XSpec):
 
     t_char = LexTok(r'.', Char)
 
-    root = [t_gref, t_colon, t_ngref, t_comment, t_word, t_escape, t_pngroup, 
+    root = [t_gref, t_colon, t_ngref, t_comment, t_word, t_nword, t_escape, t_pngroup, 
     t_plus, t_dot, t_lparen, t_rparen, t_mul, t_exclude, t_include,  
     t_lbrace, t_rbrace, t_comma, t_question, t_caret, t_pipe,  
     t_equal, t_lesser, t_greater, t_exclam, t_char]
@@ -99,6 +97,7 @@ class RegexGrammar(Grammar):
     Lesser, GroupName, Greater, T(RegExpr), RP, type=RegExpr)
 
     r_word  = Rule(Escape, WordSymbol, type=RegExpr)
+    r_nword  = Rule(Escape, NotWordSymbol, type=RegExpr)
 
     # Non capturing group.
     r_ncapture  = Rule(LP, Question, Colon, T(RegExpr, type=RegExpr), RP, type=RegExpr)
@@ -144,7 +143,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=RegExpr)
     r_done = Rule(Sof, T(RegExpr), Eof)
 
-    root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_ngroup, r_group, 
+    root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_nword, r_ngroup, r_group, 
     r_dot, r_cnext, r_ncnext, r_cback, r_ncback, r_times0, r_times1, 
     r_times2, r_times3, r_times4, r_times5, r_times6, r_times7, r_times8, 
     r_times9, r_times10, r_times11, r_times12, r_times13, 

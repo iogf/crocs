@@ -1012,5 +1012,20 @@ class TestWord(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
+class TestNotWord(unittest.TestCase):
+    def test0(self):
+        regstr = r'foo\W+bar'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        regstr = r'(\*\W+bar)+(@\1+)\&\2{1,3}'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
 if __name__ == '__main__':
     unittest.main()

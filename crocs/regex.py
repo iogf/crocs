@@ -1,6 +1,5 @@
-from crocs.core import printable, RegexOperator
+from crocs.core import printable, RegexOperator, isword, notword
 from random import choice, randint
-from string import ascii_letters, punctuation, digits
 
 class Any(RegexOperator):
     def __init__(self, *args):
@@ -38,18 +37,24 @@ class NonCapture(RegexOperator):
         return '(?:%s)' % data
 
 class Word(RegexOperator):
-    MAX_LEN = 7
-
     def invalid_data(self):
-        return choice(digits) 
+        return choice(notword) 
 
     def valid_data(self):
-        count = randint(1, self.MAX_LEN)
-
-        return choice(ascii_letters) 
+        return choice(isword) 
 
     def to_regex(self):
         return r'\w'
+
+class NotWord(RegexOperator):
+    def invalid_data(self):
+        return choice(isword) 
+
+    def valid_data(self):
+        return choice(notword) 
+
+    def to_regex(self):
+        return r'\W'
 
 class Group(RegexOperator):
     """

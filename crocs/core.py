@@ -3,6 +3,10 @@ from random import choice
 import re
 
 printable  = ascii_letters + punctuation + digits
+isword  = ascii_letters + digits + '_'
+
+notword = ''.join((ind 
+for ind in punctuation if ind != '_'))
 
 class BasicRegex:
     def invalid_data(self):
