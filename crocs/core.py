@@ -2,7 +2,7 @@ from string import ascii_letters, punctuation, digits
 from random import choice
 import re
 
-printable = ascii_letters + punctuation + digits
+printable  = ascii_letters + punctuation + digits
 
 class BasicRegex:
     def invalid_data(self):

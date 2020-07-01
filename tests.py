@@ -983,15 +983,30 @@ class TestNonCapture(unittest.TestCase):
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
-    def test1(self):
+    def test2(self):
         regstr = '((?:.+)cc(ee.*))+\1+c\2+e'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
 
-    def test1(self):
+    def test2(self):
         regstr = '((?:fooobar.+)cc(ee.*))+\1+c\2+e'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+class TestWord(unittest.TestCase):
+    def test0(self):
+        regstr = r'ee\*@\w+hehe'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        regstr = r'(e\&e\*@\w*cc)+(?:cee\w+)uu?\1'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()

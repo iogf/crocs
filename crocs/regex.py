@@ -1,5 +1,6 @@
 from crocs.core import printable, RegexOperator
 from random import choice, randint
+from string import ascii_letters, punctuation, digits
 
 class Any(RegexOperator):
     def __init__(self, *args):
@@ -35,6 +36,20 @@ class NonCapture(RegexOperator):
         for ind in self.args))
 
         return '(?:%s)' % data
+
+class Word(RegexOperator):
+    MAX_LEN = 7
+
+    def invalid_data(self):
+        return choice(digits) 
+
+    def valid_data(self):
+        count = randint(1, self.MAX_LEN)
+
+        return choice(ascii_letters) 
+
+    def to_regex(self):
+        return r'\w'
 
 class Group(RegexOperator):
     """
@@ -160,8 +175,6 @@ class Repeat(RegexOperator):
         lim = self.MAX if self.max == '' else self.max
 
         count = randint(self.min, lim)
-        # Get all chars that wouldnt match the underlying
-        # patterns.
         data = self.args[0].invalid_data() 
 
         # Generate a string that wouldn't match with any 
