@@ -103,6 +103,8 @@ class RegexGrammar(Grammar):
     r_ncapture  = Rule(LP, Question, Colon, T(RegExpr, type=RegExpr), RP, type=RegExpr)
 
     r_dot    = Rule(Dot, type=RegExpr)
+    r_caret  = Rule(Caret, type=RegExpr)
+
     r_times0 = Rule(RegExpr, LBR, Char, Comma, Char, RBR, type=RegExpr)
     r_times1 = Rule(RegExpr, LBR, Char, RBR, type=RegExpr)
     r_times2 = Rule(RegExpr, LBR, Char, Comma, RBR, type=RegExpr)
@@ -144,7 +146,7 @@ class RegexGrammar(Grammar):
     r_done = Rule(Sof, T(RegExpr), Eof)
 
     root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_nword, r_ngroup, r_group, 
-    r_dot, r_cnext, r_ncnext, r_cback, r_ncback, r_times0, r_times1, 
+    r_caret, r_dot, r_cnext, r_ncnext, r_cback, r_ncback, r_times0, r_times1, 
     r_times2, r_times3, r_times4, r_times5, r_times6, r_times7, r_times8, 
     r_times9, r_times10, r_times11, r_times12, r_times13, 
     r_pipe, r_exclude, r_include, r_char, r_done]

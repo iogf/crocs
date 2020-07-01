@@ -18,6 +18,16 @@ class Any(RegexOperator):
         data = '|'.join(data)
         return data
 
+class Caret(RegexOperator):
+    def invalid_data(self):
+        return r''
+
+    def valid_data(self):
+        return r''
+
+    def to_regex(self):
+        return '^' 
+
 class NonCapture(RegexOperator):
     def __init__(self, *args):
         super(NonCapture, self).__init__(*args)
