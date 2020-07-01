@@ -3,7 +3,7 @@ from eacc.lexer import LexTok, XSpec, SeqTok, LexSeq
 from eacc.token import TokVal, Plus, Minus, LP, RP, Mul, \
 Comma, Sof, Eof, Char,  LB, RB, Pipe, Question, Equal, Hash,Comment, \
 LBR, RBR, Dot, Escape, Lesser, Greater, Exclam, Caret, TokType, Num, String, \
-Colon
+Colon, Dollar
 
 class RegExpr(TokType):
     pass
@@ -45,6 +45,8 @@ class RegexTokens(XSpec):
     t_comma    = LexTok(r'\,', Comma)
     t_question = LexTok(r'\?', Question)
     t_caret    = LexTok(r'\^', Caret)
+    t_dollar    = LexTok(r'\$', Dollar)
+
     t_colon    = LexTok(r'\:', Colon)
     t_mul      = LexTok(r'\*', Mul)
 
@@ -73,7 +75,7 @@ class RegexTokens(XSpec):
 
     root = [t_gref, t_colon, t_ngref, t_comment, t_word, t_nword, t_escape, t_pngroup, 
     t_plus, t_dot, t_lparen, t_rparen, t_mul, t_exclude, t_include,  
-    t_lbrace, t_rbrace, t_comma, t_question, t_caret, t_pipe,  
+    t_lbrace, t_rbrace, t_comma, t_question, t_dollar, t_caret, t_pipe,  
     t_equal, t_lesser, t_greater, t_exclam, t_char]
 
 class RegexGrammar(Grammar):
@@ -104,6 +106,7 @@ class RegexGrammar(Grammar):
 
     r_dot    = Rule(Dot, type=RegExpr)
     r_caret  = Rule(Caret, type=RegExpr)
+    r_dollar  = Rule(Dollar, type=RegExpr)
 
     r_times0 = Rule(RegExpr, LBR, Char, Comma, Char, RBR, type=RegExpr)
     r_times1 = Rule(RegExpr, LBR, Char, RBR, type=RegExpr)
@@ -145,11 +148,11 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=RegExpr)
     r_done = Rule(Sof, T(RegExpr), Eof)
 
-    root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_nword, r_ngroup, r_group, 
-    r_caret, r_dot, r_cnext, r_ncnext, r_cback, r_ncback, r_times0, r_times1, 
-    r_times2, r_times3, r_times4, r_times5, r_times6, r_times7, r_times8, 
-    r_times9, r_times10, r_times11, r_times12, r_times13, 
-    r_pipe, r_exclude, r_include, r_char, r_done]
+    root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_nword, 
+    r_ngroup, r_group, r_dollar, r_caret, r_dot, r_cnext, r_ncnext, r_cback, 
+    r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, r_times5,     
+    r_times6, r_times7, r_times8, r_times9, r_times10, r_times11, r_times12, 
+    r_times13, r_pipe, r_exclude, r_include, r_char, r_done]
 
 class HClassTokens(XSpec):
     """

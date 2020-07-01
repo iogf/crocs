@@ -1051,5 +1051,37 @@ class TestCaret(unittest.TestCase):
 
         self.assertEqual(yregex.mkregex(), regstr)
 
+class TestDollar(unittest.TestCase):
+    def test0(self):
+        regstr = r'^eudof.c+$'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test1(self):
+        regstr = r'^(\*\^ee)+$'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        regstr = r'^(\*\^ee)+c*\..$'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
+    def test2(self):
+        regstr = r'((\*\^ee)+c*\..)*$'
+        yregex = xmake(regstr)
+        yregex.test()
+        yregex.hits()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+
 if __name__ == '__main__':
     unittest.main()

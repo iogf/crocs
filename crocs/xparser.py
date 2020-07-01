@@ -3,7 +3,7 @@ from eacc.lexer import Lexer
 from crocs.grammar import RegexTokens, RegexGrammar, HClassGrammar, HClassTokens
 from crocs.regex import X, Join, Group, NonCapture, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink, \
-Word, NotWord, Caret
+Word, NotWord, Caret, Dollar
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -84,6 +84,7 @@ class RegexParser(Eacc):
         self.add_handle(RegexGrammar.r_pipe, self.pipe)
         self.add_handle(RegexGrammar.r_char, self.char)
         self.add_handle(RegexGrammar.r_caret, self.caret)
+        self.add_handle(RegexGrammar.r_dollar, self.dollar)
 
         self.add_handle(RegexGrammar.r_done, self.done)
 
@@ -185,6 +186,10 @@ class RegexParser(Eacc):
     def caret(self, caret):
         caret = Caret()
         return caret
+
+    def dollar(self, caret):
+        dollar = Dollar()
+        return dollar
 
     def times0(self, regex, lbr, min, comma, max, rbr):
         e = Repeat(regex.val(), int(min.val()), int(max.val()))
