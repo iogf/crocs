@@ -140,7 +140,7 @@ class GLink(RegexOperator):
         return self.to_regex()
 
     def invalid_data(self):
-        group = Group.grefs[elf.index]
+        group = Group.grefs[self.index]
         return group.invalid_data()
 
     def valid_data(self):
