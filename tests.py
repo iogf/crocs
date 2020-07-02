@@ -1174,11 +1174,14 @@ class TestCaret(unittest.TestCase):
 
 class TestDollar(unittest.TestCase):
     def test0(self):
-        regstr = r'^eudof.c+$'
+        regstr = r'^((ab.c+))alpha'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
+
+        code = yregex.mkcode()
+        print(code)
 
     def test1(self):
         regstr = r'^(\*\^ee)+$'

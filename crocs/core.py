@@ -26,8 +26,28 @@ class BasicRegex:
 
     def hasop(self, instance):
         pass
-    
-class RegexStr:
+
+    def instref(self, argrefs):
+        count = argrefs.setdefault(self.__class__, 0)
+        name  = '%s%s' % (self.__class__.__name__.lower(), count)
+        argrefs[self] = name
+        argrefs[self.__class__] += 1
+        return name
+
+    def mkcode(self, argrefs=dict()):
+        name = self.instref(argrefs)
+        lines = []
+        for ind in self.args:
+            lines.append(ind.mkcode(argrefs))
+
+        args = ', '.join((argrefs[ind] for ind in self.args))
+        stmt = '%s = %s(%s)' % (name, self.__class__.__name__, args)
+        lines.append(stmt)
+
+        code = '\n'.join(lines)
+        return code
+
+class RegexStr(BasicRegex):
     def __init__(self, value):
         self.value = value
 
@@ -46,9 +66,6 @@ class RegexStr:
 
     def __len__(self):
         return len(self.value)
-
-    def __str__(self):
-        return re.escape(self.value)
 
     def clear(self):
         pass
@@ -69,9 +86,13 @@ class RegexStr:
     def hasop(self, instance):
         return False
 
+    def mkcode(self, argrefs=dict()):
+        return "%s = %s('%s')" % (self.instref(argrefs), 
+        self.__class__.__name__, self.value)
+
     __str__ = to_regex
 
-class RegexOperator:
+class RegexOperator(BasicRegex):
     # It may be interesting to have a base class Pattern
     # that implements common methods with Group and Include, Exclude.
     # Because these accept multiple arguments.
@@ -163,3 +184,4 @@ class RegexOperator:
             if ind.hasop(instance):
                 return True
         return False
+
