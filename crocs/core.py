@@ -66,6 +66,18 @@ class BasicRegex:
         code2 = '%s\n%s' % (code1, code0)
         return code2
 
+    def mkclone(self):
+        """
+        Return a clone based on its own serialization
+        to raw code. it is mostly used for tests.
+        """
+
+        env = dict()
+        code = self.mkcode(env)
+        instname = env[self]
+        exec(code, env)
+        return env[instname]
+    
 class RegexStr(BasicRegex):
     def __init__(self, value):
         self.value = value
