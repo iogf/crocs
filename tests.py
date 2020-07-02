@@ -41,10 +41,25 @@ sure them are in fact equal to the resulting pythonic yregex that comes from xma
 import unittest
 from crocs.regex import Include, Exclude, Any, OneOrZero, \
 OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
-NamedGroup, ZeroOrMore
+NamedGroup, ZeroOrMore, Caret, Dollar
 from crocs.xparser import xmake
 from eacc.lexer import Lexer, LexError
 import re
+
+def fromcode(yregex):
+    str_imports = r'\
+    from crocs.regex import Include, Exclude, Any, OneOrZero, \
+    OneOrMore, Group, ConsumeNext, ConsumeBack, X, Join, Seq, Repeat,\
+    NamedGroup, ZeroOrMore, Caret, Dollar, RegexStr, RegexComment'
+    
+    env0 = dict()
+    code = yregex.mkcode(env0)
+    instname = env0[yregex]
+
+    env1 = dict()
+    exec(str_imports, env1)
+    exec(code, env1)
+    return env1[instname]
 
 class TestInclude(unittest.TestCase):
     def test0(self):
@@ -633,11 +648,9 @@ class TestGroup(unittest.TestCase):
         expr0 = Group('ab')
         expr1 = Group(expr0, expr0)
         regstr = expr1.mkregex()
-        print(regstr)
         yregex = xmake(regstr)
-        print('yRegex:', yregex)
-        # yregex.test()
-        # self.assertEqual(yregex.mkregex(), regstr)
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
 
 class TestNamedGroup(unittest.TestCase):
     def test0(self):
@@ -1174,14 +1187,14 @@ class TestCaret(unittest.TestCase):
 
 class TestDollar(unittest.TestCase):
     def test0(self):
-        regstr = r'^((ab[a-z].c+))alpha(?#ajust)'
+        regstr = r'^((ab[a-z].c+))alpha(?#ajust)$'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()
         self.assertEqual(yregex.mkregex(), regstr)
-
-        code = yregex.mkcode()
-        print(code)
+        print(yregex.mkcode())
+        # strct = fromcode(yregex)
+        # self.assertEqual(strct.mkregex(), regstr)
 
     def test1(self):
         regstr = r'^(\*\^ee)+$'

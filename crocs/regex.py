@@ -1,4 +1,4 @@
-from crocs.core import printable, RegexOperator, isword, notword
+from crocs.core import printable, RegexOperator, isword, notword, RegexStr
 from random import choice, randint
 
 class Any(RegexOperator):
@@ -344,7 +344,7 @@ class Seq(RegexOperator):
     def clear(self):
         pass
 
-    def mkcode(self, argrefs):
+    def mkstmts(self, argrefs):
         return "%s = %s('%s', '%s')" % (self.instref(argrefs), 
         self.__class__.__name__, self.start, self.end)
 
@@ -446,6 +446,6 @@ class RegexComment(RegexOperator):
     def to_regex(self):
         return r'(?#%s)' % self.comment
 
-    def mkcode(self, argrefs):
+    def mkstmts(self, argrefs):
         return "%s = %s('%s')" % (self.instref(argrefs), 
         self.__class__.__name__, self.comment)

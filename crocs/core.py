@@ -34,18 +34,37 @@ class BasicRegex:
         argrefs[self.__class__] += 1
         return name
 
-    def mkcode(self, argrefs=dict()):
+    def mkstmts(self, argrefs=dict()):
         name = self.instref(argrefs)
         lines = []
         for ind in self.args:
-            lines.append(ind.mkcode(argrefs))
+            lines.append(ind.mkstmts(argrefs))
 
         args = ', '.join((argrefs[ind] for ind in self.args))
+
         stmt = '%s = %s(%s)' % (name, self.__class__.__name__, args)
         lines.append(stmt)
 
         code = '\n'.join(lines)
         return code
+
+    def group_imports(self, argrefs):
+        groups = dict()
+        for ind in argrefs.keys():
+            names = groups.setdefault(ind.__class__.__module__, set())
+            names.add(ind.__class__.__name__)
+        return groups
+
+    def mkcode(self, argrefs=dict()):
+        code0 = self.mkstmts(argrefs)
+        modules = self.group_imports(argrefs)
+
+        stmt = 'from %s import %s'
+        code1 = '\n'.join((stmt % (indi, ', '.join(indj)) 
+        for indi, indj in modules.items()))
+
+        code2 = '%s\n%s' % (code1, code0)
+        return code2
 
 class RegexStr(BasicRegex):
     def __init__(self, value):
@@ -86,7 +105,7 @@ class RegexStr(BasicRegex):
     def hasop(self, instance):
         return False
 
-    def mkcode(self, argrefs=dict()):
+    def mkstmts(self, argrefs=dict()):
         return "%s = %s('%s')" % (self.instref(argrefs), 
         self.__class__.__name__, self.value)
 
