@@ -50,7 +50,10 @@ class BasicRegex:
 
     def group_imports(self, argrefs):
         groups = dict()
-        for ind in argrefs.keys():
+        classes = (ind for ind in argrefs.keys()
+        if ind.__class__ is not type)
+
+        for ind in classes:
             names = groups.setdefault(ind.__class__.__module__, set())
             names.add(ind.__class__.__name__)
         return groups

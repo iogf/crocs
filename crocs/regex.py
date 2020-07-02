@@ -66,6 +66,10 @@ class Word(RegexOperator):
     def to_regex(self):
         return r'\w'
 
+    def mkstmts(self, argrefs):
+        return "%s = %s()" % (self.instref(argrefs), 
+        self.__class__.__name__)
+
 class NotWord(RegexOperator):
     def invalid_data(self):
         return choice(isword) 
@@ -75,6 +79,10 @@ class NotWord(RegexOperator):
 
     def to_regex(self):
         return r'\W'
+
+    def mkstmts(self, argrefs):
+        return "%s = %s()" % (self.instref(argrefs), 
+        self.__class__.__name__)
 
 class Group(RegexOperator):
     """
@@ -147,6 +155,28 @@ class GLink(RegexOperator):
         group = Group.grefs[self.index]
         return group.valid_data()
 
+    def instref(self, argrefs):
+        """
+        The group link lhs should be the same
+        for the corresponding group, when serializing yregex to code 
+        
+        """
+
+        group = Group.grefs[self.index]
+        
+        # Save the group attribute name in the context of the
+        # yregex code.
+        instname = argrefs[group]
+        argrefs[self] = instname
+        return instname
+
+    def mkstmts(self, argrefs=dict()):
+        name = self.instref(argrefs)
+
+        # Shouldn't declerate statement. GLink is merely
+        # a wrapper to be used when parsing raw regex.
+        return ''
+
     def hasop(self, instance):
         return False
 
@@ -189,6 +219,7 @@ class Repeat(RegexOperator):
         super(Repeat, self).__init__(regex)
         self.min = min
         self.max = max
+        self.wrap = wrap
         self.greedy = greedy
 
         if isinstance(regex, str) and len(regex) > 1:
@@ -224,8 +255,20 @@ class Repeat(RegexOperator):
 
         return '%s{%s,%s}%s' % (regex, self.min, self.max, sym)
 
+    def mkstmts(self, argrefs):
+        name = self.instref(argrefs)
+
+        code = self.args[0].mkstmts(argrefs)
+        stmt = "%s = %s(%s, min=%s, max=%s, wrap=%s, greedy=%s)"
+
+        stmt = stmt % (name, 
+        self.__class__.__name__, argrefs[self.args[0]], self.min, 
+        self.max if self.max else "''", self.wrap, self.greedy)
+
+        return '%s\n%s' % (code, stmt)
+
 class ZeroOrMore(Repeat):
-    def __init__(self, regex, wrap=False, greedy=False):
+    def __init__(self, regex, min=0, max='', wrap=False, greedy=False):
         super(ZeroOrMore, self).__init__(regex, 0, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
@@ -233,16 +276,16 @@ class ZeroOrMore(Repeat):
         '?' if self.greedy else '')
 
 class OneOrMore(Repeat):
-    def __init__(self, regex, wrap=False, greedy=False):
-        super(OneOrMore, self).__init__(regex, 1, wrap=wrap, greedy=greedy)
+    def __init__(self, regex, min=1, max='', wrap=False, greedy=False):
+        super(OneOrMore, self).__init__(regex, min, max, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
         return '%s+%s' % (self.args[0].to_regex(), 
         '?' if self.greedy else '')
 
 class OneOrZero(Repeat):
-    def __init__(self, regex, wrap=False, greedy=False):
-        super(OneOrZero, self).__init__(regex, 0, 1, wrap=wrap, greedy=greedy)
+    def __init__(self, regex, min=0, max=1, wrap=False, greedy=False):
+        super(OneOrZero, self).__init__(regex, min, max, wrap=wrap, greedy=greedy)
 
     def to_regex(self):
         return '%s?%s' % (self.args[0].to_regex(), 

@@ -1094,6 +1094,8 @@ class TestNonCapture(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         regstr = '((?:.+)cc(ee.*))+'
@@ -1101,6 +1103,8 @@ class TestNonCapture(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = '((?:.+)cc(ee.*))+\1+c\2+e'
@@ -1108,6 +1112,8 @@ class TestNonCapture(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = '((?:fooobar.+)cc(ee.*))+\1+c\2+e'
@@ -1115,6 +1121,8 @@ class TestNonCapture(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestWord(unittest.TestCase):
     def test0(self):
@@ -1123,6 +1131,8 @@ class TestWord(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         regstr = r'(e\&e\*@\w*cc)+(?:cee\w+)uu?\1'
@@ -1130,6 +1140,8 @@ class TestWord(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestNotWord(unittest.TestCase):
     def test0(self):
@@ -1138,6 +1150,8 @@ class TestNotWord(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         regstr = r'(\*\W+bar)+(@\1+)\&\2{1,3}'
@@ -1146,6 +1160,9 @@ class TestNotWord(unittest.TestCase):
         
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
 class TestCaret(unittest.TestCase):
     def test0(self):
         regstr = r'^eudof.c+'
@@ -1153,22 +1170,26 @@ class TestCaret(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         regstr = r'^(\*\^ee)+'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = r'^(\*\^ee)+c*\..'
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestDollar(unittest.TestCase):
     def test0(self):
@@ -1177,7 +1198,6 @@ class TestDollar(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
-        print(yregex.mkcode())
 
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
@@ -1186,25 +1206,31 @@ class TestDollar(unittest.TestCase):
         regstr = r'^(\*\^ee)+$'
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = r'^(\*\^ee)+c*\..$'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = r'((\*\^ee)+c*\..)*$'
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 if __name__ == '__main__':
     unittest.main()
