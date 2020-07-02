@@ -191,23 +191,35 @@ class NamedGroup(Group):
     (?P<name>...)
     """
 
-    def __init__(self, name, *args):
+    def __init__(self, gname, *args):
         super(NamedGroup, self).__init__(*args)
-        self.name  = name
+        self.gname  = gname
 
     def compile(self):
-        self.grefs[self.name] = self
+        self.grefs[self.gname] = self
 
-        self.data = r'(?P<%s>%s)' % (self.name, 
+        self.data = r'(?P<%s>%s)' % (self.gname, 
         super(Group, self).to_regex())
 
         self.compiled = True
-        self.map      = r'(?P=%s)' % self.name
+        self.map      = r'(?P=%s)' % self.gname
 
         self.input    = map(lambda ind: ind.valid_data(), self.args)
         self.input    = ''.join(self.input)
 
         return self.data
+
+    def mkstmts(self, argrefs):
+        name = self.instref(argrefs)
+        lines = super(NamedGroup, self).mkargs_stmts(argrefs)
+
+        args = ', '.join((argrefs[ind] for ind in self.args))
+        stmt = "%s = %s('%s', %s)"
+        stmt = stmt % (name, self.__class__.__name__, self.gname, args)
+        lines.append(stmt)
+
+        code = '\n'.join(lines)
+        return '%s\n%s' % (code, stmt)
 
 class Repeat(RegexOperator):
     """

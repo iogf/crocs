@@ -34,14 +34,17 @@ class BasicRegex:
         argrefs[self.__class__] += 1
         return name
 
-    def mkstmts(self, argrefs=dict()):
-        name = self.instref(argrefs)
+    def mkargs_stmts(self, argrefs=dict()):
         lines = []
         for ind in self.args:
             lines.append(ind.mkstmts(argrefs))
+        return lines
+
+    def mkstmts(self, argrefs=dict()):
+        name = self.instref(argrefs)
+        lines = self.mkargs_stmts(argrefs)
 
         args = ', '.join((argrefs[ind] for ind in self.args))
-
         stmt = '%s = %s(%s)' % (name, self.__class__.__name__, args)
         lines.append(stmt)
 

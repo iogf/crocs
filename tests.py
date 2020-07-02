@@ -56,8 +56,9 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
     
     def test1(self):
         expr0 = Include('x', 'y')
@@ -71,8 +72,9 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr0 = Include('x', 'y')
@@ -85,9 +87,10 @@ class TestInclude(unittest.TestCase):
 
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         expr0 = Include('x', 'y')
@@ -101,8 +104,9 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         expr0 = Include('%', '#')
@@ -117,6 +121,8 @@ class TestInclude(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         expr0 = Include('a', 'b')
@@ -128,8 +134,9 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test6(self):
         expr0 = Include('a', 'b')
@@ -141,8 +148,9 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test7(self):
         expr0 = Include(Seq('a', 'z'))
@@ -156,8 +164,9 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test8(self):
         expr0 = Include(Seq('a', 'z'))
@@ -173,88 +182,102 @@ class TestInclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test9(self):
         regstr = r'[a-z]+[0-9a-z]?(abc)\1'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test10(self):
         regstr = r'([a-z]+[0-9a-z])?(abc)'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test11(self):
         regstr = r'(([a-z]+[0-9a-z])(abc)\2)\2emm\3'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test12(self):
         regstr = r'[a-z]?'
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test13(self):
         regstr = r'([a-z]0)?'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test14(self):
         regstr = r'(((((([0-9]+))))))\3\1\2'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test15(self):
         regstr = r'(([0-9]x)?([a-z]y))?mnc([a-z\&%])+'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test16(self):
         regstr = r'([a-z\&\*\$])+'
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test17(self):
         regstr = r'[a-z\*]'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test18(self):
         regstr = r'(((((([0-9]))\5))))\3\1\2'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestExclude(unittest.TestCase):
     def test0(self):
@@ -278,8 +301,10 @@ class TestExclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr0 = Exclude(Seq('a', 'z'))
@@ -295,8 +320,10 @@ class TestExclude(unittest.TestCase):
 
         yregex.test()
 
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         expr0 = Exclude(Seq('a', 'z'))
@@ -310,6 +337,8 @@ class TestExclude(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         expr0 = Exclude(Seq('a', 'z'))
@@ -325,50 +354,60 @@ class TestExclude(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         regstr = r'[^0-9]+([^abcd]?x([^eeee])?\2)'
         yregex = xmake(regstr)
 
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test6(self):
         regstr = r'[^0-9]+([^abcd]?x([^ee])+\2)'
         yregex = xmake(regstr)
 
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test7(self):
         regstr = r'[^0-9]+([^abcd]?x([^\*\*])\2)'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test8(self):
         regstr = r'[abc\*]+'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test9(self):
         regstr = r'[\[abc\*]'
         yregex = xmake(regstr)
         yregex.test()
         
-
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test10(self):
         regstr = r'[\]abc\*]'
         yregex = xmake(regstr)
         yregex.test()
-        
 
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test11(self):
         regstr = r'([\]abc\*])+\**[^\*\&\&\[\]]+'
@@ -377,7 +416,8 @@ class TestExclude(unittest.TestCase):
         
 
         self.assertEqual(yregex.mkregex(), regstr)
-
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestAny(unittest.TestCase):
     def test0(self):
@@ -392,6 +432,8 @@ class TestAny(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         expr0 = Exclude(Seq('0', '9'))
@@ -405,6 +447,8 @@ class TestAny(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr0 = Include(Seq('0', '9'))
@@ -418,6 +462,8 @@ class TestAny(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         expr0 = Include(Seq('0', '9'))
@@ -432,6 +478,8 @@ class TestAny(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         expr0 = Include(Seq('0', '9'))
@@ -446,6 +494,8 @@ class TestAny(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         expr0 = Include(Seq('0', '9'))
@@ -470,6 +520,8 @@ class TestAny(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestOneOrZero(unittest.TestCase):
     def test0(self):
@@ -484,6 +536,8 @@ class TestOneOrZero(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         expr0 = Exclude(Seq('a', 'b'))
@@ -496,6 +550,8 @@ class TestOneOrZero(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr1 = OneOrZero('fooo')
@@ -507,6 +563,8 @@ class TestOneOrZero(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         regstr = r'a?b?c?\*?\&?[c-z\*\(\)\[\]]?c?(a?e?)\1?c'
@@ -514,6 +572,8 @@ class TestOneOrZero(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         regstr = r'(aa{1,3}?)\1'
@@ -521,6 +581,8 @@ class TestOneOrZero(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestOneOrMore(unittest.TestCase):
     def test0(self):
@@ -535,6 +597,8 @@ class TestOneOrMore(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         expr0 = Include(Seq('a', 'b'))
@@ -547,6 +611,8 @@ class TestOneOrMore(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr1 = OneOrMore('fooo')
@@ -562,6 +628,8 @@ class TestOneOrMore(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         regstr = r'a+c+b+?(c+e+?)+?\1?(\1?c)+'
@@ -569,6 +637,8 @@ class TestOneOrMore(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestGroup(unittest.TestCase):
     def test0(self):
@@ -585,6 +655,8 @@ class TestGroup(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         expr0 = Group(X(), 'a', 'b', Include('abc'))
@@ -601,6 +673,8 @@ class TestGroup(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr0 = Group('a')
@@ -615,6 +689,8 @@ class TestGroup(unittest.TestCase):
         
         yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         expr0 = Group('abc')
@@ -628,6 +704,8 @@ class TestGroup(unittest.TestCase):
         # Eacc should be capable of reading back the 
         # serialized string.
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         expr0 = Group('ab')
@@ -636,6 +714,8 @@ class TestGroup(unittest.TestCase):
         yregex = xmake(regstr)
         yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestNamedGroup(unittest.TestCase):
     def test0(self):
@@ -648,6 +728,8 @@ class TestNamedGroup(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
         
     def test1(self):
         expr0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
@@ -660,6 +742,8 @@ class TestNamedGroup(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         # Check if it works for nested named groups.
@@ -681,6 +765,8 @@ class TestNamedGroup(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         expr0 = NamedGroup('foobar', Repeat(Any('a', X(), 'b')))
@@ -692,6 +778,8 @@ class TestNamedGroup(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestRepeat(unittest.TestCase):
     def test0(self):
@@ -706,6 +794,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         expr0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
@@ -722,6 +812,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = r'a{1,2}'
@@ -729,6 +821,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         regstr = r'\*{1,2}?c*'
@@ -736,6 +830,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         regstr = r'\*{1,8}?\&+?'
@@ -743,6 +839,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         regstr = r'(\*cd){1,8}?\&+?\1+?'
@@ -750,6 +848,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test6(self):
         regstr = r'((\*cd){1,8}?\&)+?(\1?ecdeeec+)+?'
@@ -757,6 +857,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test7(self):
         regstr = r'((\*cd{1,}){1,8}?\&)+?(\1?ec?d){4,4}?'
@@ -764,6 +866,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test8(self):
         regstr = r'(((\*cd{1,}){1,8}?\&)+?){3,3}?(\1?ecd){4,4}?'
@@ -771,6 +875,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test9(self):
         regstr = r'a{1,3}c{3,3}?e{0,2}?c+?e{0,4}?'
@@ -778,6 +884,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test10(self):
         regstr = r'(a{1,3}c{3,3}?e{2,2}?c+?e{0,4}?)\1{1,2}?'
@@ -785,6 +893,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test11(self):
         regstr = r'((a{1,3}c{3,3}?e{2,3}?c+?e{1,4}?)\2{1,2}?)'
@@ -792,6 +902,8 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test12(self):
         regstr = r'a'
@@ -799,6 +911,9 @@ class TestRepeat(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestZeroOrMore(unittest.TestCase):
     def test0(self):
@@ -814,6 +929,9 @@ class TestZeroOrMore(unittest.TestCase):
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
         
     def test1(self):
         expr0 = NamedGroup('a999', Repeat('a'))
@@ -829,12 +947,18 @@ class TestZeroOrMore(unittest.TestCase):
         
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
     def test2(self):
         regstr = r'\*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}'
         yregex = xmake(regstr)
         yregex.test()
         
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestConsumeNext(unittest.TestCase):
     def test0(self):
@@ -848,6 +972,9 @@ class TestConsumeNext(unittest.TestCase):
             yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
     def test1(self):
         expr0 = ConsumeNext(Group(X(), 'bar', X()), 
         Group(X(), OneOrMore('alpha')))
@@ -858,8 +985,10 @@ class TestConsumeNext(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         expr0 = ConsumeNext(Group(X(), 'bar', X()), 
@@ -875,32 +1004,40 @@ class TestConsumeNext(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         regstr = '(?<=abc)((c+d)\2)e'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         regstr = '(?<=abc{3,3})((c+d{1,4})\2)e'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         regstr = '(?<!abc{3,3})((c+(d{1,4})eee+)\2)e'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestConsumeBack(unittest.TestCase):
     def test0(self):
@@ -931,9 +1068,10 @@ class TestConsumeBack(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        self.assertEqual(yregex.mkregex(), regstr)
 
+        self.assertEqual(yregex.mkregex(), regstr)
         clone = yregex.mkclone()
+
         self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
