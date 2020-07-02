@@ -344,6 +344,10 @@ class Seq(RegexOperator):
     def clear(self):
         pass
 
+    def mkcode(self, argrefs):
+        return "%s = %s('%s', '%s')" % (self.instref(argrefs), 
+        self.__class__.__name__, self.start, self.end)
+
 class Include(RegexOperator):
     """
     Sets.
@@ -441,3 +445,7 @@ class RegexComment(RegexOperator):
 
     def to_regex(self):
         return r'(?#%s)' % self.comment
+
+    def mkcode(self, argrefs):
+        return "%s = %s('%s')" % (self.instref(argrefs), 
+        self.__class__.__name__, self.comment)

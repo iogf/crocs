@@ -1174,7 +1174,7 @@ class TestCaret(unittest.TestCase):
 
 class TestDollar(unittest.TestCase):
     def test0(self):
-        regstr = r'^((ab.c+))alpha'
+        regstr = r'^((ab[a-z].c+))alpha(?#ajust)'
         yregex = xmake(regstr)
         yregex.test()
         yregex.hits()

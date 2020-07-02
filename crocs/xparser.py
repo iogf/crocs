@@ -278,5 +278,5 @@ def xmake(regstr):
     # regtree = tseq[-1].val()
     # regtree.test()
     # regtree.hits()
-
+    
     return tseq[-1].val()
