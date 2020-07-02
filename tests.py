@@ -914,8 +914,10 @@ class TestConsumeBack(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         expr0 = ConsumeBack(Group(OneOrMore(X()), 
@@ -929,48 +931,59 @@ class TestConsumeBack(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = r'abc.+(?=eee)e'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         regstr = r'(ac?c).+(?=e{1,3})e'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         regstr = r'(ac{1,3}c)(aa)+(?=e{1,3})e'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         regstr = r'(\*a\&{1,5}c)(aa)+(?=e{1,3}c+)'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test6(self):
         regstr = r'(\*a\&{1,5}c)\1+(a.+a)+(?=e{1,3}c+)'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test7(self):
         regstr = r'(\*a\&{1,5}c)\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})'
@@ -980,6 +993,9 @@ class TestConsumeBack(unittest.TestCase):
         
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
     def test8(self):
         regstr = '(\*a\&{1,5})+\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})'
         yregex = xmake(regstr)
@@ -988,37 +1004,48 @@ class TestConsumeBack(unittest.TestCase):
         
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
     def test9(self):
         regstr = r'(\*a\&{1,5})+\1+(a.+a)+(?=e{1,3}c+(ab+)\3{1,3})+'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test10(self):
         regstr = r'(\*a\&{1,5})+\1+(a.+a)+(?!e{1,3}c+(ab+)\3{1,3})+'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test11(self):
         regstr = r'abc(?!cde)'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test11(self):
         regstr = r'abc(?!c(d+e)\1{1,3}0)'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test12(self):
         regstr = r'abc(?=cde)cc'
@@ -1029,46 +1056,59 @@ class TestConsumeBack(unittest.TestCase):
         
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
 class TestRegexComment(unittest.TestCase):
     def test0(self):
         regstr = 'abc(?#aiosdu).+(ab)(?#asiodu\)asd)'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
         regstr = '[abc]*(?#aiosdu).+([ab]*)(?#asiodu\)[asd])'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
         regstr = '[a-z]*(?#aiosdu).+([0-9]*)(?#hehehe\)[abcde])'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
         regstr = '[a-z]*(?#aiosdu)(abc)+([0-9]+)(123)(?#....aaa\)[abcde])'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         regstr = '[a-z]*(?#aiosdu)((ab)*)?([0-9]+)(123)(?#....aaa\)[abcde])\1aa'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
         regstr = r'[a-z](?#aiosdu)([0-9]+)\1sdius\1(123)(?#....aaa\)[abcde])\1aa'
@@ -1076,16 +1116,20 @@ class TestRegexComment(unittest.TestCase):
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
         regstr = 'a(?#aiosdu)*b'
         yregex = xmake(regstr)
 
         yregex.test()
-        
         self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestNonCapture(unittest.TestCase):
     def test0(self):

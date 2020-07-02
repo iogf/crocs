@@ -327,7 +327,21 @@ class ConsumeNext(RegexOperator):
         fmt = '(?<=%s)%s' if not self.neg else '(?<!%s)%s'
         return fmt % (self.args[0].to_regex(), self.args[1].to_regex())
 
-class ConsumeBack(RegexOperator):
+
+    def mkstmts(self, argrefs):
+        name = self.instref(argrefs)
+
+        code0 = self.args[0].mkstmts(argrefs)
+        code1 = self.args[1].mkstmts(argrefs)
+
+        stmt = "%s = %s(%s, %s, neg=%s)"
+
+        stmt = stmt % (name, self.__class__.__name__, 
+        argrefs[self.args[0]], argrefs[self.args[1]], self.neg)
+
+        return '%s\n%s\n%s' % (code0, code1, stmt)
+
+class ConsumeBack(ConsumeNext):
     """
     Lookahead assertion.
 
