@@ -69,29 +69,28 @@ join0 = Join(repeat0, group0, group3, repeat3)
 >>> from crocs.xparser import xmake
 >>> yregex = xmake('T.i.s is (cool|nice)+')
 >>> yregex.test()
-Input: T^ibs is nicenicenicenice
+Input: Tbi6s is nicenicenicenicenicenice
 Regex: T.i.s\ is\ (cool|nice)+
-Input: T^ibs is nicenicenicenice
+Input: Tbi6s is nicenicenicenicenicenice
 Group dict: {}
-Group 0: T^ibs is nicenicenicenice
+Group 0: Tbi6s is nicenicenicenicenicenice
 Groups: ('nice',)
 >>> print(yregex.mkcode())
-from crocs.regex import Join, X, Any, OneOrMore, Group
+from crocs.regex import Any, Join, OneOrMore, Group, X
 from crocs.core import RegexStr
-regexstr10 = RegexStr('T')
-x4 = X()
-regexstr11 = RegexStr('i')
-x5 = X()
-regexstr12 = RegexStr('s is ')
-regexstr13 = RegexStr('cool')
-join7 = Join(regexstr13)
-regexstr14 = RegexStr('nice')
-join8 = Join(regexstr14)
-any2 = Any(join7, join8)
-group2 = Group(any2)
-oneormore2 = OneOrMore(group2, min=1, max='', wrap=False, greedy=False)
-join6 = Join(regexstr10, x4, regexstr11, x5, regexstr12, oneormore2)
->>> 
+regexstr0 = RegexStr('T')
+x0 = X()
+regexstr1 = RegexStr('i')
+x1 = X()
+regexstr2 = RegexStr('s is ')
+regexstr3 = RegexStr('cool')
+join1 = Join(regexstr3)
+regexstr4 = RegexStr('nice')
+join2 = Join(regexstr4)
+any0 = Any(join1, join2)
+group0 = Group(any0)
+oneormore0 = OneOrMore(group0, min=1, max='', wrap=False, greedy=False)
+join0 = Join(regexstr0, x0, regexstr1, x1, regexstr2, oneormore0)
 ~~~
 
 
