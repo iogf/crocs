@@ -9,6 +9,14 @@ notword = ''.join((ind
 for ind in punctuation if ind != '_'))
 
 class BasicRegex:
+    def __init__(self, *args):
+        self.args = list(args)
+
+    def reduce_initargs(self, *args):
+        items = groupby(args, lambda ind: ind.__class__)
+        for indi, indj in args:
+            pass
+
     def invalid_data(self):
         pass
 
@@ -25,7 +33,13 @@ class BasicRegex:
         pass
 
     def hasop(self, instance):
-        pass
+        if instance in self.args:
+            return True
+
+        for ind in self.args:
+            if ind.hasop(instance):
+                return True
+        return False
 
     def instref(self, argrefs):
         count = argrefs.setdefault(self.__class__, 0)
@@ -86,26 +100,20 @@ class BasicRegex:
     
 class RegexStr(BasicRegex):
     def __init__(self, value):
-        self.value = value
+        super(RegexStr, self).__init__(value)
 
     def invalid_data(self):
-        # data = filter(lambda ind: \
-        # not ind in self.value, printable)
-
         data = [ind for ind in printable
-        if not ind in self.value]
+        if not ind in self.args[0]]
 
         return ''.join(choice(data) 
-        for ind in range(len(self.value)))
+        for ind in range(len(self.args[0])))
 
     def valid_data(self):
-        return self.value
+        return self.args[0]
 
     def __len__(self):
-        return len(self.value)
-
-    def clear(self):
-        pass
+        return len(self.args[0])
 
     def to_regex(self):
         """
@@ -114,7 +122,7 @@ class RegexStr(BasicRegex):
         The regex operators are escaped even inside character sets thus
         the resulting yregex from xmake may differ from the regex passed.
         """
-        return re.escape(self.value)
+        return re.escape(self.args[0])
 
     def mkregex(self):
         regstr = self.to_regex()
@@ -125,24 +133,14 @@ class RegexStr(BasicRegex):
 
     def mkstmts(self, argrefs=dict()):
         return "%s = %s('%s')" % (self.instref(argrefs), 
-        self.__class__.__name__, self.value)
+        self.__class__.__name__, self.args[0])
 
     __str__ = to_regex
 
 class RegexOperator(BasicRegex):
-    # It may be interesting to have a base class Pattern
-    # that implements common methods with Group and Include, Exclude.
-    # Because these accept multiple arguments.
-
     def __init__(self, *args):
-        self.args = [RegexStr(ind) 
-        if isinstance(ind, str) else ind for ind in args]
-
-    def invalid_data(self):
-        pass
-
-    def valid_data(self):
-        pass
+        super(RegexOperator, self).__init__(*(RegexStr(ind) 
+        if isinstance(ind, str) else ind for ind in args))
 
     def test(self):
         """
@@ -150,7 +148,7 @@ class RegexOperator(BasicRegex):
         classes to a raw regex string. 
 
         Note: In case crocs can't find a valid input
-
+        it raises an exception.
         """
 
         regex = self.to_regex()
@@ -213,12 +211,4 @@ class RegexOperator(BasicRegex):
     def __str__(self):
         return self.mkregex()
 
-    def hasop(self, instance):
-        if instance in self.args:
-            return True
-
-        for ind in self.args:
-            if ind.hasop(instance):
-                return True
-        return False
 
