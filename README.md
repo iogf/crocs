@@ -65,6 +65,39 @@ join0 = Join(repeat0, group0, group3, repeat3)
 
 ~~~
 
+**Note:** You could also use a python interpreter instance.
+
+~~~
+>>> import re
+>>> from crocs.xparser import xmake
+>>> yregex = xmake('T.i.s is (cool|nice)+')
+>>> yregex.test()
+Input: T^ibs is nicenicenicenice
+Regex: T.i.s\ is\ (cool|nice)+
+Input: T^ibs is nicenicenicenice
+Group dict: {}
+Group 0: T^ibs is nicenicenicenice
+Groups: ('nice',)
+>>> print(yregex.mkcode())
+from crocs.regex import Join, X, Any, OneOrMore, Group
+from crocs.core import RegexStr
+regexstr10 = RegexStr('T')
+x4 = X()
+regexstr11 = RegexStr('i')
+x5 = X()
+regexstr12 = RegexStr('s is ')
+regexstr13 = RegexStr('cool')
+join7 = Join(regexstr13)
+regexstr14 = RegexStr('nice')
+join8 = Join(regexstr14)
+any2 = Any(join7, join8)
+group2 = Group(any2)
+oneormore2 = OneOrMore(group2, min=1, max='', wrap=False, greedy=False)
+join6 = Join(regexstr10, x4, regexstr11, x5, regexstr12, oneormore2)
+>>> 
+~~~
+
+
 The actual implementation supports most Python regex features, groups, named groups,
 sets, lookahead, lookbehind etc.
 
