@@ -1,27 +1,12 @@
 # crocs
  
-Write regex using pure python class/function syntax and test it better.
-
-The crocs package offers a mean to implement regex using Python classes, it is basically a
-pythonic way of implementing regex patterns.
-
-There are python classes for regex operators, these classes are grouped together to form 
-your desired pattern then it is serialized to a raw regex to be used with a regex engine.
-The pythonic structure of a given regex pattern contains methods to test and generate possible
-matches for the regex.
-
-The project comes with a handy script yregex that is used to read a raw regex string then
-generate possible matches. It is very useful to debug debug and improve regex patterns.
+The crocs package introduces the concept of yregex that is a mean of implementing regex patterns using pure
+python classes. There are python classes for regex operators, these classes are grouped together to form 
+your desired pattern. 
 
 The main benefits of using python to write regex it consists of the readability and 
 better understanding of how your regex is working since each one of the regex pieces can be
-tested separately from a python interpreter instance.
-
-The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
-generating possible matches. 
-
-The yregex script helps to debug raw regex strings. It is capable of reading a given
-raw regex string then generating possible matches. 
+tested separately when using a python interpreter.
 
 What if you had to debug the regex below to keep your job? :P
 
@@ -83,13 +68,13 @@ join0 = Join(repeat0, group0, group3, repeat3)
 The actual implementation supports most Python regex features, groups, named groups,
 sets, lookahead, lookbehind etc.
 
-### Basic Example
+what if you need to implement a regex to solve the problem below?
 
-It solves the problem of catching mails whose domain ends with 'br'  and the hostname 
-contains 'python' in the beginning too. It makes sure that the first 
-letter in the mail name is in the set a-z as well.
+**Problem:** Match mails whose domain ends with 'br'  and the hostname 
+contains 'python' at the beginning. Make sure that the first 
+letter in the mail name is in the set [a-z] as well.
 
-**Note:** The code below is a yregex it is a regex implemented using python classes :D
+**YRegex:**
 
 ~~~python
 from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
@@ -153,6 +138,9 @@ i.e3ui._@pythonylsg.br m0@pythonubjdm.br ijbf_ktux@pythonhdlh.br rtza45@pythoner
 ~~~
 
 # Install
+
+The project relies on [eacc](https://github.com/iogf/eacc) to parse the regex string then
+generating possible matches. 
 
 **Note:** Work with python3 only.
 

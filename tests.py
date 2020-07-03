@@ -36,6 +36,11 @@ It automatically escapes all strings that contain regex operators.
 
 It is necessary to escape yourself raw regex strings even inside character sets to make
 sure them are in fact equal to the resulting pythonic yregex that comes from xmake.
+
+The tests also check the serialization of the yregex structure to raw python code. The approach
+consists of using the BasicRegex.mkclone method and BasicRegex.mkcode method. The structure
+is serialized to raw code and executed then it is serialized again and tested against the initial 
+raw regex.
 """
 
 import unittest
@@ -1023,7 +1028,7 @@ class TestConsumeNext(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test4(self):
-        regstr = '(?<=abc{3,3})((c+d{1,4})\2)e'
+        regstr = r'(?<=abc{3,3})((c+d{1,4})\2)e'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -1033,7 +1038,7 @@ class TestConsumeNext(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test5(self):
-        regstr = '(?<!abc{3,3})((c+(d{1,4})eee+)\2)e'
+        regstr = r'(?<!abc{3,3})((c+(d{1,4})eee+)\2)e'
         yregex = xmake(regstr)
 
         yregex.test()
@@ -1041,6 +1046,7 @@ class TestConsumeNext(unittest.TestCase):
 
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
+
 
 class TestConsumeBack(unittest.TestCase):
     def test0(self):
@@ -1195,6 +1201,32 @@ class TestConsumeBack(unittest.TestCase):
         with self.assertRaises(AssertionError):
             yregex.test()
         
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test13(self):
+        # Possibly bug. It fails to match.
+        # regstr = r'Isaa.+c\ (?=Asimov)ee'
+        # But the regex below matches success to find a match.
+        regstr = r'Isaa.+c\ (?=Asimov).+'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test14(self):
+        # Possibly bug. It fails to match.
+        # regstr = r'Isaa.+c\ (?!Asimov)ee'
+        # But the regex below matches success to find a match.
+        regstr = r'Isaa.+c\ (?!Asimov).+'
+        yregex = xmake(regstr)
+
+        yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
 
         clone = yregex.mkclone()
