@@ -1350,7 +1350,7 @@ class TestCaret(unittest.TestCase):
         regstr = r'^eudof.c+'
         yregex = xmake(regstr)
         yregex.test()
-        
+        print(yregex.mkcode())
         self.assertEqual(yregex.mkregex(), regstr)
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)

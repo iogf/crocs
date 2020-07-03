@@ -1,4 +1,5 @@
 from string import ascii_letters, punctuation, digits
+from itertools import groupby
 from random import choice
 import re
 
@@ -10,12 +11,11 @@ for ind in punctuation if ind != '_'))
 
 class BasicRegex:
     def __init__(self, *args):
-        self.args = list(args)
+        self.args  = list(args)
 
-    def reduce_initargs(self, *args):
-        items = groupby(args, lambda ind: ind.__class__)
-        for indi, indj in args:
-            pass
+    @classmethod
+    def reduce_initargs(cls, *args):
+        return args
 
     def invalid_data(self):
         pass
@@ -102,6 +102,15 @@ class RegexStr(BasicRegex):
     def __init__(self, value):
         super(RegexStr, self).__init__(value)
 
+    @classmethod
+    def reduce_initargs(cls, *args):
+        items = []
+        for ind in args:
+            items.append(ind.args[0])
+        data = ''.join(items)
+        xstr = RegexStr(data)
+        return (xstr, )
+
     def invalid_data(self):
         data = [ind for ind in printable
         if not ind in self.args[0]]
@@ -139,8 +148,15 @@ class RegexStr(BasicRegex):
 
 class RegexOperator(BasicRegex):
     def __init__(self, *args):
-        super(RegexOperator, self).__init__(*(RegexStr(ind) 
-        if isinstance(ind, str) else ind for ind in args))
+        items = (RegexStr(ind) if isinstance(ind, str) else ind 
+        for ind in args)
+
+        args  = []        
+        opers = groupby(items, lambda ind: ind.__class__)
+
+        for indi, indj in opers:
+            args.extend(indi.reduce_initargs(*indj))
+        super(RegexOperator, self).__init__(*args)
 
     def test(self):
         """

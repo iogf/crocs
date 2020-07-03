@@ -11,6 +11,10 @@ def regexbuilder():
     regtree.test()
     regtree.hits()
 
+    print('Yregex/Code:\n')
+    code = regtree.mkcode()
+    print(code)
+
 if __name__ == '__main__':
     while True:
         try:
