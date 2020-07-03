@@ -87,13 +87,15 @@ join0 = Join(regexstr0, x0, regexstr1)
 The actual implementation supports most Python regex features, groups, named groups,
 sets, lookahead, lookbehind etc.
 
-what if you need to implement a regex to solve the problem below?
+What if you need to implement a regex to solve the problem below?
 
 **Problem:** Match mails whose domain ends with 'br'  and the hostname 
 contains 'python' at the beginning. Make sure that the first 
 letter in the mail name is in the set [a-z] as well.
 
-**YRegex:**
+If you decide to use crocs's yregex approach then you could have comments around 
+statements and you could test seperately each one of the sub patterns. It should improve
+your reasoning and slow down development/debugging time.
 
 ~~~python
 from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
