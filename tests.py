@@ -289,6 +289,9 @@ class TestExclude(unittest.TestCase):
         yregex = xmake(regstr)
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
     def test1(self):
         expr0 = Include(Seq('a', 'z'))
         expr1 = Exclude(Seq('1', '9'))

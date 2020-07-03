@@ -26,19 +26,58 @@ raw regex string then generating possible matches.
 What if you had to debug the regex below to keep your job? :P
 
 ~~~
-[tau@archlinux ~]$ yregex 
+\*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
+~~~
+
+You would need to ask help for some specialist. :P Crocs introduces the concept of Yregex that is
+a way of writing regex using python classes. 
+
+You will be able to better understand what is going on once your regex is a yregex.
+
+~~~
+[tau@archlinux ~]$ yregex
 >>> \*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
+# Regex Details.
+
+Input: ***a0ca0ca0c$i#a0ca0ca0c*
 Regex: \*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
-Input: **a7ca7c$c#a7ca7ca7ca7c**
+Input: ***a0ca0ca0c$i#a0ca0ca0c*
 Group dict: {}
-Group 0: **a7ca7c$c#a7ca7ca7ca7c**
-Groups: ('a7ca7c', 'a7ca7c', 'a7c', '$c#a7ca7ca7ca7c', '$c#')
+Group 0: ***a0ca0ca0c$i#a0ca0ca0c*
+Groups: ('a0ca0ca0c', 'a0ca0ca0c', 'a0c', '$i#a0ca0ca0c', '$i#')
 Match with:
- *a4ca4c$g#a4ca4ca4ca4c*** **a6ca6ca6ca6c$c#a6ca6ca6ca6ca6ca6ca6ca6ca6ca6ca6ca6c** 
-***a3ca3ca3c$p#a3ca3ca3ca3ca3ca3c** ***a4ca4c$h#a4ca4ca4ca4c*** 
-***a2ca2ca2c$w#a2ca2ca2ca2ca2ca2ca2ca2ca2c* ***a3ca3ca3c$a#a3ca3ca3ca3ca3ca3c*** 
-**a6ca6ca6ca6c$f#a6ca6ca6ca6c*
+ *a4ca4c$m#a4ca4ca4ca4ca4ca4c* ***a3ca3ca3ca3c$j#a3ca3ca3ca3c** 
+**a4ca4c$g#a4ca4ca4ca4c* ***a0ca0c$y#a0ca0ca0ca0ca0ca0c* **a5ca5ca5ca5c$w#a5ca5ca5ca5c* 
+*a5ca5ca5c$g#a5ca5ca5c*** *a8ca8c$x#a8ca8ca8ca8ca8ca8c*
+
+# Yregex/Code:
+
+from crocs.regex import Group, Include, GLink, Join, Repeat, Seq
+from crocs.core import RegexStr
+regexstr0 = RegexStr('*')
+repeat0 = Repeat(regexstr0, min=1, max=3, wrap=False, greedy=False)
+regexstr1 = RegexStr('a')
+seq0 = Seq('0', '9')
+include0 = Include(seq0)
+regexstr2 = RegexStr('c')
+group2 = Group(regexstr1, include0, regexstr2)
+
+repeat1 = Repeat(group2, min=1, max=3, wrap=False, greedy=False)
+group1 = Group(group2, repeat1)
+group0 = Group(group1)
+regexstr3 = RegexStr('$')
+seq1 = Seq('a', 'z')
+include1 = Include(seq1)
+regexstr4 = RegexStr('#')
+group4 = Group(regexstr3, include1, regexstr4)
+
+repeat2 = Repeat(group1, min=1, max=3, wrap=False, greedy=False)
+group3 = Group(group4, repeat2)
+regexstr5 = RegexStr('*')
+repeat3 = Repeat(regexstr5, min=1, max=3, wrap=False, greedy=False)
+join0 = Join(repeat0, group0, group3, repeat3)
 >>> 
+
 ~~~
 
 The actual implementation supports most Python regex features, groups, named groups,

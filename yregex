@@ -8,10 +8,12 @@ from traceback import print_exc
 def regexbuilder():
     regstr  = input('>>> ')
     regtree = xmake(regstr)
+
+    print('# Regex Details.\n')
     regtree.test()
     regtree.hits()
 
-    print('Yregex/Code:\n')
+    print('\n# Yregex/Code:\n')
     code = regtree.mkcode()
     print(code)
 
