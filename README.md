@@ -66,7 +66,6 @@ join0 = Join(repeat0, group0, group3, repeat3)
 **Note:** You could also use a python interpreter instance.
 
 ~~~
->>> import re
 >>> from crocs.xparser import xmake
 >>> yregex = xmake('T.i.s is (cool|nice)+')
 >>> yregex.test()
