@@ -1,4 +1,4 @@
-from crocs.core import printable, RegexOperator, isword, notword, RegexStr
+from crocs.core import printable, RegexOperator, isword, notword, RegexStr, RegexMeta
 from random import choice, randint
 from itertools import groupby
 
@@ -40,6 +40,27 @@ class Any(RegexOperator):
         data = map(lambda ind: ind.to_regex(), self.args)
         data = '|'.join(data)
         return data
+
+class MetaB(RegexMeta):
+    def invalid_data(self):
+        return choice(isword) 
+
+    def valid_data(self):
+        return choice(notword) 
+
+
+    def to_regex(self):
+        return r'\B'
+
+class Metab(RegexMeta):
+    def invalid_data(self):
+        return choice(isword)
+
+    def valid_data(self):
+        return ''
+
+    def to_regex(self):
+        return r'\b'
 
 class Caret(RegexOperator):
     def invalid_data(self):

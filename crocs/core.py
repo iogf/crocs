@@ -236,4 +236,8 @@ class RegexOperator(BasicRegex):
     def __str__(self):
         return self.mkregex()
 
+class RegexMeta(RegexOperator):
+    def mkstmts(self, argrefs):
+        return "%s = %s()" % (self.instref(argrefs), 
+        self.__class__.__name__)
 

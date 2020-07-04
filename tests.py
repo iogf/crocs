@@ -1504,6 +1504,25 @@ class TestWord(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
+class TestMetab(unittest.TestCase):
+    def test0(self):
+        regstr = r'\ \bfoo\b\ ee'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test1(self):
+        regstr = r'\b(e\*@\w*cc)+(?:cee\w+)uu?\b'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
 class TestNotWord(unittest.TestCase):
     def test0(self):
         regstr = r'foo\W+bar'

@@ -20,10 +20,16 @@ class WordSymbol(TokType):
 class NotWordSymbol(TokType):
     pass
 
+class MetabSymbol(TokType):
+    pass
+
+
 class RegexTokens(XSpec):
     t_escape = LexSeq(SeqTok(r'\\', Escape, discard=True), SeqTok(r'.', Char))
     t_word   = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'w', WordSymbol))
     t_nword  = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'W', NotWordSymbol))
+    t_metab   = LexSeq(SeqTok(r'\\', Escape), SeqTok(r'b', MetabSymbol))
+
     t_plus   = LexTok(r'\+', Plus)
     t_dot    = LexTok(r'\.', Dot)
     t_pipe   = LexTok(r'\|', Pipe)
@@ -73,7 +79,7 @@ class RegexTokens(XSpec):
 
     t_char = LexTok(r'.', Char)
 
-    root = [t_gref, t_colon, t_ngref, t_comment, t_word, t_nword, t_escape, t_pngroup, 
+    root = [t_gref, t_colon, t_ngref, t_comment, t_word, t_nword, t_metab, t_escape, t_pngroup, 
     t_plus, t_dot, t_lparen, t_rparen, t_mul, t_exclude, t_include,  
     t_lbrace, t_rbrace, t_comma, t_question, t_dollar, t_caret, t_pipe,  
     t_equal, t_lesser, t_greater, t_exclam, t_char]
@@ -100,6 +106,7 @@ class RegexGrammar(Grammar):
 
     r_word  = Rule(Escape, WordSymbol, type=RegExpr)
     r_nword  = Rule(Escape, NotWordSymbol, type=RegExpr)
+    r_metab  = Rule(Escape, MetabSymbol, type=RegExpr)
 
     # Non capturing group.
     r_ncapture  = Rule(LP, Question, Colon, T(RegExpr, type=RegExpr), RP, type=RegExpr)
@@ -149,7 +156,7 @@ class RegexGrammar(Grammar):
     r_char = Rule(Char, type=RegExpr)
     r_done = Rule(Sof, T(RegExpr), Eof)
 
-    root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_nword, 
+    root = [r_gref, r_ngref,  r_ncapture, r_comment, r_word, r_nword, r_metab,
     r_ngroup, r_group, r_dollar, r_caret, r_dot, r_cnext, r_ncnext, r_cback, 
     r_ncback, r_times0, r_times1, r_times2, r_times3, r_times4, r_times5,     
     r_times6, r_times7, r_times8, r_times9, r_times10, r_times11, r_times12, 
