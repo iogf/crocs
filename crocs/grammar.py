@@ -134,15 +134,15 @@ class RegexGrammar(Grammar):
     Equal, GroupName, RP, type=RegExpr)
 
     r_cnext = Rule(LP, Question, Lesser, Equal, 
-    T(RegExpr), RP, T(RegExpr), type=RegExpr)
+    T(RegExpr), RP, T(RegExpr, min=0), type=RegExpr)
 
     r_ncnext = Rule(LP, Question, Lesser, Exclam, 
-    T(RegExpr), RP, T(RegExpr), type=RegExpr)
+    T(RegExpr), RP, T(RegExpr, 0), type=RegExpr)
 
-    r_cback = Rule(T(RegExpr), LP, Question, Equal, 
+    r_cback = Rule(T(RegExpr, 0), LP, Question, Equal, 
     T(RegExpr), RP, type=RegExpr)
 
-    r_ncback = Rule(T(RegExpr), LP, Question, 
+    r_ncback = Rule(T(RegExpr, 0), LP, Question, 
     Exclam, T(RegExpr), RP, type=RegExpr)
 
     r_char = Rule(Char, type=RegExpr)

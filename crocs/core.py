@@ -146,6 +146,19 @@ class RegexStr(BasicRegex):
 
     __str__ = to_regex
 
+class BlankX(BasicRegex):
+    def invalid_data(self):
+        return r'x'
+
+    def valid_data(self):
+        return r''
+
+    def to_regex(self):
+        return r''
+
+    def mkregex(self):
+        return r''
+
 class RegexOperator(BasicRegex):
     def __init__(self, *args):
         items = (RegexStr(ind) if isinstance(ind, str) else ind 
@@ -167,30 +180,31 @@ class RegexOperator(BasicRegex):
         it raises an exception.
         """
 
-        regex = self.to_regex()
-        data  = self.valid_data()
-        self.clear()
+        regstr = self.mkregex()
+
+        # Make sure the regex is valid.
+        regexc = re.compile(regstr)
+        data   = self.valid_data()
 
         # It has to be search in order to work with ConsumeNext.
-        regc = re.search(regex, data)
-        assert regc is not None, 'Failed to generate valid matches!'
+        regex = regexc.search(data)
+        assert regex is not None, 'Failed to generate valid matches!'
 
         print('Input:', data)
-
-        print('Regex:', regex)
+        print('Regex:', regstr)
         print('Input:', data)
 
         print('Group dict:', 
-        regc.groupdict() if hasattr(
-        regc, 'groupdict') else None)
+        regex.groupdict() if hasattr(
+        regex, 'groupdict') else None)
 
         print('Group 0:', 
-        regc.group(0) if hasattr(
-        regc, 'group') else None)
+        regex.group(0) if hasattr(
+        regex, 'group') else None)
 
         print('Groups:', 
-        regc.groups() if hasattr(
-            regc, 'groups') else None)
+        regex.groups() if hasattr(
+            regex, 'groups') else None)
     
     def clear(self):
         for ind in self.args:

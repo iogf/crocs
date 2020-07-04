@@ -1047,6 +1047,17 @@ class TestConsumeNext(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
+    def test6(self):
+        regstr = r'e(?<=abc)'
+        yregex = xmake(regstr)
+
+        with self.assertRaises(AssertionError):
+            yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
 
 class TestConsumeBack(unittest.TestCase):
     def test0(self):

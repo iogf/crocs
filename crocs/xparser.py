@@ -4,6 +4,7 @@ from crocs.grammar import RegexTokens, RegexGrammar, HClassGrammar, HClassTokens
 from crocs.regex import X, Join, Group, NonCapture, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink, \
 Word, NotWord, Caret, Dollar
+from crocs.core import BlankX
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -148,6 +149,7 @@ class RegexParser(Eacc):
         return tree.val()
 
     def cnext(self, lp, question, lexer, equal, regex0, rp, regex1):
+        print('Regex1:', regex1)
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
         join0 = Join(*data0)
