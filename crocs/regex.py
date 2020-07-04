@@ -43,11 +43,11 @@ class Any(RegexOperator):
 
 class MetaB(RegexMeta):
     def invalid_data(self):
-        return choice(isword) 
+        return ''
 
     def valid_data(self):
-        return choice(notword) 
-
+        data = choice(isword) 
+        return  data
 
     def to_regex(self):
         return r'\B'
