@@ -1334,6 +1334,14 @@ class TestConsumeBack(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
+    def test22(self):
+        e = ConsumeBack('Isaac ', 'Asimov', neg=True)
+        regstr = e.mkregex()
+
+        yregex = xmake(regstr)
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+        
 class TestRegexComment(unittest.TestCase):
     def test0(self):
         regstr = 'abc(?#aiosdu).+(ab)(?#asiodu\)asd)'
