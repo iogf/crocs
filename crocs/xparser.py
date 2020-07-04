@@ -149,7 +149,6 @@ class RegexParser(Eacc):
         return tree.val()
 
     def cnext(self, lp, question, lexer, equal, regex0, rp, regex1):
-        print('Regex1:', regex1)
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
         join0 = Join(*data0)

@@ -1058,6 +1058,25 @@ class TestConsumeNext(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
+    def test7(self):
+        regstr = r'(?<=abc)'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test8(self):
+        regstr = r'(?<!abc)'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
 
 class TestConsumeBack(unittest.TestCase):
     def test0(self):
@@ -1240,6 +1259,68 @@ class TestConsumeBack(unittest.TestCase):
         yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
 
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test15(self):
+        regstr = r'(?!Asimov).+'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test16(self):
+        regstr = r'(?!Asimov)ee'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test17(self):
+        regstr = r'(?!Asimov)'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test18(self):
+        regstr = r'(?!Asimov)(a+)\1b1+'
+        yregex = xmake(regstr)
+
+        yregex.test()
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test19(self):
+        # Possibly a bug.
+        regstr = r'e(?=Asimov)eee'
+        yregex = xmake(regstr)
+
+        with self.assertRaises(AssertionError):
+            yregex.test()
+
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test20(self):
+        regstr = r'(?=Asimov)'
+        yregex = xmake(regstr)
+
+        yregex.test()
+
+        self.assertEqual(yregex.mkregex(), regstr)
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
