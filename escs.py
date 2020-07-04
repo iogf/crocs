@@ -1,7 +1,7 @@
 tee >(stdbuf -o 0 python -i)
 ##############################################################################
 from crocs import *
-p = Join(X(), X())
+p = Pattern(X(), X())
 p.regex()
 print p
 print p.args
@@ -38,13 +38,13 @@ mail = NamedGroup('name', name_chunk)
 hostname_chunk = Repeat(name_valid_chars, 1)
 
 # We format finally the complete hostname pattern.
-hostname_fmt = Join('python', hostname_chunk)
+hostname_fmt = Pattern('python', hostname_chunk)
 
 # Keep reference for the group.
 hostname = NamedGroup('hostname', hostname_fmt)
 
 # Define the pattern for the domain.
-domain_chars = Join(name_valid_letters, '.')
+domain_chars = Pattern(name_valid_letters, '.')
 
 # Fetch the pattern that we defined earlier.
 domain_chunk = Repeat(domain_chars, 2, 6)
@@ -53,7 +53,7 @@ domain_chunk = Repeat(domain_chars, 2, 6)
 domain  = NamedGroup('domain', domain_chunk)
 
 # Finally we generate the regex and check how it looks like.
-match_mail = Join(mail, '@', hostname, domain)
+match_mail = Pattern(mail, '@', hostname, domain)
 match_mail.test()
 ##############################################################################
 # abc adc adc ado aio ano amo
@@ -62,12 +62,12 @@ from crocs import *
 
 x = X()
 
-b = Join(x, 'd', x)
+b = Pattern(x, 'd', x)
 b.test()
 
 ##############################################################################
 
-from crocs import Seq, Join
+from crocs import Seq, Pattern
 
 # Define the scope of the data thats a-z.
 p0 = Seq('a', 'z')
@@ -79,11 +79,11 @@ c0 = Include(p0)
 c1 = X()
 
 # Build the set.
-set_b = Join(c0, c1)
+set_b = Pattern(c0, c1)
 set_b.test()
 ##############################################################################
 
-from crocs import Seq, Join
+from crocs import Seq, Pattern
 
 # Define the scope of the data thats a-z.
 p0 = Seq('0', '9')
@@ -95,7 +95,7 @@ c0 = Exclude(p0)
 c1 = X()
 
 # Build the set.
-set_b = Join(c0, c1)
+set_b = Pattern(c0, c1)
 set_b.test()
 ##############################################################################
 
@@ -106,7 +106,7 @@ c0 = Include(Seq('a', 'c'), '_*;/')
 c1 = Exclude(Seq('a', 'z'), '_*;/')
 
 # Build the set x.
-set_x = Join(c0, c1)
+set_x = Pattern(c0, c1)
 set_x.test()
 ##############################################################################
 # abcd-1
@@ -134,7 +134,7 @@ c1 = Include(p2)
 data1 = Repeat(c1, 1)
 
 # Finally we finally build the set.
-set_b = Join(data0, '-', data1)
+set_b = Pattern(data0, '-', data1)
 set_b.test()
 ##############################################################################
 import crocs
@@ -188,7 +188,7 @@ data1 = Repeat(c1, 1)
 # Define the general format of the second part thats
 # the condition.
 
-data2 = Join('-', data1)
+data2 = Pattern('-', data1)
 
 # The condition that will warrant the second part after the '-'
 # will be formed by just numbers but will not consume it.
@@ -198,7 +198,7 @@ data2 = Join('-', data1)
 # just numbers.
 cond = ConsumeBack(data0, data2)
 
-pattern = Join(cond)
+pattern = Pattern(cond)
 pattern.test()
 
 ##############################################################################
@@ -216,7 +216,7 @@ data0 = Repeat(c0, 1)
 
 
 # Define how the second part looks like.
-data1 = Join('-', 'alpha')
+data1 = Pattern('-', 'alpha')
 
 # The condition that will warrant the second part after the '-'
 # will be formed by just numbers but will not consume it.
@@ -226,7 +226,7 @@ data1 = Join('-', 'alpha')
 # just numbers.
 cond = ConsumeBack(data0, data1, neg=True)
 
-pattern = Join(cond)
+pattern = Pattern(cond)
 pattern.test()
 
 ##############################################################################
@@ -235,7 +235,7 @@ from crocs import *
 # The string has digits in the beginning.
 p0 = Seq('a', 'z')
 c0 = Include(p0)
-data = Join('alpha', Repeat(c0, 1))
+data = Pattern('alpha', Repeat(c0, 1))
 data.hits()
 
 # Set up the condition, it will match alpha only if it is not
@@ -243,7 +243,7 @@ data.hits()
 cond = ConsumeBack('alpha', 'beta', neg=True)
 
 # Finally set up the pattern.
-pattern = Join(data0, cond)
+pattern = Pattern(data0, cond)
 pattern.test()
 pattern.hits()
 regx = search('[0-9]{1,}alpha(?!beta)', '3233alphaskljd')

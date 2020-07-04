@@ -1,4 +1,4 @@
-from crocs.regex import Join, ConsumeNext
+from crocs.regex import Pattern, ConsumeNext
 
 e = ConsumeNext(ConsumeNext('abc', 'def', neg=True), 'def')
 e.test()

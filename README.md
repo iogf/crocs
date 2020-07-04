@@ -35,7 +35,7 @@ Match with:
 
 # Yregex/Code:
 
-from crocs.regex import Group, Include, GLink, Join, Repeat, Seq
+from crocs.regex import Group, Include, GLink, Pattern, Repeat, Seq
 from crocs.core import RegexStr
 regexstr0 = RegexStr('*')
 repeat0 = Repeat(regexstr0, min=1, max=3, wrap=False, greedy=False)
@@ -58,7 +58,7 @@ repeat2 = Repeat(group1, min=1, max=3, wrap=False, greedy=False)
 group3 = Group(group4, repeat2)
 regexstr5 = RegexStr('*')
 repeat3 = Repeat(regexstr5, min=1, max=3, wrap=False, greedy=False)
-join0 = Join(repeat0, group0, group3, repeat3)
+pattern0 = Pattern(repeat0, group0, group3, repeat3)
 >>> 
 
 ~~~
@@ -76,12 +76,12 @@ Group dict: {}
 Group 0: a<b
 Groups: ()
 >>> print(yregex.mkcode())
-from crocs.regex import Join, X
+from crocs.regex import Pattern, X
 from crocs.core import RegexStr
 regexstr0 = RegexStr('a')
 x0 = X()
 regexstr1 = RegexStr('b')
-join0 = Join(regexstr0, x0, regexstr1)
+pattern0 = Pattern(regexstr0, x0, regexstr1)
 ~~~
 
 The actual implementation supports most Python regex features, groups, named groups,
@@ -98,7 +98,7 @@ statements and you could test seperately each one of the sub patterns. It should
 your reasoning and slow down development/debugging time.
 
 ~~~python
-from crocs.regex import Seq, Include, Repeat, Join, NamedGroup, Include
+from crocs.regex import Seq, Include, Repeat, Pattern, NamedGroup, Include
 
 # First we define how our patterns look like.
 name_valid_letters = Seq('a', 'z')
@@ -115,7 +115,7 @@ name_valid_numbers, name_valid_signs)
 name_chunk = Repeat(name_valid_chars, 1)
 
 # The first letter in the mail name has to be a in 'a-z'.
-name_fmt = Join(Include(name_valid_letters), name_chunk)
+name_fmt = Pattern(Include(name_valid_letters), name_chunk)
 
 # Think of group as a way to keep reference
 # to the fetched chunk.
@@ -127,8 +127,8 @@ name = NamedGroup('name', name_fmt)
 hostname_chars = Include(name_valid_letters)
 hostname_chunk = Repeat(hostname_chars, 1)
 
-# We format finally the complete hostname Join.
-hostname_fmt = Join('python', hostname_chunk)
+# We format finally the complete hostname Pattern.
+hostname_fmt = Pattern('python', hostname_chunk)
 
 # Keep reference for the group.
 hostname = NamedGroup('hostname', hostname_fmt)
@@ -137,7 +137,7 @@ hostname = NamedGroup('hostname', hostname_fmt)
 domain  = NamedGroup('domain', 'br')
 
 # Finally we generate the regex and check how it looks like.
-match_mail = Join(name, '@', hostname, '.', domain)
+match_mail = Pattern(name, '@', hostname, '.', domain)
 match_mail.test()
 match_mail.hits()
 

@@ -1,6 +1,6 @@
-from crocs.regex import Join, ConsumeBack, X
+from crocs.regex import Pattern, ConsumeBack, X
 
-e = ConsumeBack(ConsumeBack(Join('a', X(), 'b'), 'def'), 'def')
+e = ConsumeBack(ConsumeBack(Pattern('a', X(), 'b'), 'def'), 'def')
 e.test()
 e.hits()
 

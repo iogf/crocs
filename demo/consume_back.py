@@ -1,4 +1,4 @@
-from crocs.regex import Join, ConsumeBack
+from crocs.regex import Pattern, ConsumeBack
 
 e = ConsumeBack('Isaac ', 'Asimov', neg=True)
 e.test()

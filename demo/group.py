@@ -1,5 +1,5 @@
-from crocs.regex import Join, Group, X
+from crocs.regex import Pattern, Group, X
 
-e = Join('a', Group('b', X()))
+e = Pattern('a', Group('b', X()))
 e.test()
 e.hits()

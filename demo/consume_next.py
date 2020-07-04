@@ -1,6 +1,6 @@
-from crocs.regex import Join, ConsumeNext, X
+from crocs.regex import Pattern, ConsumeNext, X
 
-e = ConsumeNext(Join('a', X(), 'b'), 'def')
+e = ConsumeNext(Pattern('a', X(), 'b'), 'def')
 e.test()
 e.hits()
 

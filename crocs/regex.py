@@ -1,5 +1,28 @@
 from crocs.core import printable, RegexOperator, isword, notword, RegexStr
 from random import choice, randint
+from itertools import groupby
+
+class Pattern(RegexOperator):
+    """
+    Setup a pattern.
+    """
+
+    def __init__(self, *args):
+        items = (RegexStr(ind) if isinstance(ind, str) else ind 
+        for ind in args)
+
+        args  = []        
+        opers = groupby(items, lambda ind: ind.__class__)
+
+        for indi, indj in opers:
+            args.extend(indi.reduce_initargs(*indj))
+        super(Pattern, self).__init__(*args)
+
+    def invalid_data(self):
+        return ''.join(map(lambda ind: ind.invalid_data(), self.args))
+
+    def valid_data(self):
+        return ''.join(map(lambda ind: ind.valid_data(), self.args))
 
 class Any(RegexOperator):
     def __init__(self, *args):
@@ -38,7 +61,7 @@ class Dollar(RegexOperator):
     def to_regex(self):
         return '$' 
 
-class NonCapture(RegexOperator):
+class NonCapture(Pattern):
     def __init__(self, *args):
         super(NonCapture, self).__init__(*args)
 
@@ -84,7 +107,7 @@ class NotWord(RegexOperator):
         return "%s = %s()" % (self.instref(argrefs), 
         self.__class__.__name__)
 
-class Group(RegexOperator):
+class Group(Pattern):
     """
     A normal group.
 
@@ -484,22 +507,6 @@ class X(RegexOperator):
 
     def to_regex(self):
         return '.'
-
-class Join(RegexOperator):
-    """
-    Setup a pattern.
-    """
-
-    def __init__(self, *args):
-        super(Join, self).__init__(*args)
-
-    def invalid_data(self):
-        return ''.join(map(lambda ind: \
-        ind.invalid_data(), self.args))
-
-    def valid_data(self):
-        return ''.join(map(lambda ind: \
-        ind.valid_data(), self.args))
 
 class RegexComment(RegexOperator):
     def __init__(self, comment):

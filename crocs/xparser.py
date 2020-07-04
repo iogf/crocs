@@ -1,7 +1,7 @@
 from eacc.eacc import Eacc
 from eacc.lexer import Lexer
 from crocs.grammar import RegexTokens, RegexGrammar, HClassGrammar, HClassTokens
-from crocs.regex import X, Join, Group, NonCapture, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
+from crocs.regex import X, Pattern, Group, NonCapture, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink, \
 Word, NotWord, Caret, Dollar
 from crocs.core import BlankX
@@ -104,10 +104,10 @@ class RegexParser(Eacc):
     def pipe(self, regex0, pipe, regex1):
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
-        join0 = Join(*data0)
-        join1 = Join(*data1)
-        join2 = Any(join0, join1)
-        return join2
+        pattern0 = Pattern(*data0)
+        pattern1 = Pattern(*data1)
+        pattern2 = Any(pattern0, pattern1)
+        return pattern2
 
     def group(self, lp, regex, rp):
         data  = (ind.val() for ind in regex)
@@ -151,33 +151,33 @@ class RegexParser(Eacc):
     def cnext(self, lp, question, lexer, equal, regex0, rp, regex1):
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
-        join0 = Join(*data0)
-        join1 = Join(*data1)
-        e = ConsumeNext(join0, join1)
+        pattern0 = Pattern(*data0)
+        pattern1 = Pattern(*data1)
+        e = ConsumeNext(pattern0, pattern1)
         return e
 
     def ncnext(self, lp, question, lexer, exlam, regex0, rp, regex1):
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
-        join0 = Join(*data0)
-        join1 = Join(*data1)
-        e = ConsumeNext(join0, join1, neg=True)
+        pattern0 = Pattern(*data0)
+        pattern1 = Pattern(*data1)
+        e = ConsumeNext(pattern0, pattern1, neg=True)
         return e
 
     def cback(self, regex0, lp, question,  equal, regex1, rp):
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
-        join0 = Join(*data0)
-        join1 = Join(*data1)
-        e = ConsumeBack(join0, join1)
+        pattern0 = Pattern(*data0)
+        pattern1 = Pattern(*data1)
+        e = ConsumeBack(pattern0, pattern1)
         return e
 
     def ncback(self, regex0, lp, question, exlam, regex1, rp):
         data0 = (ind.val() for ind in regex0)
         data1 = (ind.val() for ind in regex1)
-        join0 = Join(*data0)
-        join1 = Join(*data1)
-        e = ConsumeBack(join0, join1, neg=True)
+        pattern0 = Pattern(*data0)
+        pattern1 = Pattern(*data1)
+        e = ConsumeBack(pattern0, pattern1, neg=True)
         return e
 
     def dot(self, dot):
@@ -266,8 +266,8 @@ class RegexParser(Eacc):
 
     def done(self, sof, regex, eof):
         data = (ind.val() for ind in regex)
-        join = Join(*data)
-        return join
+        pattern = Pattern(*data)
+        return pattern
 
 def xmake(regstr):
     xlexer  = Lexer(RegexTokens)
