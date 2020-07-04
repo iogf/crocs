@@ -108,10 +108,11 @@ class RegexGrammar(Grammar):
     r_caret  = Rule(Caret, type=RegExpr)
     r_dollar  = Rule(Dollar, type=RegExpr)
 
-    r_times0 = Rule(RegExpr, LBR, Char, Comma, Char, RBR, type=RegExpr)
-    r_times1 = Rule(RegExpr, LBR, Char, RBR, type=RegExpr)
-    r_times2 = Rule(RegExpr, LBR, Char, Comma, RBR, type=RegExpr)
-    r_times3 = Rule(RegExpr, LBR, Comma, Char, RBR, type=RegExpr)
+    r_times0 = Rule(RegExpr, LBR, T(Char, 1), Comma, T(Char, 1), RBR, type=RegExpr)
+    r_times1 = Rule(RegExpr, LBR, T(Char, 1), RBR, type=RegExpr)
+    r_times2 = Rule(RegExpr, LBR, T(Char, 1), Comma, RBR, type=RegExpr)
+    r_times3 = Rule(RegExpr, LBR, Comma, T(Char, 1), RBR, type=RegExpr)
+
     r_times4 = Rule(RegExpr, Mul, type=RegExpr)
     r_times5 = Rule(RegExpr, Question, type=RegExpr)
     r_times6 = Rule(RegExpr, Plus, type=RegExpr)

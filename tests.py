@@ -914,7 +914,41 @@ class TestRepeat(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test12(self):
-        regstr = r'a'
+        regstr = r'a{10}'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        # RegExpr{num} is represented as RegExpr{num,num}
+        self.assertEqual(yregex.mkregex(), r'a{10,10}')
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), r'a{10,10}')
+
+    def test13(self):
+        regstr = r'a{12,}'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test13(self):
+        regstr = r'a{,13}'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), r'a{0,13}')
+
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), r'a{0,13}')
+
+    def test14(self):
+        # Possibly a bug because it fails with:
+        # regstr = r'((r.+bc)(?=a{13,15}))a'
+
+        regstr = r'((r.+bc)(?=a{13,15}))a+'
         yregex = xmake(regstr)
         yregex.test()
         

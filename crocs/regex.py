@@ -275,7 +275,7 @@ class Repeat(RegexOperator):
         return ''.join((choice(data) for ind in range(count)))
 
     def valid_data(self):
-        lim = self.MAX if self.max == '' else self.max
+        lim = (self.MAX + self.min) if self.max == '' else self.max
         count = randint(self.min, lim)
 
         data = (self.args[0].valid_data() 

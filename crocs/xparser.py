@@ -193,32 +193,43 @@ class RegexParser(Eacc):
         return dollar
 
     def times0(self, regex, lbr, min, comma, max, rbr):
-        e = Repeat(regex.val(), int(min.val()), int(max.val()))
-        return e
+        min = ''.join((ind.val() for ind in min))
+        max = ''.join((ind.val() for ind in max))
+    
+        repeat = Repeat(regex.val(), int(min), int(max))
+        return repeat
 
     def times1(self, regex, lbr, num, rbr):
-        e = Repeat(regex.val(), int(num.val()), int(num.val()))
-        return e
+        num = ''.join((ind.val() for ind in num))
+        num = int(num)
+        repeat = Repeat(regex.val(), num, num)
+        return repeat
 
     def times2(self, regex, lbr, min, comma, rbr):
-        e = Repeat(regex.val(), int(min.val()))
-        return e
+        min = ''.join((ind.val() for ind in min))
+
+        repeat = Repeat(regex.val(), int(min))
+        return repeat
+
+        return repeat
 
     def times3(self, regex, lbr, comma, max, rbr):
-        e = Repeat(regex.val(), max=int(max.val()))
-        return e
+        max = ''.join((ind.val() for ind in max))
+
+        repeat = Repeat(regex.val(), max=int(max))
+        return repeat
 
     def times4(self, regex, mul):
-        e = ZeroOrMore(regex.val())
-        return e
+        repeat = ZeroOrMore(regex.val())
+        return repeat
 
     def times5(self, regex, question):
-        e = OneOrZero(regex.val())
-        return e
+        repeat = OneOrZero(regex.val())
+        return repeat
 
     def times6(self, regex, question):
-        e = OneOrMore(regex.val())
-        return e
+        repeat = OneOrMore(regex.val())
+        return repeat
 
     def times7(self, regex, plus, question):
         """
