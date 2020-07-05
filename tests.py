@@ -86,7 +86,7 @@ class TestInclude(unittest.TestCase):
         expr1 = Include('m', 'n')
 
         expr2 = Any(expr0, expr1)
-        expr3 = OneOrMore(expr2, wrap=True)
+        expr3 = OneOrMore(Group(expr2))
         regstr = expr3.mkregex()
         self.assertEqual(regstr, '([xy]|[mn])+')
 
@@ -103,7 +103,7 @@ class TestInclude(unittest.TestCase):
         expr2 = Include('a', Seq('0', '9'), 'b')
 
         expr3 = Any(expr0, expr1, expr2)
-        expr4 = OneOrMore(expr3, wrap=True)
+        expr4 = OneOrMore(Group(expr3))
         regstr = expr4.mkregex()
 
         yregex = xmake(regstr)
@@ -119,7 +119,7 @@ class TestInclude(unittest.TestCase):
         expr2 = Include('a', Seq('0', '9'), 'b')
 
         expr3 = Any(expr0, expr1, expr2)
-        expr4 = Repeat(expr3, 3, 8, wrap=True)
+        expr4 = Repeat(Group(expr3), 3, 8)
         regstr = expr4.mkregex()
 
         yregex = xmake(regstr)
@@ -574,11 +574,33 @@ class TestAny(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), r'a{0,}|b{0,}')
 
+    def test10(self):
+        regstr = r'(a{0,}|b{0,})|(abc)|c+'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test11(self):
+        expr0 = Any('abc', 'efg')
+        expr1 = Repeat(Group(expr0), 1, 4)
+
+        regstr = expr1.mkregex()
+        self.assertEqual(regstr, r'(abc|efg){1,4}')
+
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
 class TestOneOrZero(unittest.TestCase):
     def test0(self):
         expr0 = Include(Seq('0', '9'))
         expr1 = Any(expr0, 'ahh', X())
-        expr2 = OneOrZero(expr1)
+        expr2 = OneOrZero(Group(expr1))
         expr3 = Group(expr1, 'ee', X(), 'uu')
 
         regstr = expr3.mkregex()
@@ -639,7 +661,7 @@ class TestOneOrMore(unittest.TestCase):
     def test0(self):
         expr0 = Exclude(Seq('a', 'z'))
         expr1 = Any(expr0, expr0, 'fooo', X(), 'ooo', expr0)
-        expr2 = OneOrMore(expr1)
+        expr2 = OneOrMore(Group(expr1))
         expr3 = Group(expr1, 'ee', X(), 'uu', expr2, 'oo', expr1)
 
         regstr = expr3.mkregex()
@@ -820,7 +842,7 @@ class TestNamedGroup(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test3(self):
-        expr0 = NamedGroup('foobar', Repeat(Any('a', X(), 'b')))
+        expr0 = NamedGroup('foobar', Repeat(Group(Any('a', X(), 'b'))))
         expr1 = Any(expr0, 'm', 'n', Group(expr0, '12', X()))
 
         regstr = expr1.mkregex()
@@ -834,9 +856,9 @@ class TestNamedGroup(unittest.TestCase):
 
 class TestRepeat(unittest.TestCase):
     def test0(self):
-        expr0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        expr0 = NamedGroup('oooo', Repeat(Group(Any('a', X(), 'b'))))
         expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
-        expr2 = Repeat(expr1)
+        expr2 = Repeat(Group(expr1))
         expr3 = Pattern(expr0, expr1, expr2)
 
         regstr = expr3.mkregex()
@@ -849,9 +871,9 @@ class TestRepeat(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test1(self):
-        expr0 = NamedGroup('oooo', Repeat(Any('a', X(), 'b')))
+        expr0 = NamedGroup('oooo', Repeat(Group(Any('a', X(), 'b'))))
         expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
-        expr2 = Repeat(expr1)
+        expr2 = Repeat(Group(expr1))
         expr3 = Pattern(expr0, expr1, expr2)
 
         expr4 = Pattern(expr0, X(), 'ooo', X(), expr1, expr2, expr3)
@@ -1002,11 +1024,11 @@ class TestRepeat(unittest.TestCase):
 
 class TestZeroOrMore(unittest.TestCase):
     def test0(self):
-        expr0 = NamedGroup('alpha', Repeat(Any('a', X())))
+        expr0 = NamedGroup('alpha', Repeat(Group(Any('a', X()))))
         expr1 = Pattern(expr0, 'm', Group('oooo'))
         expr2 = Any(expr0, expr1)
 
-        expr7 = ZeroOrMore(expr2)
+        expr7 = ZeroOrMore(Group(expr2))
         expr8 = Pattern(expr7, expr2)
 
         regstr = expr8.mkregex()

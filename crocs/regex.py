@@ -1,4 +1,5 @@
-from crocs.core import printable, RegexOperator, isword, notword, RegexStr, RegexMeta
+from crocs.core import printable, RegexOperator, isword, \
+notword, RegexStr, RegexMeta, BadYregex
 from random import choice, randint
 from itertools import groupby
 
@@ -271,17 +272,16 @@ class Repeat(RegexOperator):
 
     MAX = 7
 
-    def __init__(self, regex, min=0, max='', wrap=False, greedy=False):
+    def __init__(self, regex, min=0, max='', greedy=False):
         super(Repeat, self).__init__(regex)
-        self.min = min
-        self.max = max
-        self.wrap = wrap
+        self.min    = min
+        self.max    = max
         self.greedy = greedy
 
         if isinstance(regex, str) and len(regex) > 1:
             self.args[0] = Group(regex)
-        elif isinstance(regex, Any) and wrap:
-            self.args[0] = Group(regex)
+        elif isinstance(regex, Any):
+            raise BadYregex("Can't repeat Any! Wrap it with a group.")
 
     def invalid_data(self):
         lim = self.MAX if self.max == '' else self.max
@@ -315,33 +315,33 @@ class Repeat(RegexOperator):
         name = self.instref(argrefs)
 
         code = self.args[0].mkstmts(argrefs)
-        stmt = "%s = %s(%s, min=%s, max=%s, wrap=%s, greedy=%s)"
+        stmt = "%s = %s(%s, min=%s, max=%s, greedy=%s)"
 
         stmt = stmt % (name, 
         self.__class__.__name__, argrefs[self.args[0]], self.min, 
-        self.max if self.max != '' else "''", self.wrap, self.greedy)
+        self.max if self.max != '' else "''", self.greedy)
 
         return '%s\n%s' % (code, stmt)
 
 class ZeroOrMore(Repeat):
-    def __init__(self, regex, min=0, max='', wrap=False, greedy=False):
-        super(ZeroOrMore, self).__init__(regex, 0, wrap=wrap, greedy=greedy)
+    def __init__(self, regex, min=0, max='', greedy=False):
+        super(ZeroOrMore, self).__init__(regex, 0, greedy=greedy)
 
     def to_regex(self):
         return '%s*%s' % (self.args[0].to_regex(), 
         '?' if self.greedy else '')
 
 class OneOrMore(Repeat):
-    def __init__(self, regex, min=1, max='', wrap=False, greedy=False):
-        super(OneOrMore, self).__init__(regex, min, max, wrap=wrap, greedy=greedy)
+    def __init__(self, regex, min=1, max='', greedy=False):
+        super(OneOrMore, self).__init__(regex, min, max, greedy=greedy)
 
     def to_regex(self):
         return '%s+%s' % (self.args[0].to_regex(), 
         '?' if self.greedy else '')
 
 class OneOrZero(Repeat):
-    def __init__(self, regex, min=0, max=1, wrap=False, greedy=False):
-        super(OneOrZero, self).__init__(regex, min, max, wrap=wrap, greedy=greedy)
+    def __init__(self, regex, min=0, max=1, greedy=False):
+        super(OneOrZero, self).__init__(regex, min, max, greedy=greedy)
 
     def to_regex(self):
         return '%s?%s' % (self.args[0].to_regex(), 

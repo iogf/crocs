@@ -9,6 +9,12 @@ isword  = ascii_letters + digits + '_'
 notword = ''.join((ind 
 for ind in punctuation if ind != '_'))
 
+class CrocsError(Exception):
+    pass
+
+class BadYregex(CrocsError):
+    pass
+
 class BasicRegex:
     def __init__(self, *args):
         self.args  = list(args)
