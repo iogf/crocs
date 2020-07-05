@@ -300,7 +300,7 @@ class Repeat(RegexOperator):
         count = randint(self.min, lim)
 
         data = (self.args[0].valid_data() 
-            for ind in range(count))
+            for ind in range(0, count))
         data = ''.join(data)
 
         return data 
@@ -319,7 +319,7 @@ class Repeat(RegexOperator):
 
         stmt = stmt % (name, 
         self.__class__.__name__, argrefs[self.args[0]], self.min, 
-        self.max if self.max else "''", self.wrap, self.greedy)
+        self.max if self.max != '' else "''", self.wrap, self.greedy)
 
         return '%s\n%s' % (code, stmt)
 

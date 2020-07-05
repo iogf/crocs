@@ -215,6 +215,9 @@ class RegexOperator(BasicRegex):
         return ''
 
     def hits(self, count=7):
+        """
+        Generate possible matches/hits..
+        """
         data = (self.seed() for ind in range(count))
         print('Match with:\n', ' '.join(data))
 
@@ -229,6 +232,10 @@ class RegexOperator(BasicRegex):
         return regstr
 
     def mkregex(self):
+        """
+        Generate a raw regex.
+        
+        """
         regstr = self.to_regex()
         self.clear()
         return regstr

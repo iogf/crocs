@@ -5,6 +5,7 @@ from crocs.regex import X, Pattern, Group, NonCapture, NamedGroup, Repeat, ZeroO
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink, \
 Word, NotWord, Caret, Dollar, Metab,MetaB
 from crocs.core import BlankX
+import re
 
 class IncludeSet(Eacc):
     def __init__(self):
@@ -291,6 +292,11 @@ class RegexParser(Eacc):
         return pattern
 
 def xmake(regstr):
+    """
+    Generate Python code from the regex regstr..
+    """
+    # Make sure the regex is valid before parsing.
+    regexc = re.compile(regstr)
     xlexer  = Lexer(RegexTokens)
     xparser = RegexParser()
 
