@@ -279,7 +279,8 @@ class Repeat(RegexOperator):
         self.greedy = greedy
 
         if isinstance(regex, str) and len(regex) > 1:
-            self.args[0] = Group(regex)
+            raise BadYregex(("Can't repeat strings length > 1!"
+                "Use it with a group."))
         elif isinstance(regex, Any):
             raise BadYregex("Can't repeat Any! Wrap it with a group.")
 

@@ -1,7 +1,7 @@
 
 from distutils.core import setup
 setup(name="crocs",
-      version="3.0.0",
+      version="3.1.0",
       packages=["crocs", ],
       scripts = ['yregex'],
       author="Iury O. G. Figueiredo",

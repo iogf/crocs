@@ -627,7 +627,7 @@ class TestOneOrZero(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
-        expr1 = OneOrZero('fooo')
+        expr1 = OneOrZero(Group('fooo'))
         expr2 = Group(expr1, 'ee', X(), 'uu')
         expr3 = Pattern(expr2, 'foobar', expr2, 'bar', expr2)
 
@@ -688,7 +688,7 @@ class TestOneOrMore(unittest.TestCase):
         self.assertEqual(clone.mkregex(), regstr)
 
     def test2(self):
-        expr1 = OneOrMore('fooo')
+        expr1 = OneOrMore(Group('fooo'))
         expr2 = Group(expr1, '0000000', expr1, expr1, X(), 'uu', expr1)
         expr3 = Pattern(expr1, expr2, expr2, 'alpha', expr2, 'bar', expr2)
 
@@ -821,8 +821,8 @@ class TestNamedGroup(unittest.TestCase):
     def test2(self):
         # Check if it works for nested named groups.
         expr0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
-        expr1 = NamedGroup('beta', 'Lets be overmen.')
-        expr2 = NamedGroup('gamma', OneOrMore(expr1), 'rs', OneOrMore('rs'))
+        expr1 = NamedGroup('beta', Group('Lets be overmen.'))
+        expr2 = NamedGroup('gamma', OneOrMore(expr1), 'rs', OneOrMore(Group('rs')))
 
         expr3 = NamedGroup('delta', expr0, expr1, expr2, 'hoho')
         expr4 = Pattern(expr0, expr1, expr0, expr1, expr2, expr3)
@@ -1069,7 +1069,7 @@ class TestZeroOrMore(unittest.TestCase):
 
 class TestConsumeNext(unittest.TestCase):
     def test0(self):
-        expr0 = ConsumeNext(Group(X(), OneOrMore('alpha')), 
+        expr0 = ConsumeNext(Group(X(), OneOrMore(Group('alpha'))), 
         Group(X(), 'bar', X()))
         expr1 = Any(expr0, X(), '123')
         regstr = expr1.mkregex()
@@ -1079,7 +1079,7 @@ class TestConsumeNext(unittest.TestCase):
 
     def test1(self):
         expr0 = ConsumeNext(Group(X(), 'bar', X()), 
-        Group(X(), OneOrMore('alpha')))
+        Group(X(), OneOrMore(Group('alpha'))))
 
         expr1 = Any(expr0, X(), '123')
         expr2 = ConsumeNext(Group(X(), '579', X()), expr1)
@@ -1094,14 +1094,14 @@ class TestConsumeNext(unittest.TestCase):
 
     def test2(self):
         expr0 = ConsumeNext(Group(X(), 'bar', X()), 
-        Group(X(), OneOrMore('alpha')))
+        Group(X(), OneOrMore(Group('alpha'))))
         expr1 = Any(expr0, X(), '123')
         expr2 = ConsumeNext(Group(X(), '579', X()), expr1)
 
         expr3 = ConsumeBack(expr2, 
         Group(OneOrMore(expr2), 'aaaaa', 'bbbb', X()))
 
-        expr3 = Pattern(expr3, 'aaaa', X(), OneOrMore('aaaa'))
+        expr3 = Pattern(expr3, 'aaaa', X(), OneOrMore(Group('aaaa')))
         regstr = expr3.mkregex()
         yregex = xmake(regstr)
 
@@ -1175,9 +1175,9 @@ class TestConsumeNext(unittest.TestCase):
 class TestConsumeBack(unittest.TestCase):
     def test0(self):
         expr0 = ConsumeBack(Group(X(), '1010101', X()), 
-        Group(X(), OneOrMore('010101')))
+        Group(X(), OneOrMore(Group('010101'))))
 
-        expr1 = Pattern(expr0, 'aaaa', X(), OneOrMore('1010101'))
+        expr1 = Pattern(expr0, 'aaaa', X(), OneOrMore(Group('1010101')))
         expr2 = Any(expr0, expr1, X(), Group(expr1, X(), 'a'))
 
         regstr = expr2.mkregex()
@@ -1193,7 +1193,7 @@ class TestConsumeBack(unittest.TestCase):
         expr0 = ConsumeBack(Group(OneOrMore(X()), 
         'aaa', X()), Group('aaa', X(), 'bbb'))
 
-        expr1 = Any(expr0, 'aaaa', X(), OneOrMore('foobar'), X())
+        expr1 = Any(expr0, 'aaaa', X(), OneOrMore(Group('foobar')), X())
         expr2 = Any(expr1, expr1, X(), Group(expr1, X(), 'a'))
         expr3 = NamedGroup('xx', expr0, expr1, X(), X())
         expr4 = Pattern(expr0, expr1, expr2, expr3)
