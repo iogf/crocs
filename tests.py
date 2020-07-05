@@ -1046,7 +1046,7 @@ class TestZeroOrMore(unittest.TestCase):
         expr1 = Pattern(expr0, ZeroOrMore('a'), 
         Group('oooo'), Group(expr0))
 
-        expr2 = Repeat(expr1)
+        expr2 = Repeat(Group(expr1))
 
         regstr = expr2.mkregex()
         yregex = xmake(regstr)
@@ -1082,7 +1082,7 @@ class TestConsumeNext(unittest.TestCase):
         Group(X(), OneOrMore(Group('alpha'))))
 
         expr1 = Any(expr0, X(), '123')
-        expr2 = ConsumeNext(Group(X(), '579', X()), expr1)
+        expr2 = ConsumeNext(Group(X(), '579', X()), Group(expr1))
         regstr = expr2.mkregex()
         yregex = xmake(regstr)
 
@@ -1096,7 +1096,7 @@ class TestConsumeNext(unittest.TestCase):
         expr0 = ConsumeNext(Group(X(), 'bar', X()), 
         Group(X(), OneOrMore(Group('alpha'))))
         expr1 = Any(expr0, X(), '123')
-        expr2 = ConsumeNext(Group(X(), '579', X()), expr1)
+        expr2 = ConsumeNext(Group(X(), '579', X()), Group(expr1))
 
         expr3 = ConsumeBack(expr2, 
         Group(OneOrMore(expr2), 'aaaaa', 'bbbb', X()))
@@ -1105,7 +1105,7 @@ class TestConsumeNext(unittest.TestCase):
         regstr = expr3.mkregex()
         yregex = xmake(regstr)
 
-        yregex.test()
+        # yregex.test()
         self.assertEqual(yregex.mkregex(), regstr)
 
         clone = yregex.mkclone()

@@ -3,11 +3,7 @@ notword, RegexStr, RegexMeta, BadYregex
 from random import choice, randint
 from itertools import groupby
 
-class Pattern(RegexOperator):
-    """
-    Setup a pattern.
-    """
-
+class JoinX(RegexOperator):
     def __init__(self, *args):
         items = (RegexStr(ind) if isinstance(ind, str) else ind 
         for ind in args)
@@ -17,13 +13,19 @@ class Pattern(RegexOperator):
 
         for indi, indj in opers:
             args.extend(indi.reduce_initargs(*indj))
-        super(Pattern, self).__init__(*args)
+        super(JoinX, self).__init__(*args)
 
     def invalid_data(self):
         return ''.join(map(lambda ind: ind.invalid_data(), self.args))
 
     def valid_data(self):
         return ''.join(map(lambda ind: ind.valid_data(), self.args))
+
+class Pattern(JoinX):
+    """
+    Setup a pattern.
+    """
+    pass
 
 class Any(RegexOperator):
     def __init__(self, *args):
@@ -83,7 +85,7 @@ class Dollar(RegexOperator):
     def to_regex(self):
         return '$' 
 
-class NonCapture(Pattern):
+class NonCapture(JoinX):
     def __init__(self, *args):
         super(NonCapture, self).__init__(*args)
 
@@ -129,7 +131,7 @@ class NotWord(RegexOperator):
         return "%s = %s()" % (self.instref(argrefs), 
         self.__class__.__name__)
 
-class Group(Pattern):
+class Group(JoinX):
     """
     A normal group.
 
@@ -279,10 +281,9 @@ class Repeat(RegexOperator):
         self.greedy = greedy
 
         if isinstance(regex, str) and len(regex) > 1:
-            raise BadYregex(("Can't repeat strings length > 1!"
-                "Use it with a group."))
-        elif isinstance(regex, Any):
-            raise BadYregex("Can't repeat Any! Wrap it with a group.")
+            raise BadYregex("String length > 1! Use it with a group.")
+        elif isinstance(regex, Any) or isinstance(regex, Pattern):
+            raise BadYregex("Can't repeat! Wrap it with a group.")
 
     def invalid_data(self):
         lim = self.MAX if self.max == '' else self.max
@@ -356,6 +357,9 @@ class ConsumeNext(RegexOperator):
     """
 
     def __init__(self, regex0, regex1, neg=False):
+        if isinstance(regex1, Any):
+            raise BadYregex("Can't repeat! Wrap it with a group.")
+
         super(ConsumeNext, self).__init__(regex0, regex1)
         self.neg = neg
 
@@ -406,6 +410,9 @@ class ConsumeBack(ConsumeNext):
     """
 
     def __init__(self, regex0, regex1, neg=False):
+        if isinstance(regex0, Any):
+            raise BadYregex("Can't repeat! Wrap it with a group.")
+
         super(ConsumeBack, self).__init__(regex0, regex1)
         self.neg = neg
 
