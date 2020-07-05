@@ -25,7 +25,12 @@ class Pattern(JoinX):
     """
     Setup a pattern.
     """
-    pass
+    def __init__(self, *args):
+        for ind in args:
+            if isinstance(ind, Any):
+                raise BadYregex(('Received Any instance!' 
+                    'Wrap it with a group.'))
+        super(Pattern, self).__init__(*args)
 
 class Any(RegexOperator):
     def __init__(self, *args):
@@ -358,7 +363,8 @@ class ConsumeNext(RegexOperator):
 
     def __init__(self, regex0, regex1, neg=False):
         if isinstance(regex1, Any):
-            raise BadYregex("Can't repeat! Wrap it with a group.")
+            raise BadYregex(('Argument regex1 is Any instance!'
+                'Wrap it with a group'))
 
         super(ConsumeNext, self).__init__(regex0, regex1)
         self.neg = neg
@@ -410,8 +416,9 @@ class ConsumeBack(ConsumeNext):
     """
 
     def __init__(self, regex0, regex1, neg=False):
-        if isinstance(regex0, Any):
-            raise BadYregex("Can't repeat! Wrap it with a group.")
+        if isinstance(regex1, Any):
+            raise BadYregex(('Argument regex1 is Any instance!'
+                'Wrap it with a group'))
 
         super(ConsumeBack, self).__init__(regex0, regex1)
         self.neg = neg

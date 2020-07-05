@@ -432,7 +432,7 @@ class TestAny(unittest.TestCase):
         expr0 = Exclude(Seq('0', '9'))
         expr1 = Include(Seq('a', 'b'))
         expr2 = Any(expr0, expr1)
-        expr3 = Pattern(expr2, expr2)
+        expr3 = Pattern(Group(expr2), Group(expr2))
 
         regstr = expr3.mkregex()
 
@@ -447,7 +447,7 @@ class TestAny(unittest.TestCase):
         expr0 = Exclude(Seq('0', '9'))
         expr1 = OneOrMore(expr0)
         expr2 = Any('a', expr0, expr1, 'b')
-        expr3 = Pattern(expr2, expr2)
+        expr3 = Pattern(Group(expr2), Group(expr2))
 
         regstr = expr3.mkregex()
 
@@ -514,8 +514,8 @@ class TestAny(unittest.TestCase):
         expr5 = Group(expr4, expr3, expr2, 'a', 'b', expr3)
         expr6 = Any(expr0, expr1, expr2, expr3, expr4, expr5)
 
-        expr7 = Pattern(expr0, expr2, expr3, expr4, expr5, expr6, 
-        'somestring',  expr6, expr6)
+        expr7 = Pattern(expr0, expr2, expr3, Group(expr4), expr5, Group(expr6), 
+        'somestring',  Group(expr6), Group(expr6))
 
         # The regex.
         # [0-9]([0-9].)\1+[0-9]|.|\1|\1|\1+([0-9]|.|\1|\1|\1+\1+\1ab\1+)[0-9]|.\
@@ -720,9 +720,7 @@ class TestGroup(unittest.TestCase):
         expr2 = Group(expr1, 'mm')
         expr3 = Group(expr2, 'uu')
         expr4 = Any(expr0, expr1, expr2, expr3)
-        expr5 = Pattern(expr4, expr0, expr1, expr2, expr3, expr4)
-
-        regstr = expr5.mkregex()
+        regstr = expr4.mkregex()
 
         yregex = xmake(regstr)
         yregex.test()
@@ -807,7 +805,7 @@ class TestNamedGroup(unittest.TestCase):
     def test1(self):
         expr0 = NamedGroup('alpha', 'X', OneOrMore(Group('a', 'b')), 'B')
         expr1 = Any(expr0, 'abc', X(), 'edf')
-        expr2 = Pattern(expr0, expr1, X(), 'foobar')
+        expr2 = Pattern(expr0, Group(expr1), X(), 'foobar')
         
         regstr = expr2.mkregex()
         yregex = xmake(regstr)
@@ -859,7 +857,7 @@ class TestRepeat(unittest.TestCase):
         expr0 = NamedGroup('oooo', Repeat(Group(Any('a', X(), 'b'))))
         expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
         expr2 = Repeat(Group(expr1))
-        expr3 = Pattern(expr0, expr1, expr2)
+        expr3 = Pattern(expr0, Group(expr1), expr2)
 
         regstr = expr3.mkregex()
         yregex = xmake(regstr)
@@ -874,9 +872,9 @@ class TestRepeat(unittest.TestCase):
         expr0 = NamedGroup('oooo', Repeat(Group(Any('a', X(), 'b'))))
         expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
         expr2 = Repeat(Group(expr1))
-        expr3 = Pattern(expr0, expr1, expr2)
+        expr3 = Pattern(expr0, Group(expr1), expr2)
 
-        expr4 = Pattern(expr0, X(), 'ooo', X(), expr1, expr2, expr3)
+        expr4 = Pattern(expr0, X(), 'ooo', X(), Group(expr1), expr2, expr3)
         expr5 = Any(expr0, expr1, expr2, expr3, expr4)
 
         regstr = expr5.mkregex()
@@ -1029,7 +1027,7 @@ class TestZeroOrMore(unittest.TestCase):
         expr2 = Any(expr0, expr1)
 
         expr7 = ZeroOrMore(Group(expr2))
-        expr8 = Pattern(expr7, expr2)
+        expr8 = Pattern(expr7, Group(expr2))
 
         regstr = expr8.mkregex()
         yregex = xmake(regstr)
@@ -1196,7 +1194,7 @@ class TestConsumeBack(unittest.TestCase):
         expr1 = Any(expr0, 'aaaa', X(), OneOrMore(Group('foobar')), X())
         expr2 = Any(expr1, expr1, X(), Group(expr1, X(), 'a'))
         expr3 = NamedGroup('xx', expr0, expr1, X(), X())
-        expr4 = Pattern(expr0, expr1, expr2, expr3)
+        expr4 = Pattern(expr0, Group(expr1), Group(expr2), expr3)
         regstr = expr4.mkregex()
         yregex = xmake(regstr)
 

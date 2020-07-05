@@ -113,9 +113,19 @@ class RegexParser(Eacc):
         return meta
 
     def pipe(self, regex0, pipe, regex1):
-        data0 = (ind.val() for ind in regex0)
-        data1 = (ind.val() for ind in regex1)
-        pattern0 = Pattern(*data0)
+        data0 = [ind.val() for ind in regex0]
+        data1 = [ind.val() for ind in regex1]
+        pattern0 = None
+        if isinstance(data0[0], Any):
+            pattern0 = data0[0]
+        else:
+            pattern0 = Pattern(*data0)
+
+        pattern1 = Pattern(*data1)
+        pattern2 = Any(pattern0, pattern1)
+        return pattern2
+
+    def reduce_pipe(self, regex0, regex1):
         pattern1 = Pattern(*data1)
         pattern2 = Any(pattern0, pattern1)
         return pattern2
@@ -287,9 +297,10 @@ class RegexParser(Eacc):
         return RegexComment(comment.val())
 
     def done(self, sof, regex, eof):
-        data = (ind.val() for ind in regex)
-        pattern = Pattern(*data)
-        return pattern
+        data = [ind.val() for ind in regex]
+        if len(data) > 1:
+            return Pattern(*data)
+        return data[0]
 
 def xmake(regstr):
     """
