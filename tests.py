@@ -956,7 +956,7 @@ class TestRepeat(unittest.TestCase):
     def test0(self):
         expr0 = NamedGroup('oooo', Repeat(Group(Any('a', X(), 'b'))))
         expr1 = Any(expr0, 'm', 'n', Group('oooo'), Group(expr0, X(), '12oooo', X()))
-        expr2 = Repeat(Group(expr1))
+        expr2 = Repeat(Group(expr1), 1, 3)
         expr3 = Pattern(expr0, Group(expr1), expr2)
 
         regstr = expr3.mkregex()
