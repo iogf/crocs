@@ -24,7 +24,6 @@ You will be able to better understand what is going on once your regex is a yreg
 
 Input: **a8ca8c$z#a8ca8ca8ca8c*
 Regex: \*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
-Input: **a8ca8c$z#a8ca8ca8ca8c*
 Group dict: {}
 Group 0: **a8ca8c$z#a8ca8ca8ca8c*
 Groups: ('a8ca8c', 'a8ca8c', 'a8c', '$z#a8ca8ca8ca8c', '$z#')
@@ -72,7 +71,6 @@ tau@archlinux ~]$ python
 >>> yregex.test()
 Input: a'b
 Regex: a.b
-Input: a'b
 Group dict: {}
 Group 0: a'b
 Groups: ()
@@ -130,7 +128,6 @@ That would output:
 [tau@archlinux demo]$ python mails.py 
 Input: pokxntfr@pythont.br
 Regex: (?P<name>[a-z]{1,})@(?P<hostname>python[a-z]{1,})\.br
-Input: pokxntfr@pythont.br
 Group dict: {'name': 'pokxntfr', 'hostname': 'pythont'}
 Group 0: pokxntfr@pythont.br
 Groups: ('pokxntfr', 'pythont')

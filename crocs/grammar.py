@@ -101,9 +101,11 @@ class RegexGrammar(Grammar):
     o_pipe6 = Rule(Dot)
     o_pipe7 = Rule(Plus)
     o_pipe8 = Rule(Escape)
+    o_pipe9 = Rule(Dollar)
 
     r_pipe  = Rule(T(RegExpr), Pipe, T(RegExpr), type=RegExpr, 
-    up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5, o_pipe6, o_pipe7, o_pipe8))
+    up=(o_pipe0, o_pipe1, o_pipe2, o_pipe3, o_pipe4, o_pipe5, o_pipe6, 
+    o_pipe7, o_pipe8, o_pipe9))
 
     r_group  = Rule(LP, T(RegExpr, type=RegExpr), RP, type=RegExpr)
     r_ngroup = Rule(LP, Question, GroupSymbol,

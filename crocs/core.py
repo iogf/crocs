@@ -197,9 +197,8 @@ class RegexOperator(BasicRegex):
         regex = regexc.search(data)
         assert regex is not None, 'Failed to generate valid matches!'
 
-        print('Input:', data)
+        print('Input:', repr(data))
         print('Regex:', regstr)
-        print('Input:', data)
 
         print('Group dict:', 
         regex.groupdict() if hasattr(
