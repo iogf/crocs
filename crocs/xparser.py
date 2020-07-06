@@ -115,15 +115,14 @@ class RegexParser(Eacc):
     def pipe(self, regex0, pipe, regex1):
         data0 = [ind.val() for ind in regex0]
         data1 = [ind.val() for ind in regex1]
-        pattern0 = None
-        if isinstance(data0[0], Any):
-            pattern0 = data0[0]
-        else:
-            pattern0 = Pattern(*data0)
-
         pattern1 = Pattern(*data1)
-        pattern2 = Any(pattern0, pattern1)
-        return pattern2
+        pattern0 = data0[0]
+
+        if isinstance(data0[0], Any):
+            pattern0.args.append(pattern1)
+        else:
+            pattern0 = Any(Pattern(*data0), pattern1)
+        return pattern0
 
     def reduce_pipe(self, regex0, regex1):
         pattern1 = Pattern(*data1)
