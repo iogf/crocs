@@ -68,7 +68,9 @@ class BasicRegex:
         stmt = '%s = %s(%s)' % (name, self.__class__.__name__, args)
         lines.append(stmt)
 
-        code = '\n'.join(lines)
+        code = '\n'.join((ind 
+        for ind in lines if ind != ''))
+
         return code
 
     def group_imports(self, argrefs):
