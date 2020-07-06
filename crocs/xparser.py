@@ -4,7 +4,7 @@ from crocs.grammar import RegexTokens, RegexGrammar, HClassGrammar, HClassTokens
 from crocs.regex import X, Pattern, Group, NonCapture, NamedGroup, Repeat, ZeroOrMore, OneOrMore, \
 OneOrZero, Seq, Include, Exclude, ConsumeNext, ConsumeBack, Any, NGLink, RegexComment, GLink, \
 Word, NotWord, Caret, Dollar, Metab,MetaB
-from crocs.core import BlankX
+from crocs.core import BlankX, RegexStr
 import re
 
 class IncludeSet(Eacc):
@@ -115,8 +115,12 @@ class RegexParser(Eacc):
     def pipe(self, regex0, pipe, regex1):
         data0 = [ind.val() for ind in regex0]
         data1 = [ind.val() for ind in regex1]
-        pattern1 = Pattern(*data1)
+
+        pattern1 = data1[0]
         pattern0 = data0[0]
+
+        if len(data1) > 1:
+            pattern1 = Pattern(*data1)
 
         if isinstance(data0[0], Any):
             pattern0.args.append(pattern1)
@@ -290,7 +294,7 @@ class RegexParser(Eacc):
         return repeat
 
     def char(self, char):
-        return char.val()
+        return RegexStr(char.val())
 
     def comment(self, lp, question, hash, comment, rp):
         return RegexComment(comment.val())
