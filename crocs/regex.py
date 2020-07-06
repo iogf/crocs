@@ -23,8 +23,13 @@ class JoinX(RegexOperator):
 
 class Pattern(JoinX):
     """
-    Setup a pattern.
+    This class is used to join sub patterns. The sub patterns
+    can be instances of Group, Repeat, str, etc. 
+
+    the only constraint it is not possible to pass instances of Any
+    otherwise it would cause ambiguity in the raw regex string.
     """
+
     def __init__(self, *args):
         for ind in args:
             if isinstance(ind, Any):
@@ -33,6 +38,17 @@ class Pattern(JoinX):
         super(Pattern, self).__init__(*args)
 
 class Any(RegexOperator):
+    """
+    The regex |.
+
+    Usage:
+        any = Any('abc', 'efg')
+        print(any.mkregex())
+
+    Output:
+        'abc|efg'
+    """
+
     def __init__(self, *args):
         super(Any, self).__init__(*args)
 
@@ -50,6 +66,17 @@ class Any(RegexOperator):
         return data
 
 class MetaB(RegexMeta):
+    """
+    The regex \B.
+
+    Usage:
+        pattern = Pattern(MetaB(), 'bar')
+        print(pattern.mkregex())
+
+    Output:
+        \Bbar
+    """
+
     def invalid_data(self):
         return ''
 
@@ -61,6 +88,17 @@ class MetaB(RegexMeta):
         return r'\B'
 
 class Metab(RegexMeta):
+    """
+    The regex \b.
+
+    Usage:
+        pattern = Pattern(Metab(), 'bar')
+        print(pattern.mkregex())
+
+    Output:
+        \bbar
+    """
+
     def invalid_data(self):
         return choice(isword)
 
@@ -71,6 +109,17 @@ class Metab(RegexMeta):
         return r'\b'
 
 class Caret(RegexOperator):
+    """
+    The regex ^.
+
+    Usage:
+        pattern = Pattern(Caret(), 'bar')
+        print(pattern.mkregex())
+
+    Output:
+        ^bar
+    """
+
     def invalid_data(self):
         return r''
 
@@ -81,6 +130,19 @@ class Caret(RegexOperator):
         return '^' 
 
 class Dollar(RegexOperator):
+    """
+    The regex $.
+
+    Usage:
+
+        pattern = Pattern('foobar', Dollar())
+        print(pattern.mkregex())
+
+    Output:
+
+        foobar$
+    """
+
     def invalid_data(self):
         return r''
 
@@ -91,6 +153,20 @@ class Dollar(RegexOperator):
         return '$' 
 
 class NonCapture(JoinX):
+    """
+    The regex:
+        (:abc)
+
+    Usage:
+        group = NonCapture('foo')
+        pattern = Pattern(group, 'bar')
+        print(pattern.mkregex())
+
+    Output:
+
+        (?:foo)bar
+
+    """
     def __init__(self, *args):
         super(NonCapture, self).__init__(*args)
 
@@ -109,6 +185,18 @@ class NonCapture(JoinX):
         return '(?:%s)' % data
 
 class Word(RegexOperator):
+    """
+    The \w metacharacter.
+
+    Usage:
+        repeat = Repeat(Word(), 1)
+        pattern = Pattern(':', repeat)
+        print(pattern.mkregex())
+
+    Output:
+        :\w{1,}
+
+    """
     def invalid_data(self):
         return choice(notword) 
 
@@ -123,6 +211,19 @@ class Word(RegexOperator):
         self.__class__.__name__)
 
 class NotWord(RegexOperator):
+    """
+    The \W metacharacter.
+
+    Usage:
+        repeat = Repeat(NotWord(), 1)
+        pattern = Pattern(':', repeat)
+        print(pattern.mkregex())
+
+    Output:
+        :\W{1,}
+
+    """
+
     def invalid_data(self):
         return choice(isword) 
 
@@ -138,9 +239,20 @@ class NotWord(RegexOperator):
 
 class Group(JoinX):
     """
-    A normal group.
+    A regex group like:
+        (abc)
 
-    (abc).
+    usage:
+        group = Group('abc')
+        pattern = Pattern(group, X(), group)
+        print(pattern.mkregex())
+
+    Output:
+        (abc).\1
+
+    Notice that the first reference to the group it serializes
+    to the regex group construct but the second one serializes to 
+    the group reference.
     """
 
     count = 0
@@ -190,6 +302,10 @@ class Group(JoinX):
         super(Group, self).clear()
 
 class GLink(RegexOperator):
+    """
+    Group literal reference. It is used by the regex parser
+    to index groups correctly but could be used in a yregex. 
+    """
     def __init__(self, index):
         super(GLink, self).__init__()
         self.index = index
@@ -234,6 +350,10 @@ class GLink(RegexOperator):
         return False
 
 class NGLink(GLink):
+    """
+    NamedGroup reference it works alike GLink class. It is meant
+    to be used by the regex parser.
+    """
     def to_regex(self):
         return r'(?P=%s)' % self.index
 
@@ -241,7 +361,15 @@ class NamedGroup(Group):
     """
     Named groups.
 
-    (?P<name>...)
+    Usage:
+
+        group = NamedGroup('gname', 'abc', X(), 'efg')
+        pattern  = Pattern(group, 'ijl')
+        print(pattern)
+
+    Output:
+        (?P<gname>abc.efg)ijl
+    
     """
 
     def __init__(self, gname, *args):
@@ -276,6 +404,15 @@ class NamedGroup(Group):
 
 class Repeat(RegexOperator):
     """
+    The regex a{min, max)}
+
+    Usage:
+        repeat = Repeat('a', 1)
+        print(repeat)
+
+    Output:
+        a{1,}
+
     """
 
     MAX = 7
@@ -332,6 +469,10 @@ class Repeat(RegexOperator):
         return '%s\n%s' % (code, stmt)
 
 class ZeroOrMore(Repeat):
+    """
+    The regex op +. It works alike Repeat.
+    """
+
     def __init__(self, regex, min=0, max='', greedy=False):
         super(ZeroOrMore, self).__init__(regex, 0, greedy=greedy)
 
@@ -340,6 +481,10 @@ class ZeroOrMore(Repeat):
         '?' if self.greedy else '')
 
 class OneOrMore(Repeat):
+    """
+    The regex op *. It works alike Repeat.
+    """
+
     def __init__(self, regex, min=1, max='', greedy=False):
         super(OneOrMore, self).__init__(regex, min, max, greedy=greedy)
 
@@ -348,6 +493,10 @@ class OneOrMore(Repeat):
         '?' if self.greedy else '')
 
 class OneOrZero(Repeat):
+    """
+    The regex op ?.
+    """
+
     def __init__(self, regex, min=0, max=1, greedy=False):
         super(OneOrZero, self).__init__(regex, min, max, greedy=greedy)
 
@@ -411,9 +560,9 @@ class ConsumeNext(RegexOperator):
 
 class ConsumeBack(ConsumeNext):
     """
-    Lookahead assertion.
+    The regex lookahead assertion.
 
-    (?=...)
+        (?=foo)bar
     """
 
     def __init__(self, regex0, regex1, neg=False):
@@ -451,6 +600,11 @@ class ConsumeBack(ConsumeNext):
         return fmt % (self.args[0].to_regex(), self.args[1].to_regex())
 
 class Seq(RegexOperator):
+    """
+    Map to a sequence like a-z, A-Z, 0-9 etc.
+    It can only be used with Include or Exclude.
+    """
+
     def __init__(self, start, end):
         super(Seq, self).__init__()
 
@@ -543,6 +697,9 @@ class X(RegexOperator):
         return '.'
 
 class RegexComment(RegexOperator):
+    """
+    Just a regex comment like (?#foobar)
+    """
     def __init__(self, comment):
         super(RegexComment, self).__init__()
         self.comment = comment
