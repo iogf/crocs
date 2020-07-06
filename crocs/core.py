@@ -23,20 +23,33 @@ class BasicRegex:
     def reduce_initargs(cls, *args):
         return args
 
+    def clear(self):
+        pass
+
     def invalid_data(self):
         pass
 
     def valid_data(self):
         pass
 
-    def clear(self):
-        pass
-
     def to_regex(self):
-        pass
+        """ 
+        Shouldn't be used. Use mkregex 
+        """
+
+        lm     = lambda ind: ind.to_regex()
+        regstr =  ''.join(map(lm, self.args))
+        # self.clear()
+        return regstr
 
     def mkregex(self):
-        pass
+        """
+        Generate a raw regex.
+        
+        """
+        regstr = self.to_regex()
+        self.clear()
+        return regstr
 
     def hasop(self, instance):
         if instance in self.args:
@@ -84,6 +97,9 @@ class BasicRegex:
         return groups
 
     def mkcode(self, argrefs=dict()):
+        # Necessary to populate Group.grefs.
+        regstr = self.to_regex()
+
         code0 = self.mkstmts(argrefs)
         modules = self.group_imports(argrefs)
 
@@ -92,18 +108,23 @@ class BasicRegex:
         for indi, indj in modules.items()))
 
         code2 = '%s\n%s' % (code1, code0)
+        self.clear()
+
         return code2
 
     def mkclone(self):
         """
         Return a clone based on its own serialization
-        to raw code. it is mostly used for tests.
+        to raw python code. it is mostly used for tests.
         """
+        regstr = self.to_regex()
 
         env = dict()
         code = self.mkcode(env)
         instname = env[self]
         exec(code, env)
+        self.clear()
+
         return env[instname]
     
 class RegexStr(BasicRegex):
@@ -189,7 +210,7 @@ class RegexOperator(BasicRegex):
         it raises an exception.
         """
 
-        regstr = self.mkregex()
+        regstr = self.to_regex()
 
         # Make sure the regex is valid.
         regexc = re.compile(regstr)
@@ -213,15 +234,17 @@ class RegexOperator(BasicRegex):
         print('Groups:', 
         regex.groups() if hasattr(
             regex, 'groups') else None)
-    
+        self.clear()
+
     def clear(self):
         for ind in self.args:
             ind.clear()
 
     def seed(self):
-        regex = self.mkregex()
+        regex = self.to_regex()
         data  = self.valid_data()
         regc  = re.search(regex, data)
+        self.clear()
 
         if regc:
             return data
@@ -233,25 +256,6 @@ class RegexOperator(BasicRegex):
         """
         data = (self.seed() for ind in range(count))
         print('Match with:\n', ' '.join(data))
-
-    def to_regex(self):
-        """ 
-        Shouldn't be used. Use mkregex 
-        """
-
-        lm     = lambda ind: ind.to_regex()
-        regstr =  ''.join(map(lm, self.args))
-        # self.clear()
-        return regstr
-
-    def mkregex(self):
-        """
-        Generate a raw regex.
-        
-        """
-        regstr = self.to_regex()
-        self.clear()
-        return regstr
 
     def __str__(self):
         return self.mkregex()

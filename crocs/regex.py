@@ -185,6 +185,7 @@ class Group(JoinX):
         self.data     = ''
         self.map      = ''
         Group.count   = 0
+        Group.grefs.clear()
         self.compiled = False
         super(Group, self).clear()
 

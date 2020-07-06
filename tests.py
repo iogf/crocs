@@ -632,6 +632,15 @@ class TestAny(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
+    def test15(self):
+        regstr = r'a|b|c+'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
 class TestOneOrZero(unittest.TestCase):
     def test0(self):
         expr0 = Include(Seq('0', '9'))

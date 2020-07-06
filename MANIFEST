@@ -16,10 +16,10 @@ demo/exclude.py
 demo/group.py
 demo/group_reference.py
 demo/include.py
+demo/mails.py
 demo/named_group.py
 demo/nested_consume_back.py
 demo/nested_consume_next.py
 demo/repeat.py
 demo/sequence.py
 demo/wildcard.py
-demo/xmails.py
