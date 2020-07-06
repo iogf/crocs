@@ -650,8 +650,35 @@ class TestAny(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
-    def test16(self):
+    def test17(self):
         regstr = r'(a+|b*|c+)(\1ff)((\2ee))\3*|((a+cee*ee+c{1,}?)ee)'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test18(self):
+        regstr = r'(a+|b*|c+)(\1ff)((\2ee))\3*|((a+cee*ee+c{1,}?)ee)|((a.+c)cd.*)(?=f.+bar)'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test19(self):
+        regstr = r'(a+|b*|(?<=abc..d)(((ss))c+))(f+f)((ee))*|((a+cee*ee+c{1,}?)ee)|((a.+c)cd.*)(?=f.+bar)'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test19(self):
+        regstr = r'(((e(a|b|c)d)c)|((ab|cd)|ef)|((((a|e|u|i+))))|ef)|ee|oo|.+'
         yregex = xmake(regstr)
         yregex.test()
         
