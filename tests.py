@@ -677,8 +677,17 @@ class TestAny(unittest.TestCase):
         clone = yregex.mkclone()
         self.assertEqual(clone.mkregex(), regstr)
 
-    def test19(self):
+    def test20(self):
         regstr = r'(((e(a|b|c)d)c)|((ab|cd)|ef)|((((a|e|u|i+))))|ef)|ee|oo|.+'
+        yregex = xmake(regstr)
+        yregex.test()
+        
+        self.assertEqual(yregex.mkregex(), regstr)
+        clone = yregex.mkclone()
+        self.assertEqual(clone.mkregex(), regstr)
+
+    def test21(self):
+        regstr = r'a.+?|e.*?|c{1,2}'
         yregex = xmake(regstr)
         yregex.test()
         
