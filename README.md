@@ -14,7 +14,7 @@ What if you had to debug the regex below to keep your job? :P
 \*{1,3}(((a[0-9]c)\3{1,3}))((\$[a-z]\#)\2{1,3})\*{1,3}
 ~~~
 
-You would need to ask help for some specialist. :P 
+You would need to ask help to a specialist. :P 
 You will be able to better understand what is going on once your regex is a yregex.
 
 ~~~
