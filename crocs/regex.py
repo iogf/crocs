@@ -469,9 +469,6 @@ class Seq(RegexOperator):
     def to_regex(self):
         return '%s-%s' % (self.start, self.end)
 
-    def clear(self):
-        pass
-
     def mkstmts(self, argrefs):
         return "%s = %s('%s', '%s')" % (self.instref(argrefs), 
         self.__class__.__name__, self.start, self.end)

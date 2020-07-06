@@ -146,9 +146,15 @@ class RegexStr(BasicRegex):
     def hasop(self, instance):
         return False
 
+    def instref(self, argrefs):
+        count = argrefs.setdefault(self.__class__, 0)
+        argrefs[self] = "'%s'" % self.args[0]
+        argrefs[self.__class__] += 1
+        return "'%s'" % self.args[0]
+
     def mkstmts(self, argrefs=dict()):
-        return "%s = %s('%s')" % (self.instref(argrefs), 
-        self.__class__.__name__, self.args[0])
+        self.instref(argrefs)
+        return ''
 
     __str__ = to_regex
 
