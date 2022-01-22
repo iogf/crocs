@@ -303,6 +303,8 @@ class RegexParser(Eacc):
         data = [ind.val() for ind in regex]
         if len(data) > 1:
             return Pattern(*data)
+        elif isinstance(data[0], RegexStr):
+            return Pattern(data[0])
         return data[0]
 
 def xmake(regstr):
