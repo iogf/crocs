@@ -60,6 +60,9 @@ class BasicRegex:
                 return True
         return False
 
+    def iswrapper(self):
+        return False
+
     def instref(self, argrefs):
         count = argrefs.setdefault(self.__class__, 0)
         name  = '%s%s' % (self.__class__.__name__.lower(), count)
@@ -92,8 +95,9 @@ class BasicRegex:
         if ind.__class__ is not type)
 
         for ind in classes:
-            names = groups.setdefault(ind.__class__.__module__, set())
-            names.add(ind.__class__.__name__)
+            if ind.iswrapper() is False:
+                groups.setdefault(ind.__class__.__module__, 
+                    set()).add(ind.__class__.__name__)
         return groups
 
     def mkcode(self, argrefs=dict()):
@@ -168,6 +172,9 @@ class RegexStr(BasicRegex):
 
     def hasop(self, instance):
         return False
+
+    def iswrapper(self):
+        return True
 
     def instref(self, argrefs):
         count = argrefs.setdefault(self.__class__, 0)
